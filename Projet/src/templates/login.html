@@ -62,24 +62,26 @@
 				<div class="jumbotron jumbotron-center ">
 						<p>
 						<div class="connexion">
-							<form action="/login?from={{ from_page }}" method="post" class="form-inline" role="form">
-								<div class="form-group">
+							<form action="/login?from={{ from_page }}" method="POST" class="form-inline" role="form">
+								<div class="form-style">
 									<label for="login" class="Connexion-text">Identifiant :</label>
 									<!--<label class="sr-only" for="login">Login</label>-->
 									<br />
 									<input class="form-control" type="text" name="login" id="login" placeholder="Ex : Zozor" size="30" maxlength="10" />
 								</div>
-								<div class="form-group">
+								<div class="form-style">
 									<label class="sr-only" for="password">Mot De Passe :</label>
 									<br />
 									<input class="form-control" type="password" name="password" id="password" placeholder="Ex : Zozor" size="30" maxlength="10" />
 									<br />
 								</div>
+								<button type="submit" class="btn btn-primary">Connexion</button>
 							</form>
 						</div>
 						
 					</p>
-					<p><a class="btn btn-lg btn-success" href="#" role="button">Connexion</a></p>
+					
+					<!--<p><a class="btn btn-primary" type="submit" role="button">Connexion</a></p>-->
 					<p><a href="Inscription.html" class="Connexion-text">Pas de compte ?<br /> Inscrivez vous dès maintenant !</a></p>
 				</div>
 			</div>

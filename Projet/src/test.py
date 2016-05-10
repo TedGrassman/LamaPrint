@@ -30,26 +30,37 @@ metadata.create_all(engine)		# remplit la BdD avec les informations par défaut
 
 def hash_for(password):
 	salted = '%s @ %s' % (SALT, password)
-	return hashlib.sha256(salted).hexdigest()
+	return hashlib.sha256(salted.encode('utf-8')).hexdigest()
 
 def authenticate(login, password):
 	"""Authentifier un utilisateur"""
 	db = engine.connect()
 	try:
 		name = db.execute(select([accounts.c.login]).where(accounts.c.login == login)).fetchone()
+		print('User', name)
 		if name is None:
 			# L'utilisateur n'existe pas
 			# code ...
-			#return '**Authentication fail: login does not exist**'
+			print('**Authentication fail: login does not exist**')
 			return False
 		else:
 			passhash = hash_for(password)
-			storedHash = db.execute(select([accounts.c.password_hash]).where(accounts.c.login == login)).fetchone()
+			#passhash = hash_for(password.encode('utf-8'))
+			#storedHash = db.execute(select([accounts.c.password_hash]).where(accounts.c.login == login)).fetchone()
+			print(login)
+			print(password)
+			result = db.execute("select password_hash from accounts where login=\'"+login+"\'")
+			"""for i in result:
+				print(i)
+				storedHash = i"""
+			storedHash = result.fetchone()[0]
+			print(passhash)
+			print(storedHash)
 			if passhash == storedHash:
-				#return '**Authentication successfull!**'
+				print('**Authentication successfull!**')
 				return True
 			else:
-				#return '**Authentication fail: wrong password**'
+				print('**Authentication fail: wrong password**')
 				return False
 	finally:
 		db.close();
@@ -59,17 +70,16 @@ def create(login, password):
 	db = engine.connect()
 	try:
 		name = db.execute(select([accounts.c.login]).where(accounts.c.login == login)).fetchone()
+		print(name)
 		if name is None:
 			# L'utilisateur n'existe pas ; on l'ajoute
-			db.execute(accounts.insert(), [
-				{'login': login, 'password_hash': hash_for(password)}
-			])
-			#return '**(New user)**'
+			db.execute(accounts.insert(), [ {'login': login, 'password_hash': hash_for(password)} ])
+			print('**(New user)**')
 			return True
 		else:
 			# L'utilisateur existe déjà ; erreur
-			#return '**Creation fail: login already exists**'
-			return False			
+			print('**Creation fail: login already exists**')
+			return False
 	finally:
 		db.close();
 				
@@ -77,13 +87,13 @@ def create(login, password):
 @app.route('/')
 @app.route('/index')
 def index():
-	return redirect(url_for('Page_HTML', filename='index.html'))
+	return redirect(url_for('static', filename='index.html'))
 
 @app.route('/test')
 def test():
 	return "Hello !"
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
 	from_page = request.args.get('from', 'Main')
 	if request.method == 'POST':
@@ -91,15 +101,18 @@ def login():
 			session['username'] = request.form['login']
 			#session['name'] = escape(request.form['name'])              
 			session['logged'] = True
+			flash('Authentication successfull')
+			print('Authentication successfull')
 			return redirect('/')		# on redirige à l'index
 		else:		# authenticate a échoué (False)
-			flash('Unexistant user or invalid password for login' +request.form['login'])
+			flash('Unexistant user or invalid password for login ' +request.form['login'])
+			print('Unexistant user or invalid password for login ' +request.form['login'])
 			return redirect('/login?from=' + from_page)
 	else:	# méthode HTML GET
 		return render_template('login.html', from_page=from_page)
 
 
-@app.route('/register', methods=['POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
 	from_page = request.args.get('from', 'Main')
 	if request.method == 'POST':
@@ -107,9 +120,11 @@ def register():
 			session['username'] = request.form['login']
 			#session['name'] = escape(request.form['name'])              
 			session['logged'] = True
+			print('User creation successfull!')
 			return redirect('/')		# on redirige à l'index
 		else:		# create a échoué (False)
 			flash('Creation fail: user \"'+ request.form['login'] + '\" already exists')
+			print('Creation fail: user \"'+ request.form['login'] + '\" already exists')
 			return redirect('/register?from=' + from_page)
 	else:	# méthode HTML GET
 		return render_template('register.html', from_page=from_page)
