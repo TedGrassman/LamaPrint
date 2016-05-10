@@ -72,6 +72,7 @@ footer{
 	margin-bottom:30px;
 }
 
+<<<<<<< HEAD
 .maps{
 width:100;
 Height: 500px;
@@ -79,4 +80,12 @@ Height: 500px;
 
 .panel-title-center{
 text-align:center;
+=======
+.form-container{
+	margin-right: 70px;
+	margin-left: 70px;
+	width:430px;
+	
+	
+>>>>>>> 471e389ff97a9879ba5be5e45aeab4e06da71b7f
 }

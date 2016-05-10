@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+
+        <meta charset="utf-8" />
+
+        <title href="index.html">Projet</title><!-- affichage dans l'encadré onglet-->
+		
+		<script type="text/javascript" src="../../jquery/jquery-1.12.3.min.js" ></script>
+		<script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js" ></script>
+		
+		<link rel="stylesheet" type="text/css" href="../../bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../../bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="lamaprint.css" />
+
+			
+    </head>
+
+    <body>
+	
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+		  <div class="container navbar-no-margin">
+			<div class="navbar-header">
+			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			  </button>
+			  <a class="navbar-brand" href="#">Lamaprint</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+			  <ul class="nav navbar-nav">
+				<li class="active"><a href="index.html">Home</a></li>
+				<li><a href="#about">About</a></li>
+				<li><a href="#contact">Contact</a></li>
+				<li class="dropdown">
+				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+				  <ul class="dropdown-menu">
+					<li><a href="#">Action</a></li>
+					<li><a href="#">Another action</a></li>
+					<li><a href="#">Something else here</a></li>
+					<li role="separator" class="divider"></li>
+					<li class="dropdown-header">Nav header</li>
+					<li><a href="#">Separated link</a></li>
+					<li><a href="#">One more separated link</a></li>
+				  </ul>
+				</li>
+			  </ul>
+			  <ul class="nav navbar-nav pull-right">
+				  <a href="Login.html"><li><button type="button" class="btn btn-lg btn-default navbar-button">Login</button></li></a>
+			  </ul>
+			</div><!--/.nav-collapse -->
+		  </div>
+		</nav>
+		
+		<div class="content">
+			<header>
+				<h1> Lamaprint: </h1>	
+				<h2>Je veux louer les services de mon Imprimante 3D</h2>
+			</header>
+			
+			<div class="form-container">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title"><a href="Projet.html"> Mon Imprimante 3D </a></h3>
+					</div>
+					<div class="panel-body">
+						
+						
+						<form method="post" action="#">
+							
+							<p><label for="taillemax">Taille maximale des impressions</label> : 
+							<input type="number" min="0" name="taillemax" id="taillemax" style="text-align:center;" required /> cm.</p>
+							
+							<p><label for="resolution">Résolution</label> : 
+							<input type="number" min="0" name="resolution" id="taillemax" style="width: 6em;text-align:center;" /> µm. 
+							
+							<label for="prix" style="margin-left: 30px;">Prix min</label> : 
+							<input type="number" min="0" step="0.01" name="prix" id="prix" style="width: 6em;text-align:center;" /> €/Kg.</p>
+							
+							<p><label for="materiaux">Matériaux</label> : 
+							<input type="text" name="materiaux" id="materiaux" size="51" /> </p>
+							
+							<p><label for="adresse">Adresse</label> : 
+							<input type="text" name="adresse" id="adresse" size="52" required /></p>
+							
+							<p><label for="codepostal">Code Postal</label> : 
+							<input type="text" name="codepostal" id="codepostal" style="width: 3em";  required />
+							
+							<label for="ville">Ville</label> : 
+							<input type="text" name="ville" id="ville" style="width: 6em" required />
+							
+							<label for="pays">Pays</label> : 
+							<select name="pays" id="pays" style="width: 7em" required>
+								<option value="Allemagne">Allemagne</option>
+								<option value="Autriche">Autriche</option>
+								<option value="Belgique">Belgique</option>
+								<option value="Bulgarie">Bulgarie</option>
+								<option value="Chypre">Chypre</option>
+								<option value="Croatie">Croatie</option>
+								<option value="Danemark">Danemark</option>
+								<option value="Espagne">Espagne</option>
+								<option value="Estonie">Estonie</option>
+								<option value="Finlande">Finlande</option>
+								<option value="France" selected>France</option>
+								<option value="Grece">Grèce</option>
+								<option value="Hongrie">Hongrie</option>
+								<option value="Irlande">Irlande</option>
+								<option value="Italie">Italie</option>
+								<option value="Islande">Islande</option>
+								<option value="Lettonie">Lettonie</option>
+								<option value="Liechtenstein">Liechtenstein</option>
+								<option value="Lituanie">Lituanie</option>
+								<option value="Luxembourg">Luxembourg</option>
+								<option value="Malte ">Malte </option>
+								<option value="Norvege">Norvège</option>
+								<option value="Pays-Bas">Pays-Bas</option>
+								<option value="Pologne">Pologne</option>
+								<option value="Portugal">Portugal</option>
+								<option value="Republique tcheque">République tchèque</option>
+								<option value="Roumanie">Roumanie</option>
+								<option value="Royaume-Uni">Royaume-Uni</option>
+								<option value="Slovaquie">Slovaquie</option>
+								<option value="Slovenie">Slovénie</option>
+								<option value="Suede">Suède</option>
+								<option value="Suisse">Suisse</option>
+							</select></p>
+							
+							<p><label for="commentaires">Commentaires</label> : <br />
+							<textarea name="commentaires" id="commentaires" rows="4" cols="60"></textarea></p>
+							
+							<p><input type="checkbox" name="numtel" id="numtel" /> 
+							<label for="numtel">Afficher mon numéro de téléphone.</label></p>
+							
+							<input type="submit" value="Valider" ></code>
+						</form>
+											
+						
+						
+					</div>
+					
+				</div>
+				
+			</div>
+			
+			
+			<footer> 
+				<div class="well">
+					Lamaprint
+				</div>
+			</footer>
+		</div>
+		
+    </body>
+	
+</html>
