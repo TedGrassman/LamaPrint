@@ -209,7 +209,7 @@ header{
 
 .register-button-style{
 	border-color:#f7aa2d;
-	margin-bottom:5px;
+	margin-bottom:8px;
 	margin-top:30px;
 }
 	.register-button-style:hover{
@@ -321,8 +321,8 @@ header{
 
 .profile-button-style{
 	border-color:#f7aa2d;
-	margin-bottom:5px;
-	margin-top:30px;
+	margin-bottom:0px;
+	margin-top:0px;
 }
 	.profile-button-style:hover{
 		border-color:#db8e12;
