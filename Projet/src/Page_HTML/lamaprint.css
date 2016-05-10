@@ -72,5 +72,11 @@ footer{
 	margin-bottom:30px;
 }
 
+.maps{
+width:100;
+Height: 500px;
+}
 
-
+.panel-title-center{
+text-align:center;
+}

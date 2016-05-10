@@ -3,13 +3,15 @@
 <html>
 
     <head>
-
+<
         <meta charset="utf-8" />
 
         <title href="index.html">Projet</title><!-- affichage dans l'encadré onglet-->
 		
 		<script type="text/javascript" src="../../jquery/jquery-1.12.3.min.js" ></script>
 		<script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js" ></script>
+		<script type="text/javascript" src="../API/cookies.js" ></script>
+		
 		
 		<link rel="stylesheet" type="text/css" href="../../bootstrap/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../../bootstrap/css/bootstrap-theme.min.css" />
@@ -66,7 +68,7 @@
 								<div class="form-style">
 									<label for="id" class="Connexion-text">Identifiant :</label>
 									<br />
-									<input type="text" name="id" id="id" placeholder="Ex : Zozor" size="30" maxlength="10" />
+									<input type="text" name="id" id="test" placeholder="Ex : Zozor" size="30" maxlength="10" />
 								</div>
 								<div class="form-style" class="Connexion-text">
 									<label for="mdp">Mot De Passe :</label>
@@ -78,7 +80,7 @@
 						</div>
 						
 					</p>
-					<p><a class="btn btn-lg btn-success" href="#" role="button">Connexion</a></p>
+					<p onclick="connexion()"><a class="btn btn-lg btn-success" href="#" role="button">Connexion</a></p><!--Modif onclik button-->
 					<p><a href="Inscription.html" class="Connexion-text">Pas de compte ?<br /> Inscrivez vous dès maintenant !</a></p>
 				</div>
 			</div>
