@@ -58,62 +58,62 @@
 		
 		<div class="content">
 			<header>
-				<h1> Lamaprint: </h1>	
-				<h2>Je veux proposer un projet</h2>
+				
 			</header>
 			
-			<div class="form-container"> <!-- mettre plusieurs classe-->
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-						<h3 class="panel-title"><a href="Projet.html"> Nouveau projet </a></h3>
+		</div>
+		
+		<div class="container register-text">
+			
+			<div class="container-co jumbotron propose-form-title">
+				<p>
+					<label for="titletext" class="login-form-title">Nouveau projet</label>
+				</p>
+			</div>
+			
+			<div class="container-globalregister"> 
+				<form method="post" action="#" enctype="multipart/form-data">
+					<div class="col-md-6 no-padding">
+						<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose">
+							
+							<p><label for="title">Titre</label> : </br>
+							<input type="text" name="title" id="title" size="42%" required /></p>
+							
+							<label for="prix">Prix </label> : <label for="masse" style="margin-left: 105px;">Masse </label> :  </br>
+							<input type="number" min="0" step="0.01" value="0" name="prix" id="prix" style="width: 7em;" class="input-center" required /> € 
+							<input type="number" min="0" name="masse" id="masse" style="margin-left: 28px; width: 7em;" class="input-center" /> g</p>
+							
+							<p><label for="dimx">Dimensions </label> : </br>
+							<input type="number" min="0" step="0.1" name="dimx" id="dimx" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="x" /> x
+							<input type="number" min="0" step="0.1" name="dimy" id="dimy" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="y" /> x
+							<input type="number" min="0" step="0.1" name="dimz" id="dimz" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="z" /> cm </p>
+							
+							<p><label for="fichier">Fichier</label> :
+							<input type="file" name="fichier" id="fichier" style="margin-left:25px" required /></p>
+								
+							<p><label for="images">Images</label> :
+							<input type="file" name="images" id="images" style="margin-left:25px" multiple /></p>
+							
+						</div>
+					
 					</div>
-					<div class="panel-body">
-						
-						
-						<form method="post" action="#" enctype="multipart/form-data">
-							
-							<p><label for="title">Titre</label> : 
-							<input type="text" name="title" id="title" size="55" required /></p>
-							
-							<label for="prix">Prix </label> : 
-							<input type="number" min="0" step="0.01" value="0" name="prix" id="prix" style="width: 7em;text-align:center;" required /> €. 
-							
-							<label for="masse" style="margin-left: 40px;">Masse </label> : 
-							<input type="number" min="0" name="masse" id="masse" style="width: 7em;text-align:center;" /> g.</p>
-							
-							<p><label for="dimx">Dimensions </label> : 
-							<input type="number" min="0" step="0.1" name="dimx" id="dimx" style="width: 4em;text-align:center;" placeholder="x" /> x
-							<input type="number" min="0" step="0.1" name="dimy" id="dimy" style="width: 4em;text-align:center;" placeholder="y" /> x
-							<input type="number" min="0" step="0.1" name="dimz" id="dimz" style="width: 4em;text-align:center;" placeholder="z" /> cm. </p>
-							
+					<div class="col-md-6 no-padding">
+						<div id="registerrightwindow" class="jumbotron-propose container-halfpropose">
 							
 							<p><label for="description">Description </label> : <br />
-							<textarea name="description" id="description" rows="4" cols="60"></textarea></p>
-
-							<p><label for="fichier">Fichier</label> :
-							<input type="file" name="fichier" id="fichier" /></p>
-							
-							<p><label for="images">Images</label> :
-							<input type="file" name="images" id="fichier" multiple /></p>
-							
-							<br />
-							<input type="submit" value="Envoyer" />
-							
-						</form>
-											
+							<textarea name="description" id="description" rows="8" cols="42%" style="margin-bottom:11px"></textarea></p>
 						
-						
+							<a class="btn btn-lg btn-warning register-button-style" href="#" role="button">Envoyer</a>
+						</div>
 					</div>
-					
-				</div>
-				
+				</form>
 			</div>
 			
 			
 			<footer> 
-				<div class="well">
+				<!--<div class="well">
 					Lamaprint
-				</div>
+				</div>-->
 			</footer>
 		</div>
 		
