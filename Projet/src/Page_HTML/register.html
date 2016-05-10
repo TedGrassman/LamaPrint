@@ -77,25 +77,25 @@
 										<label class="register-form-subtitle">Informations liées au compte</label>
 										<br />									
 									
-										<label for="id" class="register-text">Identifiant :</label>
+										<label for="id" class="register-text">Identifiant *</label>
 										<br />
-										<input type="text" name="id" id="id" placeholder="Entrez votre identifiant ici" size="30" maxlength="64" />
+										<input type="text" name="id" id="id" placeholder="Entrez votre identifiant ici" size="30" maxlength="64" required />
 									
 									
-										<label for="mdp" class="register-text">Mot De Passe :</label>
+										<label for="mdp" class="register-text">Mot De Passe *</label>
 										<br />
-										<input type="password" name="mdp" id="mdp" placeholder="Entrez votre mot de passe ici" size="30" maxlength="64" />
+										<input type="password" name="mdp" id="mdp" placeholder="Entrez votre mot de passe ici" size="30" maxlength="64" required />
 										<br />
 										
-										<label for="mdpconfirm" class="register-text">Confirmation du Mot De Passe :</label>
+										<label for="mdpconfirm" class="register-text">Confirmation du Mot De Passe *</label>
 										<br />
-										<input type="password" name="mdpconfirm" id="mdpconfirm" placeholder="Confirmation du mot de passe" size="30" maxlength="64" />
+										<input type="password" name="mdpconfirm" id="mdpconfirm" placeholder="Confirmation du mot de passe" size="30" maxlength="64" required />
 										<br />
 									
 									
-										<label for="mail" class="register-text">Adresse E-mail :</label>
+										<label for="mail" class="register-text">Adresse E-mail *</label>
 										<br />
-										<input type="text" name="mail" id="mail" placeholder="Entrez votre adresse e-mail ici" size="30" maxlength="64" />
+										<input type="text" name="mail" id="mail" placeholder="Entrez votre adresse e-mail ici" size="30" maxlength="64" required />
 									
 									</div>
 								</form>
@@ -119,26 +119,31 @@
 						<br />	
 					
 					
-						<label for="firstname" class="register-text">Prénom :</label>
+						<label for="firstname" class="register-text">Prénom</label>
 						<br />
 						<input type="text" name="firstname" id="firstname" placeholder="Entrez votre prénom ici" size="30" maxlength="64" />
 					
 					
-						<label for="lastname" class="register-text">Nom :</label>
+						<label for="lastname" class="register-text">Nom</label>
 						<br />
 						<input type="text" name="lastname" id="lastname" placeholder="Entrez votre nom ici" size="30" maxlength="64" />
 					
 					
-						<label for=" birthdate" class="register-text">Date de naissance :</label>
+						<label for="birthdate" class="register-text">Date de naissance</label>
 						<br />
 						<input type="date" name="birthdate" id="birthdate" placeholder="JJ/MM/AAAA" size="30" maxlength="10" />
 						
-						<label for="firstname" class="register-text">Trucs en plus </label>
+						<label for="phonenumber" class="register-text">Numéro de téléphone</label>
 						<br />
-						<label for="firstname" class="register-text">Trucs en plus </label>
-						<br />
-						<label for="firstname" class="register-text">Trucs en plus </label>
-						<br />
+						<input type="date" name="phonenumber" id="phonenumber" placeholder="Entrez votre numéro de téléphone" size="30" maxlength="10" />
+						
+						<br /><br />
+						
+						<input type="checkbox" id="idcheckbox" value="valeur"/>
+						
+						<label for="idcheckbox">J'accepte les </label> 
+						<a href="cgu.html" class="link-form-style"> conditions générales d'utilisation</a> 
+						<br/>
 
 					
 					

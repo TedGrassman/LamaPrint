@@ -65,9 +65,9 @@
 		
 		<div class="container register-text">
 			
-			<div class="container-co jumbotron register-form-title">
+			<div class="jumbotron register-form-title">
 				<p>
-					<label for="titletext" class="login-form-title">Profil de °Yx-Pédrolebossdu67-xY°</label>
+					<label for="titletext" class="login-form-title">Modifier son profil</label>
 				</p>
 			</div>
 			<div class="container-globalregister">
@@ -77,10 +77,12 @@
 						<p>						
 								<form method="post" action="#">
 									<div class="form-style">
-										<br />	<br />	<br />	<br />	<br />	<br />	
-										<label class="register-form-subtitle">Avatar de °Yx-Pédrolebossdu67-xY°</label>
-										<br /> <br />	<br />	<br />	<br />	<br />		
-										
+										<label class="profile-subtitle">Gestion de l'avatar</label>
+										<br /><br />
+										<image type="image" src="../Image/garou.png" name="avatar" id="avatar"/>
+										<br />
+										<label class="login-text">Modifier son avatar</label>
+										<input type="file" class="profile-text" style="width:300px; font-size:12px; margin-top:0px;" />
 									</div>
 								</form>
 							
@@ -89,10 +91,24 @@
 					</div>
 				<div class="container-leftregister jumbotron">
 					<p>
-						<label <label class="register-text">Trucs en plus </label>
+						<label class="profile-subtitle">Mot de passe</label>
 						<br />
-						<label <label class="register-text">Trucs en plus </label>
+						
+						<label for="mdp" class="profile-text">Ancien Mot De Passe</label>
 						<br />
+						<input type="password" name="mdp" id="mdp" placeholder="Ancien mot de passe" size="30" maxlength="64" />
+						<br />
+						
+						<label for="newmdp" class="profile-text">Nouveau Mot De Passe</label>
+						<br />
+						<input type="password" class="register-text" name="newmdp" id="newmdp" placeholder="Nouveau mot de passe" size="30" maxlength="64"/>
+						<br />
+						
+						<label for="delconfirm" class="profile-text">Confirmation du Mot De Passe</label>
+						<br />
+						<input type="password" name="delconfirm" id="delconfirm" placeholder="Confirmation du mot de passe" size="30" maxlength="64" />
+						<br />
+
 					</p>
 				</div>
 				</div>
@@ -102,30 +118,37 @@
 				<div class="col-md-6 no-padding">
 					<div id="registerrightwindow" class="jumbotron container-rightregister">
 						
-						<label class="register-form-subtitle">Informations</label>
+						<label class="register-form-subtitle">Informations personnelles</label>
 						<br />	
 					
-						<label class="register-text">Trucs en plus </label>
+					
+						<label for="firstname" class="register-text">Prénom</label>
 						<br />
-						<label class="register-text">Trucs en plus </label>
+						<input type="text" name="firstname" id="firstname" placeholder="Entrez votre prénom ici" size="30" maxlength="64" />
+					
+					
+						<label for="lastname" class="register-text">Nom</label>
 						<br />
-						<label class="register-text">Trucs en plus </label>
+						<input type="text" name="lastname" id="lastname" placeholder="Entrez votre nom ici" size="30" maxlength="64" />
+					
+					
+						<label for="birthdate" class="register-text">Date de naissance</label>
 						<br />
-						<label class="register-text">Trucs en plus </label>
+						<input type="date" name="birthdate" id="birthdate" placeholder="JJ/MM/AAAA" size="30" maxlength="10" />
+						
+						<label for="phonenumber" class="profile-text">Numéro de téléphone</label>
 						<br />
-						<label class="register-text">Trucs en plus </label>
-						<br />
-						<label class="register-text">Trucs en plus </label>
-						<br />
-						<label <label class="register-text">Trucs en plus </label>
-						<br />
+						<input type="date" name="phonenumber" id="phonenumber" style="text-align:center;" placeholder="Entrez votre numéro de téléphone" size="30" maxlength="10" />
 						
 					
-					
-					<a class="btn btn-lg btn-warning register-button-style" href="#" role="button">Bouton pour rigoler</a>
 					</div>
 				</div>
 				
+				<div class="col-md-12 no-padding">
+					<div class="jumbotron container-co">
+						<a class="btn btn-lg btn-warning profile-button-style" href="#" role="button">Confirmer les modifications</a>
+					</div>
+				</div>
 			
 			
 			
