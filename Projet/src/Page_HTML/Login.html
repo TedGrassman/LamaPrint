@@ -3,15 +3,13 @@
 <html>
 
     <head>
-<
+
         <meta charset="utf-8" />
 
         <title href="index.html">Projet</title><!-- affichage dans l'encadré onglet-->
 		
 		<script type="text/javascript" src="../../jquery/jquery-1.12.3.min.js" ></script>
 		<script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js" ></script>
-		<script type="text/javascript" src="../API/cookies.js" ></script>
-		
 		
 		<link rel="stylesheet" type="text/css" href="../../bootstrap/css/bootstrap.min.css" />
 		<link rel="stylesheet" type="text/css" href="../../bootstrap/css/bootstrap-theme.min.css" />
@@ -59,36 +57,51 @@
 			<header>
 				
 			</header>
+		</div>
+		
+		<div class="container login-text">
 			
-			<div class="container container-co Connexion-text">
-				<div class="jumbotron jumbotron-center ">
-						<p>
-						<div class="connexion">
-							<form method="post" action="#">
-								<div class="form-style">
-									<label for="id" class="Connexion-text">Identifiant :</label>
-									<br />
-									<input type="text" name="id" id="test" placeholder="Ex : Zozor" size="30" maxlength="10" />
-								</div>
-								<div class="form-style" class="Connexion-text">
-									<label for="mdp">Mot De Passe :</label>
-									<br />
-									<input type="text" name="mdp" id="mdp" placeholder="Ex : Zozor" size="30" maxlength="10" />
-									<br />
-								</div>
-							</form>
-						</div>
-						
-					</p>
-					<p onclick="connexion()"><a class="btn btn-lg btn-success" href="#" role="button">Connexion</a></p><!--Modif onclik button-->
-					<p><a href="Inscription.html" class="Connexion-text">Pas de compte ?<br /> Inscrivez vous dès maintenant !</a></p>
-				</div>
+			<div class="container-login jumbotron login-form-title">
+				<p>
+					<label for="titletext" class="login-form-title">Connexion</label>
+				</p>
 			</div>
 			
+			<div class="jumbotron container-login">
+					<p>						
+						<form method="post" action="#">
+							<div class="form-style">
+							
+							
+								<label for="id" class="login-text">Identifiant :</label>
+								<br />
+								<input type="text" name="id" id="id" placeholder="Entrez votre identifiant ici" size="30" maxlength="64" />
+							
+							
+								<label for="mdp" class="login-text">Mot De Passe :</label>
+								<br />
+								<input type="text" name="mdp" id="mdp" placeholder="Entrez votre mot de passe ici" size="30" maxlength="64" />
+								<br />
+								
+							</div>
+						</form>
+						
+					</p>
+					<a class="btn btn-lg btn-warning login-button-style" href="#" role="button">Connexion</a>
+					
+			</div>
+			
+			<div class="container-login jumbotron">
+				<p>
+					<a href="Register.html" class="link-form-style">Pas de compte ?<br /> Inscrivez vous dès maintenant !</a>
+				</p>
+			</div>
+			
+			
 			<footer> 
-				<div class="well">
+				<!--<div class="well">
 					Lamaprint
-				</div>
+				</div> -->
 			</footer>
 		</div>
 		
