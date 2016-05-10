@@ -1,0 +1,76 @@
+.row-no-margin { /*Surcharge row*/
+	margin-right: 0px;
+    margin-left: 0px;
+    margin-top:50px;
+}
+
+/*NAVBAR*/
+.navbar-no-margin
+{
+	margin-left:0px;
+	margin-right:0px;
+	width:100%;
+}
+
+.navbar-button{
+	margin-top:2%;
+	margin-bottom:2%;
+	margin-right:10%
+}
+
+.left_panel
+{
+	position:absolute;
+	width:50%;
+}
+/*GLOBAL*/
+header{
+	position:relative;
+	text-align:center;
+	margin-bottom:51px;
+	margin-top:0px;
+}
+
+footer{
+	/*FIXED FOOTER*/
+	/*position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px;*/
+}
+
+.carousel-option{
+	margin-left:auto;
+	margin-right:auto;
+	width: 80%;
+}
+
+.content {
+	margin-top:71px;
+	padding-top: 5px;
+	min-height: calc(100% - 131px); //* 71px header + 60 px footr = 131px */
+}
+
+/*Page Connexion*/
+.connexion{
+	margin-bottom:50px;
+	margin-top:50px;
+}
+
+.container-co{
+	width:400px;
+	text-align:center;
+	
+}
+
+.Connexion-text{
+	font-size:15px;
+}
+
+/*FORM*/
+.form-style{
+	margin-bottom:30px;
+}
+
+
+
