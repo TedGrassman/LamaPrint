@@ -209,8 +209,8 @@ header{
 
 .register-button-style{
 	border-color:#f7aa2d;
-	margin-bottom:8px;
-	margin-top:30px;
+	margin-bottom:0px;
+	margin-top:22px;
 }
 	.register-button-style:hover{
 		border-color:#db8e12;
