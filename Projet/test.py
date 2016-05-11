@@ -19,10 +19,44 @@ SALT = 'foo#BAR_{baz}^666'
 engine = create_engine('sqlite:///users.db', echo=True)
 metadata = MetaData()
 
-accounts = Table('accounts', metadata,
-	Column('id', Integer, autoincrement=True, primary_key=True),
-	Column('login', String, nullable=False),
-	Column('password_hash', String, nullable=False))
+user = Table('user', metadata,
+	Column('username', String, primary_key = True, unique = True, nullable = False),
+	Column('password', String),
+	Column('mail', String),
+	Column('lastname', String),
+	Column('name', String),
+	Column('address', String),
+	Column('creation_date', String),
+	Column('score', Integer),
+	Column('printer', String), #'yes' ou 'no'
+	Column('birthdate', String))
+
+project = Table('project', metadata,
+	Column('id', Integer, autoincrement = True, primary_key = True, nullable = False, unique = True),
+	Column('creation_date', String),
+	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
+	Column('project_name', String),
+	Column('score', Integer),
+	Column('project_type', Integer), #'rquest', 'publication' ou 'offer'
+	Column('description', Integer))
+
+file = Table('file', metadata,
+	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
+	Column('creation_date', String),
+	Column('score', Integer),
+	Column('project', Integer, ForeignKey('project.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
+	Column('dimensions', String), # exemple: '3cmx4cm'
+	Column('weight', Float),
+	Column('price', String), # exemple: '€23.4'
+	Column('name', String))
+				
+comment = Table('comment', metadata,
+	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
+	Column('creation_date', String),
+	Column('score', Integer),
+	Column('project', Integer, ForeignKey('project.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
+	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
+	Column('comment_text', String))
 
 metadata.create_all(engine)		# remplit la BdD avec les informations par défaut
 
@@ -35,7 +69,7 @@ def authenticate(login, password):
 	"""Authentifier un utilisateur"""
 	db = engine.connect()
 	try:
-		result = db.execute(select([accounts.c.login]).where(accounts.c.login == login)).fetchone()
+		result = db.execute(select([user.c.username]).where(user.c.username == login)).fetchone()
 		name = result[0]
 		print('User:', name)
 		if name is None:
@@ -46,11 +80,11 @@ def authenticate(login, password):
 		else:
 			passhash = hash_for(password)
 			#passhash = hash_for(password.encode('utf-8'))
-			result = db.execute(select([accounts.c.password_hash]).where(accounts.c.login == login)).fetchone()
+			result = db.execute(select([user.c.password]).where(user.c.username == login)).fetchone()
 			storedHash = result[0]
 			print(login)
 			print(password)
-			#result = db.execute("select password_hash from accounts where login=\'"+login+"\'")
+			#result = db.execute("select password_hash from user where login=\'"+login+"\'")
 			"""for i in result:
 				print(i)
 				storedHash = i"""
@@ -70,11 +104,11 @@ def create(login, password):
 	"""Créer et enregistrer un utilisateur existant"""
 	db = engine.connect()
 	try:
-		name = db.execute(select([accounts.c.login]).where(accounts.c.login == login)).fetchone()
+		name = db.execute(select([user.c.username]).where(user.c.username == login)).fetchone()
 		print(name)
 		if name is None:
 			# L'utilisateur n'existe pas ; on l'ajoute
-			db.execute(accounts.insert(), [ {'login': login, 'password_hash': hash_for(password)} ])
+			db.execute(user.insert(), [ {'username': login, 'password': hash_for(password)} ])
 			print('**(New user)**')
 			return True
 		else:
