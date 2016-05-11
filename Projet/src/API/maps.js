@@ -67,5 +67,5 @@ function successCallback(position){
 }
 
 function errorCallback(msg){
-		aert("connard");
+		alert("connard");
 }
