@@ -27,22 +27,22 @@ projet = Table('projet', metadata,
 			Column('description', Integer))
 
 fichier = Table('fichier', metadata,
-				Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
-				Column('date_de_creation', String),
-				Column('score', Integer),
-				Column('projet', Integer, ForeignKey('projet.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-				Column('dimensions', String), # exemple: '3cmx4cm'
-				Column('poids', Float),
-				Column('prix', String), # exemple '€23.4'
-				Column('nom', String))
+			Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
+			Column('date_de_creation', String),
+			Column('score', Integer),
+			Column('projet', Integer, ForeignKey('projet.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
+			Column('dimensions', String), # exemple: '3cmx4cm'
+			Column('poids', Float),
+			Column('prix', String), # exemple '€23.4'
+			Column('nom', String))
 				
 commentaire = Table('commentaire', metadata,
-				Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
-				Column('date_de_creation', String),
-				Column('score', Integer),
-				Column('projet', Integer, ForeignKey('projet.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-				Column('usager', String, ForeignKey('usager.pseudo', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-				Column('texte_du_commentaire', String))
+			Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
+			Column('date_de_creation', String),
+			Column('score', Integer),
+			Column('projet', Integer, ForeignKey('projet.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
+			Column('usager', String, ForeignKey('usager.pseudo', ondelete = 'SET NULL', onupdate = 'CASCADE')),
+			Column('texte_du_commentaire', String))
 			
 
 

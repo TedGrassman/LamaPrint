@@ -16,7 +16,7 @@ SALT = 'foo#BAR_{baz}^666'
 
 # Création de la base de données
 # Base de donnée : doit supporter les types "blob"
-engine = create_engine('sqlite:///users.db', echo=True)
+engine = create_engine('sqlite:///lama.db', echo=True)
 metadata = MetaData()
 
 user = Table('user', metadata,
@@ -195,3 +195,6 @@ if __name__ == '__main__':
 	app.run(debug=True)
 	app.logger.debug("Debug")
 # ............................................................................................... #
+
+
+('ouhoezhrezhr',)
