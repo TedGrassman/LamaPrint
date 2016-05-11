@@ -261,9 +261,15 @@ header{
 	padding-left:20px;
 	padding-right:20px;
 	text-align:left;
-	height:75%;
+	height:558px;
 }
 	
+
+.project-comments{
+	text-align:left;
+	overflow-y: auto;
+	height:350px;"
+}
 
 /*PROFILE -----------------------------------------------*/
 
