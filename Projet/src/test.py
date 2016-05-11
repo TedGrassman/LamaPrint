@@ -1,4 +1,3 @@
-#! /usr/bin/python
 # -*- coding:utf-8 -*-
 
 from flask import *
@@ -36,8 +35,9 @@ def authenticate(login, password):
 	"""Authentifier un utilisateur"""
 	db = engine.connect()
 	try:
-		name = db.execute(select([accounts.c.login]).where(accounts.c.login == login)).fetchone()
-		print('User', name)
+		result = db.execute(select([accounts.c.login]).where(accounts.c.login == login)).fetchone()
+		name = result[0]
+		print('User:', name)
 		if name is None:
 			# L'utilisateur n'existe pas
 			# code ...
@@ -46,10 +46,11 @@ def authenticate(login, password):
 		else:
 			passhash = hash_for(password)
 			#passhash = hash_for(password.encode('utf-8'))
-			#storedHash = db.execute(select([accounts.c.password_hash]).where(accounts.c.login == login)).fetchone()
+			result = db.execute(select([accounts.c.password_hash]).where(accounts.c.login == login)).fetchone()
+			storedHash = result[0]
 			print(login)
 			print(password)
-			result = db.execute("select password_hash from accounts where login=\'"+login+"\'")
+			#result = db.execute("select password_hash from accounts where login=\'"+login+"\'")
 			"""for i in result:
 				print(i)
 				storedHash = i"""
@@ -87,7 +88,7 @@ def create(login, password):
 @app.route('/')
 @app.route('/index')
 def index():
-	return redirect(url_for('static', filename='index.html'))
+	return render_template('index.html')
 
 @app.route('/test')
 def test():
