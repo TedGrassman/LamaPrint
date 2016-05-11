@@ -8,11 +8,11 @@
 
         <title href="index.html">Projet</title><!-- affichage dans l'encadré onglet-->
 		
-		<script type="text/javascript" src="../../jquery/jquery-1.12.3.min.js" ></script>
-		<script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js" ></script>
+		<script type="text/javascript" src="../jquery/jquery-1.12.3.min.js" ></script>
+		<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js" ></script>
 		
-		<link rel="stylesheet" type="text/css" href="../../bootstrap/css/bootstrap.min.css" />
-		<link rel="stylesheet" type="text/css" href="../../bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap-theme.min.css" />
 		<link rel="stylesheet" type="text/css" href="lamaprint.css" />
 
 			
@@ -49,38 +49,51 @@
 				  </ul>
 				</li>
 			  </ul>
+			  <ul class="nav navbar-nav pull-right">
+				  <a href="login.html"><li><button type="button" class="btn btn-lg btn-default navbar-button">Login</button></li></a>
+			  </ul>
 			</div><!--/.nav-collapse -->
 		  </div>
 		</nav>
 		
 		<div class="content">
 			<header>
-				
+				<h1> Lamaprint: </h1>	
+				<h2>Proposer / Répondre à un projet</h2>
 			</header>
 			
-			<div class="container container-co Connexion-text">
-				<div class="jumbotron jumbotron-center ">
-						<p>
-						<div class="connexion">
-							<form action="/login?from={{ from_page }}" method="post" class="form-inline" role="form">
-								<div class="form-group">
-									<label for="login" class="Connexion-text">Identifiant :</label>
-									<!--<label class="sr-only" for="login">Login</label>-->
-									<br />
-									<input class="form-control" type="text" name="login" id="login" placeholder="Ex : Zozor" size="30" maxlength="10" />
-								</div>
-								<div class="form-group">
-									<label class="sr-only" for="password">Mot De Passe :</label>
-									<br />
-									<input class="form-control" type="password" name="password" id="password" placeholder="Ex : Zozor" size="30" maxlength="10" />
-									<br />
-								</div>
-							</form>
+			
+			<div class="row row-no-margin choice"> <!-- mettre plusieurs classe-->
+				<div class="col-md-4"> <!-- col-md-n avec n la taille en nombre de collone. Max=12 -->
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+						  <h3 class="panel-title"><a href="Projet.html"> Les TOP </a></h3>
 						</div>
-						
-					</p>
-					<p><a class="btn btn-lg btn-success" href="#" role="button">Connexion</a></p>
-					<p><a href="Inscription.html" class="Connexion-text">Pas de compte ?<br /> Inscrivez vous dès maintenant !</a></p>
+						<div class="panel-body">
+						<!-- Ecrire dans le Panel ici-->
+						</div>
+					 </div>
+				</div>
+				
+				<div class="col-md-4">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+						  <h3 class="panel-title"><a href="MyProject.html">Vos projets</a></h3>
+						</div>
+						<div class="panel-body">
+						  <!-- Ecrire dans le Panel ici-->
+						</div>
+					 </div>
+				</div>
+				<div class="col-md-4">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+						  <h3 class="panel-title"><a href="MyPropositions.html">Vos demandes</a></h3>
+						</div>
+						<div class="panel-body">
+						  <!-- Ecrire dans le Panel ici-->
+						</div>
+					 </div>
 				</div>
 			</div>
 			

@@ -8,16 +8,15 @@
 
         <title href="index.html">Projet</title><!-- affichage dans l'encadré onglet-->
 		
-		<script type="text/javascript" src="../../jquery/jquery-1.12.3.min.js" ></script>
-		<script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js" ></script>
+		<script type="text/javascript" src="../jquery/jquery-1.12.3.min.js" ></script>
+		<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js" ></script>
 		
-		<link rel="stylesheet" type="text/css" href="../../bootstrap/css/bootstrap.min.css" />
-		<link rel="stylesheet" type="text/css" href="../../bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap-theme.min.css" />
 		<link rel="stylesheet" type="text/css" href="lamaprint.css" />
 
+			
     </head>
-
-    <body>
 	
 		<nav class="navbar navbar-inverse navbar-fixed-top">
 		  <div class="container navbar-no-margin">
@@ -58,52 +57,47 @@
 			</header>
 		</div>
 		
-		<div class="container login-text">
-			
-			<div class="container-login jumbotron login-form-title">
-				<p>
-					<label for="titletext" class="login-form-title">Connexion</label>
-				</p>
-			</div>
-			
-
-			<div class="jumbotron container-login">
-					<p>						
-						<form method="POST" action="/">
-							<div class="form-style">
-							
-								<label for="id" class="login-text">Identifiant :</label>
-								<br />
-								<input type="text" name="id" id="id" placeholder="Entrez votre identifiant ici" size="30" maxlength="64" />
-								
-								<label for="mdp" class="login-text">Mot De Passe :</label>
-								<br />
-								<input type="text" name="mdp" id="mdp" placeholder="Entrez votre mot de passe ici" size="30" maxlength="64" />
-								<br />
-								
-								<a class="btn btn-lg btn-warning login-button-style" href="#" role="button">Connexion</a>
-
-							</div>
-						</form>
-					</p>
+		<form method="post" action="#">
+			<body>
+				<div class="container login-text">
 					
+					<div class="container-login jumbotron login-form-title">
+						<label for="titletext" class="login-form-title">Connexion</label>
+					</div>
+				
+					<div class="jumbotron container-login">					
 					
-			</div>
-			
-			<div class="container-login jumbotron">
-				<p>
+						<div class="form-style">
+								
+								
+							<label for="id" class="login-text">Identifiant :</label>
+							<br />
+							<input type="text" name="id" id="id" style="text-align:center;" placeholder="Entrez votre identifiant ici" size="30" maxlength="64" />
+						
+						
+							<label for="mdp" class="login-text">Mot De Passe :</label>
+							<br />
+							<input type="password" name="mdp" id="mdp" style="text-align:center;" placeholder="Entrez votre mot de passe ici" size="30" maxlength="64" />
+							<br />
+								
+						</div>
+
+						<a class="btn btn-lg btn-warning login-button-style" href="#" role="button">Connexion</a>
+						
+					</div>
+				
+				<div class="container-login jumbotron">				
 					<a href="register.html" class="link-form-style">Pas de compte ?<br /> Inscrivez vous dès maintenant !</a>
-				</p>
-			</div>
-			
-			
-			<footer> 
+				</div>
+			</body>	
+		</form>
+				
+		<footer> 
 				<!--<div class="well">
 					Lamaprint
 				</div> -->
-			</footer>
-		</div>
+		</footer>
 		
-    </body>
+
 	
 </html>

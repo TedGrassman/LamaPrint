@@ -83,7 +83,24 @@ def create(login, password):
 			return False
 	finally:
 		db.close();
-				
+
+"""Pour récupérer les ressource statiques contenues dans différents dossiers (autre que "static")"""
+#os.path.join('js', path).replace('\\','/')
+@app.route('/api/<path:somepath>')
+def send_api(somepath):
+	return send_from_directory('api', somepath)
+@app.route('/bootstrap/<path:somepath>')
+def send_bootstrap(somepath):
+	return send_from_directory('bootstrap', somepath)
+@app.route('/image/<path:somepath>')
+def send_image(somepath):
+	return send_from_directory('image', somepath)
+@app.route('/jquery/<path:somepath>')
+def send_jquery(somepath):
+	return send_from_directory('jquery', somepath)
+@app.route('/lamaprint.css')
+def send_css():
+	return url_for('static', filename='lamaprint.css')
 
 @app.route('/')
 @app.route('/index')
@@ -133,10 +150,10 @@ def register():
 
 @app.route('/logout')
 def logout():
-    from_page = request.args.get('from', 'Main')
-    session.clear()
-    return redirect('/')
-    #return redirect('/pages/' + from_page)
+	from_page = request.args.get('from', 'Main')
+	session.clear()
+	return redirect('/')
+	#return redirect('/pages/' + from_page)
 
 
 # ............................................................................................... #
