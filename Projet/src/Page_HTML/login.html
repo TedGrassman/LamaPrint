@@ -17,8 +17,6 @@
 
 			
     </head>
-
-    <body>
 	
 		<nav class="navbar navbar-inverse navbar-fixed-top">
 		  <div class="container navbar-no-margin">
@@ -59,74 +57,47 @@
 			</header>
 		</div>
 		
-		<div class="container login-text">
-			
-			<div class="container-login jumbotron login-form-title">
-				<p>
-					<label for="titletext" class="login-form-title">Connexion</label>
-				</p>
-			</div>
-			
-<<<<<<< HEAD:Projet/src/Page_HTML/Login.html
-			<div class="container container-co Connexion-text">
-				<div class="jumbotron jumbotron-center ">
-						<p>
-						<div class="connexion">
-							<form action="/login?from={{ from_page }}" method="post" class="form-inline" role="form">
-								<div class="form-group">
-									<label for="login" class="Connexion-text">Identifiant :</label>
-									<!--<label class="sr-only" for="login">Login</label>-->
-									<br />
-									<input class="form-control" type="text" name="login" id="login" placeholder="Ex : Zozor" size="30" maxlength="10" />
-								</div>
-								<div class="form-group">
-									<label class="sr-only" for="password">Mot De Passe :</label>
-									<br />
-									<input class="form-control" type="password" name="password" id="password" placeholder="Ex : Zozor" size="30" maxlength="10" />
-									<br />
-								</div>
-							</form>
-						</div>
-=======
-			<div class="jumbotron container-login">
-					<p>						
-						<form method="post" action="#">
-							<div class="form-style">
-							
-							
-								<label for="id" class="login-text">Identifiant :</label>
-								<br />
-								<input type="text" name="id" id="id" placeholder="Entrez votre identifiant ici" size="30" maxlength="64" />
-							
-							
-								<label for="mdp" class="login-text">Mot De Passe :</label>
-								<br />
-								<input type="text" name="mdp" id="mdp" placeholder="Entrez votre mot de passe ici" size="30" maxlength="64" />
-								<br />
-								
-							</div>
-						</form>
->>>>>>> origin/master:Projet/src/Page_HTML/login.html
-						
-					</p>
-					<a class="btn btn-lg btn-warning login-button-style" href="#" role="button">Connexion</a>
+		<form method="post" action="#">
+			<body>
+				<div class="container login-text">
 					
-			</div>
-			
-			<div class="container-login jumbotron">
-				<p>
+					<div class="container-login jumbotron login-form-title">
+						<label for="titletext" class="login-form-title">Connexion</label>
+					</div>
+				
+					<div class="jumbotron container-login">					
+					
+						<div class="form-style">
+								
+								
+							<label for="id" class="login-text">Identifiant :</label>
+							<br />
+							<input type="text" name="id" id="id" style="text-align:center;" placeholder="Entrez votre identifiant ici" size="30" maxlength="64" />
+						
+						
+							<label for="mdp" class="login-text">Mot De Passe :</label>
+							<br />
+							<input type="password" name="mdp" id="mdp" style="text-align:center;" placeholder="Entrez votre mot de passe ici" size="30" maxlength="64" />
+							<br />
+								
+						</div>
+
+						<a class="btn btn-lg btn-warning login-button-style" href="#" role="button">Connexion</a>
+						
+					</div>
+				
+				<div class="container-login jumbotron">				
 					<a href="register.html" class="link-form-style">Pas de compte ?<br /> Inscrivez vous dès maintenant !</a>
-				</p>
-			</div>
-			
-			
-			<footer> 
+				</div>
+			</body>	
+		</form>
+				
+		<footer> 
 				<!--<div class="well">
 					Lamaprint
 				</div> -->
-			</footer>
-		</div>
+		</footer>
 		
-    </body>
+
 	
 </html>
