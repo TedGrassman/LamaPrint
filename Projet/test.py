@@ -3,8 +3,10 @@
 from flask import *
 from sqlalchemy import *
 from sqlalchemy.sql import *
+from sqlalchemy.orm import sessionmaker
 from markdown import markdown
 import os, hashlib
+import random
 
 
 app = Flask(__name__)
@@ -70,14 +72,15 @@ def authenticate(login, password):
 	db = engine.connect()
 	try:
 		result = db.execute(select([user.c.username]).where(user.c.username == login)).fetchone()
-		name = result[0]
-		print('User:', name)
-		if name is None:
+		
+		if result is None:
 			# L'utilisateur n'existe pas
 			# code ...
 			print('**Authentication fail: login does not exist**')
 			return False
 		else:
+			name = result[0]
+			print('User:', name)
 			passhash = hash_for(password)
 			#passhash = hash_for(password.encode('utf-8'))
 			result = db.execute(select([user.c.password]).where(user.c.username == login)).fetchone()
@@ -88,7 +91,7 @@ def authenticate(login, password):
 			"""for i in result:
 				print(i)
 				storedHash = i"""
-			storedHash = result.fetchone()[0]
+			#storedHash = result.fetchone()[0]
 			print(passhash)
 			print(storedHash)
 			if passhash == storedHash:
@@ -117,6 +120,21 @@ def create(login, password):
 			return False
 	finally:
 		db.close();
+		
+
+def printer_create():
+	engine = create_engine('sqlite:///lama.db', echo=True)
+	try:
+		Session=sessionmaker()
+		Session.configure(bind=engine)
+		db_session=Session()
+		id=db_session.query(user.username).first()
+		print('id= '+id)
+		print('User:'+session.get('username'))
+	finally:
+		pass
+	
+
 
 """Pour récupérer les ressource statiques contenues dans différents dossiers (autre que "static")"""
 #os.path.join('js', path).replace('\\','/')
@@ -139,6 +157,7 @@ def send_css():
 @app.route('/')
 @app.route('/index')
 def index():
+	#session['logged']=False
 	return render_template('index.html')
 
 @app.route('/test')
@@ -153,9 +172,12 @@ def login():
 			session['username'] = request.form['login']
 			#session['name'] = escape(request.form['name'])              
 			session['logged'] = True
+			response = make_response(render_template('index.html'))
+			response.set_cookie('YourSessionCookie', session['username'])
+			
 			flash('Authentication successfull')
 			print('Authentication successfull')
-			return redirect('/')		# on redirige à l'index
+			return response		# on redirige à l'index
 		else:		# authenticate a échoué (False)
 			flash('Unexistant user or invalid password for login ' +request.form['login'])
 			print('Unexistant user or invalid password for login ' +request.form['login'])
@@ -164,36 +186,62 @@ def login():
 		return render_template('login.html', from_page=from_page)
 
 
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['GET','POST'])
 def register():
-	from_page = request.args.get('from', 'Main')
+	print('test')
+	from_page=request.args.get('from', 'Main')
 	if request.method == 'POST':
-		if create(request.form['login'], request.form['password']):	# create a réussi (True)
+		if create(request.form['login'], request.form['password']):	# create a réussi (True)*
 			session['username'] = request.form['login']
-			#session['name'] = escape(request.form['name'])              
+			session['name'] = escape(request.form['firstname'])              
 			session['logged'] = True
+			response = make_response(render_template('index.html'))
+			response.set_cookie('YourSessionCookie', session['username'])
 			print('User creation successfull!')
-			return redirect('/')		# on redirige à l'index
+			return response		# on redirige à l'index
 		else:		# create a échoué (False)
 			flash('Creation fail: user \"'+ request.form['login'] + '\" already exists')
 			print('Creation fail: user \"'+ request.form['login'] + '\" already exists')
 			return redirect('/register?from=' + from_page)
-	else:	# méthode HTML GET
-		return render_template('register.html', from_page=from_page)
 
 
 @app.route('/logout')
 def logout():
 	from_page = request.args.get('from', 'Main')
+	session.pop('logged_in', None)
 	session.clear()
 	return redirect('/')
 	#return redirect('/pages/' + from_page)
 
+@app.route('/profile/modify')	
+def profile():
+	return render_template("profile.html")
+	
+
+@app.route('/propose')
+def propose():
+	return render_template("propose.html")
+	
+@app.route('/rent', methods=['GET','POST'])
+def rent():
+	if request.method == 'POST':
+		if session.get('logged') == False :
+			print('User not connected')
+			return render_template("rentprinter.html")
+		
+		else: 
+			printer_create()
+			
+			return render_template("rentprinter.html")
+			
+	else:
+		return render_template("rentprinter.html")
 
 # ............................................................................................... #
 if __name__ == '__main__':
 	app.run(debug=True)
 	app.logger.debug("Debug")
+	pause
 # ............................................................................................... #
 
 
