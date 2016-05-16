@@ -1,2 +1,6 @@
-test		1234
-LamaChine	password
+test			1234
+LamaChine		password
+the dark knight		123
+matias			123
+lama			123
+lama1			123
