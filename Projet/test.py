@@ -174,10 +174,13 @@ def send_css():
 @app.route('/')
 @app.route('/index')
 def index():
-	data=request.cookies.get('logged')
+	data=request.cookies.get('username')
 	if data is None:
 		session['logged']=False
 		print('No cookie')
+	else:
+		session['logged']=True
+		session['username']=data
 	return render_template('index.html')
 
 @app.route('/test')
@@ -255,7 +258,9 @@ def logout():
 	from_page = request.args.get('from', 'Main')
 	session.pop('logged_in', None)
 	session.clear()
-	return redirect('/')
+	resp = make_response(render_template('index.html'))
+	resp.set_cookie('username', '', expires=0)
+	return resp
 	#return redirect('/pages/' + from_page)
 
 @app.route('/profile/<username>', methods=['GET','POST'])	
@@ -285,12 +290,29 @@ def profile(username):
 		return render_template("userpagetemplate.html",username=user,nom=nom,prenom=prenom, birthdate=birthdate)
 				
 				
-@app.route('/propose')
+@app.route('/propose', methods=['GET','POST'])
 def propose():
 	db = engine.connect()
-	if session['logged'] is False:
+		
+	if request.method == 'GET':
+		data=request.cookies.get('username')
+		if data is None:
+			print('Pas de cookie')
+			return redirect('/')
+		else:
+			return render_template("propose.html")
+			
+	if request.method == 'POST':
+		session['username']=request.cookies.get('username')
+		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'])).fetchone()
+		if result is None:
+			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
+			print('create project')
+		else:
+			print('Vous avez déjà créé ce projet')
 		return redirect('/')
-	return render_template("propose.html")
+	
+	
 	
 @app.route('/rent', methods=['GET','POST'])
 def rent():
