@@ -282,7 +282,7 @@ def profile(username):
 		if result[9] is None:	
 			birthdate='Non renseigné'
 		
-		return render_template("userpagetemplate.html",username=user,nom=nom,prenom=prenom, birthdate=birthdate)
+		return render_template("userpagetemplate.html", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
 				
 				
 @app.route('/propose')
