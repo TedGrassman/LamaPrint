@@ -86,9 +86,14 @@
 					<div class="col-md-6 no-padding">
 						<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose">
 							
-							<p><label for="taillemax">Taille maximale des impressions</label> : <br />
-							<input type="number" min="0" name="taillemax" id="taillemax" style="width: 6em;" class="input-center" required /> cm.</p>
-							
+							<p><label for="dimxmax">Taille maximale des impressions</label> : <br />
+							<input type="number" min="0" step="0.1" name="dimxmax" id="dimxmax" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="x" required /> x
+							<input type="number" min="0" step="0.1" name="dimymax" id="dimymax" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="y" required /> x
+							<input type="number" min="0" step="0.1" name="dimzmax" id="dimzmax" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="z" required /> cm </p>
+
+
+
+
 							<p><label for="resolution">Résolution</label> : <label for="prix" style="margin-left: 85px;margin-right:30px">Prix min :</label>  <br />
 							
 							<input type="number" min="0" name="resolution" id="taillemax" style="width: 6em;" class="input-center" /> µm. 
@@ -142,6 +147,7 @@
 								<option value="Malte ">Malte </option>
 								<option value="Norvege">Norvège</option>
 								<option value="Pays-Bas">Pays-Bas</option>
+								<option value="Perou">Pérou</option>
 								<option value="Pologne">Pologne</option>
 								<option value="Portugal">Portugal</option>
 								<option value="Republique tcheque">République tchèque</option>

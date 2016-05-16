@@ -388,7 +388,8 @@ header{
 
 .older-comments{
 	max-height:300px;
-	overflow: scroll;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 .commentaire{
 	text-align:left;
