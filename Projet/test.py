@@ -287,10 +287,17 @@ def profile(username):
 				
 @app.route('/propose')
 def propose():
-	db = engine.connect()
-	if session['logged'] is False:
-		return redirect('/')
+	if session.get('logged') is False:
+		return redirect('/login')
 	return render_template("propose.html")
+
+@app.route('/projet')
+def projet():
+	return render_template("projet.html")
+
+@app.route('/project')
+def project():
+	return render_template("project.html")
 	
 @app.route('/rent', methods=['GET','POST'])
 def rent():
@@ -301,7 +308,6 @@ def rent():
 		
 		else: 
 			printer_create()
-			
 			return render_template("rentprinter.html")
 			
 	else:
