@@ -1,6 +1,5 @@
 
 
-
 function initialize() {
 	
 	//myCenter=new google.maps.LatLng(p.coords.latitude,p.coords.longitude));
@@ -33,7 +32,7 @@ function initialize() {
 						infowindow.close();
 					}
 					infowindow = new google.maps.InfoWindow({
-							content:"Nicholas = Caca!"
+							content:"ADD PRINTER DESCRIPTION"
 					});
 
 						infowindow.open(map,marker);
@@ -50,16 +49,16 @@ function initialize() {
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
+
 if(navigator.geolocation) {
 	  
 	  navigator.geolocation.getCurrentPosition(successCallback,errorCallback,{timeout:10000});
 
 	} else {
-	 alert("Merde !");
+	 alert("Geolocation is not activated!");
 	}
 	
 function successCallback(position){
-		alert("test");
 		var center = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
 		// using global variable:
 		map.panTo(center);
@@ -67,5 +66,5 @@ function successCallback(position){
 }
 
 function errorCallback(msg){
-		alert("connard");
+		alert("Error");
 }
