@@ -98,7 +98,7 @@ def authenticate(login, password):
 				print('**Authentication fail: wrong password**')
 				return False
 	finally:
-		db.close();
+		db.close()
 
 def create(login, password):
 	"""Créer et enregistrer un utilisateur existant"""
@@ -116,7 +116,7 @@ def create(login, password):
 			print('**Creation fail: login already exists**')
 			return False
 	finally:
-		db.close();
+		db.close()
 
 """Pour récupérer les ressource statiques contenues dans différents dossiers (autre que "static")"""
 #os.path.join('js', path).replace('\\','/')
@@ -149,16 +149,16 @@ def test():
 def login():
 	from_page = request.args.get('from', 'Main')
 	if request.method == 'POST':
-		if authenticate(request.form['login'], request.form['password']):	# le login a réussi (True)
-			session['username'] = request.form['login']
+		if authenticate(request.form['id'], request.form['mdp']):	# le login a réussi (True)
+			session['username'] = request.form['id']
 			#session['name'] = escape(request.form['name'])              
 			session['logged'] = True
 			flash('Authentication successfull')
 			print('Authentication successfull')
 			return redirect('/')		# on redirige à l'index
 		else:		# authenticate a échoué (False)
-			flash('Unexistant user or invalid password for login ' +request.form['login'])
-			print('Unexistant user or invalid password for login ' +request.form['login'])
+			flash('Unexistant user or invalid password for login ' +request.form['id'])
+			print('Unexistant user or invalid password for login ' +request.form['id'])
 			return redirect('/login?from=' + from_page)
 	else:	# méthode HTML GET
 		return render_template('login.html', from_page=from_page)
@@ -168,15 +168,15 @@ def login():
 def register():
 	from_page = request.args.get('from', 'Main')
 	if request.method == 'POST':
-		if create(request.form['login'], request.form['password']):	# create a réussi (True)
-			session['username'] = request.form['login']
+		if create(request.form['id'], request.form['mdp']):	# create a réussi (True)
+			session['username'] = request.form['id']
 			#session['name'] = escape(request.form['name'])              
 			session['logged'] = True
 			print('User creation successfull!')
 			return redirect('/')		# on redirige à l'index
 		else:		# create a échoué (False)
-			flash('Creation fail: user \"'+ request.form['login'] + '\" already exists')
-			print('Creation fail: user \"'+ request.form['login'] + '\" already exists')
+			flash('Creation fail: user \"'+ request.form['id'] + '\" already exists')
+			print('Creation fail: user \"'+ request.form['id'] + '\" already exists')
 			return redirect('/register?from=' + from_page)
 	else:	# méthode HTML GET
 		return render_template('register.html', from_page=from_page)
