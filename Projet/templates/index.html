@@ -63,7 +63,7 @@
 			  <!-- RIGHT CORNER-->
 			  <ul class="navbar-nav pull-right">
 				{% if session['logged'] %}
-				<li class="navbar-text"><a href="profile">Profile de {{session['username']}}</a></li>
+				<li class="navbar-text"><a href="profile/{{session['username']}}">Profile de {{session['username']}}</a></li>
 				<li><a href="logout"><button type="button" id="connexionButton" class="btn btn-lg btn-default navbar-button">Logout</button></a></li>
 				{% else %}
 				<a href="login"><li class="nav"><button type="button" id="connexionButton" class="btn btn-lg btn-default navbar-button">Login</button></li></a>

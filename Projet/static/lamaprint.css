@@ -380,5 +380,20 @@ header{
 	.profile-button-style:focus{
 		border-color:#c27800;
 	}
+	
+.comment-box{
+	width: 100%;
+	text-align:left;
+}
 
+.older-comments{
+	max-height:300px;
+	overflow: scroll;
+}
+.commentaire{
+	text-align:left;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid #6E5858;
+}
 	

@@ -1,16 +1,14 @@
 function  getCookie(){
-    
+	 var res= {};
      var regSepCookie = new RegExp(';');
      var cookies = document.cookie.split(regSepCookie);
      for(var i = 0; i < cookies.length; i++){
        var regInfo = new RegExp('=');
        var infos = cookies[i].split(regInfo);
-	   for (i=0; i<infos.length; i+=2){
-			alert(infos[i]+': '+infos[i+1]);
-		   }
-	   }
-     
-     return null;
+	   //alert(infos[0]);
+	   res[infos[0]]=infos[1];
+	}
+     return res;
 }
 /*function getCookie(sName) {
         var oRegex = new RegExp("(?:; )?" + sName + "=([^;]*);?");
@@ -27,8 +25,4 @@ function createCookie(sName,sValue){
 		alert("Creation cookie:"+sName+"="+sValue);
 }
 
-function connexion(){
-	var value = document.getElementById("test").value;
-	createCookie("ID", value);
-}
 

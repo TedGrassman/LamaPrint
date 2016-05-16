@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+
+        <meta charset="utf-8" />
+
+        <title href="index.html">Projet</title><!-- affichage dans l'encadré onglet-->
+		
+		<script type="text/javascript" src="../jquery/jquery-1.12.3.min.js" ></script>
+		<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js" ></script>
+		<script type="text/javascript" src="../api/cookies.js"></script>
+		<script type="text/javascript" src="../api/profile.js"></script>
+		
+		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="../static/lamaprint.css" />
+
+			
+    </head>
+    
+	
+				
+		
+		
+		<div class="content">
+			<header>
+				
+			</header>
+		</div>
+		
+		
+			<body>
+			
+			<nav class="navbar navbar-inverse navbar-fixed-top">
+		  <div class="container navbar-no-margin">
+			<div class="navbar-header">
+			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			  </button>
+			  <a class="navbar-brand" href="/index">Lamaprint</a>
+			</div>
+			<div id="navbar" class="navbar-collapse collapse">
+			  <ul class="nav navbar-nav">
+			  
+				<!--PROJET DROPDOWN-->
+				<li class="dropdown">
+				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projet<span class="caret"></span></a>
+				  <ul class="dropdown-menu">
+					<li><a href="/propose">Proposer un projet</a></li>
+					<li><a href="#">Répondre à un projet</a></li>
+				  </ul>
+				</li>
+				
+				<!--IMPRIMANTE DROPDOWN-->
+				<li class="dropdown">
+				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Imprimante 3D<span class="caret"></span></a>
+				  <ul class="dropdown-menu">
+					<li><a href="/rent">Prêter votre imprimante</a></li>
+					<li><a href="#">Louer une imprimante</a></li>
+				  </ul>
+				</li>
+		
+			  </ul>
+			  
+			  <!-- RIGHT CORNER-->
+			  <ul class="navbar-nav pull-right">
+				{% if session['logged'] %}
+				<li><a href="/logout"><button type="button" id="connexionButton" class="btn btn-lg btn-default navbar-button">Logout</button></a></li>
+				{% else %}
+				<a href="login"><li class="nav"><button type="button" id="connexionButton" class="btn btn-lg btn-default navbar-button">Login</button></li></a>
+				{% endif %}
+			  </ul>
+			</div><!--/.nav-collapse -->
+		  </div>
+		</nav>
+			
+				<form method="post" action="#">
+					<div class="container register-text">
+					
+						<div class="jumbotron profile-title">
+							<label for="titletext" class="profile-title">Profil de {{username}}</label>
+						</div>
+					
+						<div class="container-globalprofile">
+							
+							<div class="col-md-6 no-padding">
+								<div class="jumbotron container-leftprofile">
+									
+									<div class="form-style">
+										<br />
+										<br />
+										<image src="../Image/garou.png" name="avatar" id="avatar"/>
+										<br />
+										<br />
+									</div>
+								
+								</div>
+								
+						</div>
+						
+						
+						
+						<div class="col-md-6 no-padding">
+							<div class="jumbotron container-rightprofile">
+								
+								<label class="profile-subtitle">Informations personnelles</label>
+								<br />	
+							
+							
+								<B><text class="profile-text">Prénom : 
+								</text></B>
+								<text style="color:#0065e5; text-align:center;">{{prenom}}</text>
+								<br />
+							
+								<B><text class="profile-text">Nom : </text></B>
+								<text style="color:#0065e5; text-align:center;">{{nom}}</text>
+								<br />
+							
+								<B><text class="profile-text">Date de naissance : </text></B>
+								<text style="color:#0065e5; text-align:center;">{{birthdate}}</text>
+
+							
+							</div>
+							
+							<div class="jumbotron container-rightprofile">
+								
+								<label class="profile-subtitle">Informations du compte</label>
+								<br />	
+							
+							
+								<B><text class="profile-text">Nombre de projets initiés : </text></B>
+								<text style="color:#0065e5; text-align:center;">######</text>
+								<br />
+							
+								<B><text class="profile-text">Nombre de fichiers déposés : </text></B>
+								<text style="color:#0065e5; text-align:center;">######</text>
+								<br />
+							
+								<B><text class="profile-text">Imprimante 3D possédée :</text></B>
+								<text style="color:#0065e5; text-align:center;">######</text>
+
+							
+							</div>
+							
+							
+						</div>
+						
+						<div class="col-md-12 no-padding">
+							<div class="jumbotron">
+							<B><text class="profile-subtitle">Commentaires</text></B>
+							</br>
+								<div>
+									<textarea name="comments" id="com" class="comment-box">
+									
+									</textarea>
+								</div>
+								<button type="button" value="button text" onclick="test()" class="btn btn-lg btn-default navbar-button">Envoyer</button>
+							<div id="older-comments" class="older-comments">
+								
+							</div>
+							</div>
+
+						</div>
+						
+					</div>
+				</form>
+			</body>
+		
+			
+				
+
+			
+			
+			<footer> 
+				<!--<div class="well">
+					Lamaprint
+				</div> -->
+			</footer>
+		</div>
+	
+</html>
