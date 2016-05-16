@@ -114,7 +114,7 @@
 									
 									<label for="mail" class="register-text">Adresse E-mail *</label>
 									<br />
-									<input type="text" name="mail" id="mail" style="text-align:center;" placeholder="Entrez votre adresse e-mail ici" size="30" maxlength="64" required />
+									<input type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$" name="mail" id="mail" style="text-align:center;" placeholder="Entrez votre adresse e-mail ici" size="30" maxlength="64" required />
 									
 								</div>
 							
@@ -149,7 +149,7 @@
 								
 								<label for="phonenumber" class="register-text">Numéro de téléphone</label>
 								<br />
-								<input type="date" name="phonenumber" id="phonenumber" style="text-align:center;" placeholder="Entrez votre numéro de téléphone" size="30" maxlength="10" />
+								<input type="tel" pattern="^((\+\d{1,3}(-| )?\(?\d\)?(-| )?\d{1,5})|(\(?\d{2,6}\)?))(-| )?(\d{3,4})(-| )?(\d{4})(( x| ext)\d{1,5}){0,1}$" name="phonenumber" id="phonenumber" style="text-align:center;" placeholder="Entrez votre numéro de téléphone" size="30" maxlength="10" />
 								
 								<br /><br />
 								
@@ -175,6 +175,6 @@
 					Lamaprint
 				</div> -->
 			</footer>
-		
+	</body>	
 	
 </html>

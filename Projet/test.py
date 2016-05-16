@@ -178,7 +178,7 @@ def index():
 	if data is None:
 		session['logged']=False
 		print('No cookie')
-	return render_template('index.html')
+	return render_template('index.html', name="Main Page")
 
 @app.route('/test')
 def test():
@@ -204,7 +204,7 @@ def login():
 			print('Unexistant user or invalid password for login ' +request.form['login'])
 			return redirect('/login?from=' + from_page)
 	else:	# méthode HTML GET
-		return render_template('login.html', from_page=from_page)
+		return render_template('login.html', name="Login", from_page=from_page)
 
 
 @app.route('/register', methods=['GET','POST'])
@@ -247,7 +247,7 @@ def register():
 			print('Creation fail: user \"'+ request.form['login'] + '\" already exists')
 			return redirect('/register?from=' + from_page)
 	if request.method == 'GET':
-		return render_template('register.html')
+		return render_template('register.html', name="Register", from_page=from_page)
 
 
 @app.route('/logout')
@@ -263,7 +263,7 @@ def profile(username):
 	if request.method=='GET':
 		print(session.get('username'))
 		result=getUserInfo(username)
-			
+		
 		#Nom de Famille
 		if result[3] is not None:
 			nom=result[3]
@@ -313,6 +313,3 @@ if __name__ == '__main__':
 	app.logger.debug("Debug")
 	pause
 # ............................................................................................... #
-
-
-('ouhoezhrezhr',)
