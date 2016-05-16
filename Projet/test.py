@@ -174,10 +174,10 @@ def send_css():
 @app.route('/')
 @app.route('/index')
 def index():
-	data=request.cookies.get('logged')
-	if data is None:
-		session['logged']=False
-		print('No cookie')
+	#data=request.cookies.get('logged')
+	#if data is None:
+	#	session['logged']=False				# fait systématiquement déconnecter la session...
+	#	print('No cookie')
 	return render_template('index.html', name="Main Page")
 
 @app.route('/test')
