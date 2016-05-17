@@ -1,0 +1,123 @@
+{% extends "main.html" %}
+
+{% block title %}{{ name }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="content">
+	<header>
+	</header>
+		
+	<div class="container register-text">
+		
+		<div class="container-co jumbotron propose-form-title">
+			<p>
+				<label for="titletext" class="login-form-title">Trouver une Imprimante 3D</label>
+			</p>
+		</div>
+
+		
+		<div class="container-globalregister"> 
+			<form method="post" action="/rent" enctype="multipart/form-data">
+				<div  id="registerleftwindow" class="jumbotron-propose printers-head">
+					<p><label for="dimxmax" style="margin-left:20px">Taille de l'impression</label> :  <label for="resolution" style="margin-left:100px">Résolution maximale</label> : <label for="prix" style="margin-left: 50px;">Prix max :</label>  <br />
+					<input type="number" min="0" step="0.1" name="dimxmax" id="dimxmax" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="x" required /> x
+					<input type="number" min="0" step="0.1" name="dimymax" id="dimymax" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="y" required /> x
+					<input type="number" min="0" step="0.1" name="dimzmax" id="dimzmax" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="z" required /> cm
+
+					
+					<input type="number" min="0" name="resolution" id="taillemax" style="width: 6em;margin-left:35px" class="input-center" /> µm. 
+					<input type="number" min="0" step="0.01" name="prix" id="prix" style="width: 6em;margin-left:35px" class="input-center" /> €/Kg.</p>
+
+					<p><label for="codepostal" style="margin-right:35px" >Code Postal :</label>  <label for="ville" style="margin-right:85px" >Ville :</label> <label for="pays" style="margin-right:220px" >Pays :</label>  <br />
+							<input type="text" name="codepostal" id="codepostal" style="width: 3em;margin-right:25px;"  required />
+														
+							<input type="text" name="ville" id="ville" style="width: 6em; margin-right:25px;" required />
+														
+							<select name="pays" id="pays" style="width: 7em" style="margin-right:25px;" required>
+								<option value="Allemagne">Allemagne</option>
+								<option value="Autriche">Autriche</option>
+								<option value="Belgique">Belgique</option>
+								<option value="Bulgarie">Bulgarie</option>
+								<option value="Chypre">Chypre</option>
+								<option value="Croatie">Croatie</option>
+								<option value="Danemark">Danemark</option>
+								<option value="Espagne">Espagne</option>
+								<option value="Estonie">Estonie</option>
+								<option value="Finlande">Finlande</option>
+								<option value="France" selected>France</option>
+								<option value="Grece">Grèce</option>
+								<option value="Hongrie">Hongrie</option>
+								<option value="Irlande">Irlande</option>
+								<option value="Italie">Italie</option>
+								<option value="Islande">Islande</option>
+								<option value="Lettonie">Lettonie</option>
+								<option value="Liechtenstein">Liechtenstein</option>
+								<option value="Lituanie">Lituanie</option>
+								<option value="Luxembourg">Luxembourg</option>
+								<option value="Malte ">Malte </option>
+								<option value="Norvege">Norvège</option>
+								<option value="Pays-Bas">Pays-Bas</option>
+								<option value="Perou">Pérou</option>
+								<option value="Pologne">Pologne</option>
+								<option value="Portugal">Portugal</option>
+								<option value="Republique tcheque">République tchèque</option>
+								<option value="Roumanie">Roumanie</option>
+								<option value="Royaume-Uni">Royaume-Uni</option>
+								<option value="Slovaquie">Slovaquie</option>
+								<option value="Slovenie">Slovénie</option>
+								<option value="Suede">Suède</option>
+								<option value="Suisse">Suisse</option>
+							</select>
+
+							<button type="submit" class="btn btn-lg btn-warning printers-button-style">Chercher</button></p>
+
+					</div>
+
+
+					<div class="col-md-6 no-padding">
+						<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose">
+							Aucun résultat.
+						</div>
+					
+					</div>
+											
+					<div class="col-md-6 no-padding">
+						<div id="registerrightwindow" class="jumbotron-propose container-halfpropose">
+
+						#########################################<br />
+						#########################################<br />
+						#########################################<br />
+						#########################################<br />
+						#########################################<br />
+						#########################################<br />
+						#########################################<br />
+						#################### MAP ################<br />
+						#########################################<br />
+						#########################################<br />
+						#########################################<br />
+						#########################################<br />
+						#########################################<br />
+						#########################################<br />
+						#########################################<br />
+
+							
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+
+{% block footer %}
+{{ super() }}
+{% endblock %}

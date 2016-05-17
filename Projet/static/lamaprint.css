@@ -247,6 +247,33 @@ header{
 	.register-button-style:focus{
 		border-color:#c27800;
 	}
+
+
+/*printers ----------------------------------------*/
+
+.printers-head{
+	margin-right:15px;
+	margin-left:15px;
+	margin-top:0px;
+	padding-left:0px;
+	padding-right:0px;
+	padding-top:0px;
+	padding-right:0px;
+}
+
+.printers-button-style{
+	border-color:#f7aa2d;
+	margin-bottom:0px;
+	margin-top:0px;
+	margin-left:75px;
+}
+	.register-button-style:hover{
+		border-color:#db8e12;
+	}
+	.register-button-style:focus{
+		border-color:#c27800;
+	}
+
 	
 /*PROPOSE PROJET ----------------------------------------*/
 

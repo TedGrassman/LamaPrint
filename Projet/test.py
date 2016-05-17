@@ -298,6 +298,10 @@ def projet():
 @app.route('/project')
 def project():
 	return render_template("project.html")
+
+@app.route('/printers')
+def printers():
+	return render_template('printers.html')
 	
 @app.route('/rent', methods=['GET','POST'])
 def rent():
