@@ -174,6 +174,7 @@ def send_css():
 @app.route('/')
 @app.route('/index')
 def index():
+<<<<<<< HEAD
 	data=request.cookies.get('username')
 	if data is None:
 		session['logged']=False
@@ -181,6 +182,12 @@ def index():
 	else:
 		session['logged']=True
 		session['username']=data
+=======
+	#data=request.cookies.get('logged')
+	#if data is None:
+	#	session['logged']=False				# fait systématiquement déconnecter la session...
+	#	print('No cookie')
+>>>>>>> beceec1d6d35e17b4001f2a41472646de9b3588e
 	return render_template('index.html', name="Main Page")
 
 @app.route('/test')
@@ -287,11 +294,12 @@ def profile(username):
 		if result[9] is None:	
 			birthdate='Non renseigné'
 		
-		return render_template("userpagetemplate.html", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
+		return render_template("userpagetemplate.html", name= "Profil", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
 				
 				
 @app.route('/propose', methods=['GET','POST'])
 def propose():
+<<<<<<< HEAD
 	db = engine.connect()
 		
 	if request.method == 'GET':
@@ -321,25 +329,36 @@ def project(title):
 		return render_template("project.html", title=title)
 	
 	
+=======
+	if session.get('logged') is False:
+		return redirect('/login')
+	return render_template("propose.html", name = "Proposer une imprimante")
+
+@app.route('/projet')
+def projet():
+	return render_template("projet.html")
+
+@app.route('/project')
+def project():
+	return render_template("project.html")
+>>>>>>> beceec1d6d35e17b4001f2a41472646de9b3588e
 	
 @app.route('/rent', methods=['GET','POST'])
 def rent():
 	if request.method == 'POST':
 		if session.get('logged') == False :
 			print('User not connected')
-			return render_template("rentprinter.html")
+			return render_template("rentprinter.html", name = "Louer une imprimante")
 		
 		else: 
 			printer_create()
-			
-			return render_template("rentprinter.html")
+			return render_template("rentprinter.html", name = "Louer une imprimante")
 			
 	else:
-		return render_template("rentprinter.html")
+		return render_template("rentprinter.html", name = "Louer une imprimante")
 
 # ............................................................................................... #
 if __name__ == '__main__':
 	app.run(debug=True)
 	app.logger.debug("Debug")
-	pause
 # ............................................................................................... #

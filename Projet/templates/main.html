@@ -30,53 +30,53 @@
 		{% block navbar %}
 		<!-- NAVBAR -->
 		<nav class="navbar navbar-inverse navbar-fixed-top">
-			<div class="container navbar-no-margin">
+			<div class="container-fluid navbar-no-margin">
+				
 				<div class="navbar-header">
+					<!-- Collapsed navbar for mobile users -> navbar is shown only whe user touches button -->
 					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-						<span class="sr-only">Toggle navigation</span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 						<span class="icon-bar"></span>
 					</button>
-					<a class="navbar-brand" href="/">Lamaprint</a>
+					<a class="navbar-brand" href="/">LamaPrint</a>
 				</div>
-				<div id="navbar" class="navbar-collapse collapse">
-					<ul class="nav navbar-nav">
 
-						<!--PROJET DROPDOWN-->
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projet<span class="caret"></span></a>
-							<ul class="dropdown-menu">
-								<li><a href="/propose">Proposer un projet</a></li>
-								<li><a href="#">Répondre à un projet</a></li>
-							</ul>
-						</li>
+				<ul class="nav navbar-nav">
 					
-						<!--IMPRIMANTE DROPDOWN-->
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Imprimante 3D<span class="caret"></span></a>
-							<ul class="dropdown-menu">
-								<li><a href="/rent">Prêter votre imprimante</a></li>
-								<li><a href="#">Louer une imprimante</a></li>
-							</ul>
-						</li>
-			
-					</ul>
+					<!--PROJET DROPDOWN-->
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projet<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="/propose">Proposer un projet</a></li>
+							<li><a href="#">Répondre à un projet</a></li>
+						</ul>
+					</li>
 
-					<!-- RIGHT CORNER-->
-					<ul class="navbar-nav pull-right">
-						{% if session['logged'] %}
-						<li class="navbar-text"><a href="profile/{{session['username']}}">Profile de {{session['username']}}</a></li>
-						<li><a href="logout"><button type="button" id="connexionButton" class="btn btn-lg btn-default navbar-button">Logout</button></a></li>
-						{% elif request.path == "/login" %}
-						<!-- Rien, pas de bouton login sur la page login -->
-						{% else %}
-						<a href="login"><li class="nav"><button type="button" id="connexionButton" class="btn btn-lg btn-default navbar-button">Login</button></li></a>
-						{% endif %}
-					</ul>
-				</div><!--/.nav-collapse -->
+					<!--IMPRIMANTE DROPDOWN-->
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Imprimante 3D<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="/rent">Prêter votre imprimante</a></li>
+							<li><a href="#">Louer une imprimante</a></li>
+						</ul>
+					</li>
+				</ul>
+
+				<!-- Right part of navbar -->
+				<ul class="nav navbar-nav navbar-right">
+					{% if session.get('logged')==True %}
+					<li><a href="/profile/{{session['username']}}"><span class="glyphicon glyphicon-user"></span> {{session['username']}}</a></li>
+					<li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+					{% elif request.path == "/login" %}
+					<li><a href="/register"><span class="glyphicon glyphicon-user"></span> Register</a></li>
+					{% else %}
+					<li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+					{% endif %}
+				</ul>
 			</div>
 		</nav>
+
 		{% endblock %}
 
 
@@ -90,7 +90,7 @@
 		<!-- FOOTER -->
 		<footer> 
 			<div class="well">
-				Lamaprint
+				© LamaPrint 2016
 			</div>
 		</footer>
 		{% endblock %}

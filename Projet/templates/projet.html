@@ -1,121 +1,60 @@
-<!DOCTYPE html>
+{% extends "main.html" %}
 
-<html>
+{% block title %}{{ name }}{% endblock %}
 
-    <head>
+{% block head %}
+{{ super() }}
+{% endblock %}
 
-        <meta charset="utf-8" />
+{% block navbar %}
+{{ super() }}
+{% endblock %}
 
-        <title href="index.html">Projet</title><!-- affichage dans l'encadré onglet-->
-		
-		<script type="text/javascript" src="../jquery/jquery-1.12.3.min.js" ></script>
-		<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js" ></script>
-		
-		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.min.css" />
-		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap-theme.min.css" />
-		<link rel="stylesheet" type="text/css" href="static/lamaprint.css" />
-
-			
-    </head>
-
-    <body>
+{% block content %}	
+<div class="content">
+	<header>
+		<h1> Lamaprint: </h1>	
+		<h2>Proposer / Répondre à un projet</h2>
+	</header>
 	
-		    <body>
-		<nav class="navbar navbar-inverse navbar-fixed-top">
-		  <div class="container navbar-no-margin">
-			<div class="navbar-header">
-			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			  </button>
-			  <a class="navbar-brand" href="/index">Lamaprint</a>
-			</div>
-			<div id="navbar" class="navbar-collapse collapse">
-			  <ul class="nav navbar-nav">
-			  
-				<!--PROJET DROPDOWN-->
-				<li class="dropdown">
-				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projet<span class="caret"></span></a>
-				  <ul class="dropdown-menu">
-					<li><a href="/propose">Proposer un projet</a></li>
-					<li><a href="#">Répondre à un projet</a></li>
-				  </ul>
-				</li>
-				
-				<!--IMPRIMANTE DROPDOWN-->
-				<li class="dropdown">
-				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Imprimante 3D<span class="caret"></span></a>
-				  <ul class="dropdown-menu">
-					<li><a href="/rent">Prêter votre imprimante</a></li>
-					<li><a href="#">Louer une imprimante</a></li>
-				  </ul>
-				</li>
-		
-			  </ul>
-			  
-			  <!-- RIGHT CORNER-->
-			  <ul class="nav navbar-nav pull-right">
-				{% if session['logged'] %}
-				<li>Bienvenue {{session['username']}} !</li>
-				<li><a href="logout"><button type="button" id="connexionButton" class="btn btn-lg btn-default navbar-button">Logout</button></a></li>
-				{% else %}
-				<a href="login"><li><button type="button" id="connexionButton" class="btn btn-lg btn-default navbar-button">Login</button></li></a>
-				{% endif %}
-			  </ul>
-			</div><!--/.nav-collapse -->
-		  </div>
-		</nav>
-		
-		<div class="content">
-			<header>
-				<h1> Lamaprint: </h1>	
-				<h2>Proposer / Répondre à un projet</h2>
-			</header>
-			
-			
-			<div class="row row-no-margin choice"> <!-- mettre plusieurs classe-->
-				<div class="col-md-4"> <!-- col-md-n avec n la taille en nombre de collone. Max=12 -->
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-						  <h3 class="panel-title"><a href="Projet.html"> Les TOP </a></h3>
-						</div>
-						<div class="panel-body">
-						<!-- Ecrire dans le Panel ici-->
-						</div>
-					 </div>
+	<div class="row row-no-margin choice"> <!-- mettre plusieurs classe-->
+		<div class="col-md-4"> <!-- col-md-n avec n la taille en nombre de collone. Max=12 -->
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+				  <h3 class="panel-title"><a href="projet"> Les TOP </a></h3>
 				</div>
-				
-				<div class="col-md-4">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-						  <h3 class="panel-title"><a href="MyProject.html">Vos projets</a></h3>
-						</div>
-						<div class="panel-body">
-						  <!-- Ecrire dans le Panel ici-->
-						</div>
-					 </div>
+				<div class="panel-body">
+				<!-- Ecrire dans le Panel ici-->
 				</div>
-				<div class="col-md-4">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-						  <h3 class="panel-title"><a href="MyPropositions.html">Vos demandes</a></h3>
-						</div>
-						<div class="panel-body">
-						  <!-- Ecrire dans le Panel ici-->
-						</div>
-					 </div>
-				</div>
-			</div>
-			
-			<footer> 
-				<div class="well">
-					Lamaprint
-				</div>
-			</footer>
+			 </div>
 		</div>
 		
-    </body>
-	
-</html>
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+				  <h3 class="panel-title"><a href="myprojects">Vos projets</a></h3>
+				</div>
+				<div class="panel-body">
+				  <!-- Ecrire dans le Panel ici-->
+				</div>
+			 </div>
+		</div>
+		<div class="col-md-4">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+				  <h3 class="panel-title"><a href="mypropositions">Vos demandes</a></h3>
+				</div>
+				<div class="panel-body">
+				  <!-- Ecrire dans le Panel ici-->
+				</div>
+			 </div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+
+{% block footer %}
+{{ super() }}
+{% endblock %}
