@@ -309,6 +309,7 @@ def propose():
 	db = engine.connect()
 		
 	if request.method == 'GET':
+		print('PROJECT !!!!!!')
 		data=request.cookies.get('username')
 		if data is None:
 			print('Pas de cookie')
@@ -317,20 +318,19 @@ def propose():
 			return render_template("propose.html")
 			
 	if request.method == 'POST':
+		print('ICICICICICICI')
 		session['username']=request.cookies.get('username')
-		result = db.execute(select([file.c.project]).where(file.c.name==session['username'])).fetchone()
-		#if result is None:
-		#db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
-		print('create project')
-		return redirect('/project/'+request.form['title'])
-		#else:
-		#	print('Vous avez déjà créé ce projet')
+		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
+		if result is None:
+			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
+			print('create project')
+			return redirect('/project/'+request.form['title'])
+		else:
+			print('Vous avez déjà créé ce projet')
 		return redirect('/')
 		
 @app.route('/project/<title>')
-def project(title):
-	db = engine.connect()
-		
+def project_form(title):
 	if request.method == 'GET':
 		return render_template("project.html", title=title)
 	if session.get('logged') is False:
@@ -341,9 +341,6 @@ def project(title):
 def projet():
 	return render_template("projet.html")
 
-@app.route('/project')
-def project():
-	return render_template("project.html")
 
 @app.route('/printers')
 def printers():
