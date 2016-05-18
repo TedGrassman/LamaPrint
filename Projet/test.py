@@ -48,7 +48,7 @@ project = Table('project', metadata,
 	Column('project_name', String),
 	Column('score', Integer),
 	Column('project_type', Integer), #'rquest', 'publication' ou 'offer'
-	Column('description', Integer))
+	Column('description', String))
 
 file = Table('file', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
@@ -299,6 +299,7 @@ def logout():
 	return resp
 	#return redirect('/pages/' + from_page)
 
+
 @app.route('/profile/<username>', methods=['GET','POST'])	
 def profile(username):
 	if request.method=='GET':
@@ -314,7 +315,7 @@ def profile(username):
 		#Prenom
 		if result[4] is not None:
 			prenom=result[4]
-		if result[4] is None:	
+		if result[4] is None:
 			prenom='Non renseigné'
 			
 		#Date de naissance
@@ -325,7 +326,41 @@ def profile(username):
 		
 	return render_template("userpagetemplate.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate)
 
-	
+
+@app.route('/demand', methods=['GET','POST'])
+def demand():
+	if request.method == 'GET':
+		data=request.cookies.get('username')
+		if data is None:
+			print('Pas de cookie')
+			return redirect('/')
+		else:
+			return render_template("demand.html", name = "Demande de projet")
+	if request.method == 'POST':
+		db = engine.connect()
+		session['username']=request.cookies.get('username')
+		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
+		if result is None:
+			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username'], 'description': request.form['description']}])
+			print('create project')
+			return redirect('/demand/'+request.form['title'])
+		else:
+			print('Vous avez déjà créé ce projet')
+		return redirect('/')
+		
+@app.route('/demand/<title>', methods=['GET','POST'])
+def demandDisplay(title):
+	if request.method == 'GET':
+		db = engine.connect()
+		result = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
+		if result is None:
+			print('ERREUR BSD')
+			return render_template("demand_display.html",name= "Demande:"+title, title=title)
+		else:
+			return render_template("demand_display.html",name= "Demande:"+title, title=title, description=result[0])
+		
+		
+		
 @app.route('/propose', methods=['GET','POST'])
 def propose():
 	db = engine.connect()
@@ -344,7 +379,7 @@ def propose():
 		session['username']=request.cookies.get('username')
 		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
 		if result is None:
-			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
+			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username'], }])
 			print('create project')
 			return redirect('/project/'+request.form['title'])
 		else:
