@@ -52,6 +52,16 @@ file = Table('file', metadata,
 	Column('weight', Float),
 	Column('price', String), # exemple: '€23.4'
 	Column('name', String))
+	
+	
+printer = Table('printer', metadata,
+	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
+	Column('creation_date', String),
+	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
+	Column('dimensions', String), # exemple: '3cmx4cm'
+	Column('weight', Float),
+	Column('price', String)) # exemple: '€23.4'
+
 				
 comment = Table('comment', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
@@ -174,7 +184,6 @@ def send_css():
 @app.route('/')
 @app.route('/index')
 def index():
-<<<<<<< HEAD
 	data=request.cookies.get('username')
 	if data is None:
 		session['logged']=False
@@ -182,12 +191,10 @@ def index():
 	else:
 		session['logged']=True
 		session['username']=data
-=======
 	#data=request.cookies.get('logged')
 	#if data is None:
 	#	session['logged']=False				# fait systématiquement déconnecter la session...
 	#	print('No cookie')
->>>>>>> beceec1d6d35e17b4001f2a41472646de9b3588e
 	return render_template('index.html', name="Main Page")
 
 @app.route('/test')
@@ -299,7 +306,6 @@ def profile(username):
 				
 @app.route('/propose', methods=['GET','POST'])
 def propose():
-<<<<<<< HEAD
 	db = engine.connect()
 		
 	if request.method == 'GET':
@@ -327,9 +333,6 @@ def project(title):
 		
 	if request.method == 'GET':
 		return render_template("project.html", title=title)
-	
-	
-=======
 	if session.get('logged') is False:
 		return redirect('/login')
 	return render_template("propose.html", name = "Proposer une imprimante")
@@ -338,10 +341,9 @@ def project(title):
 def projet():
 	return render_template("projet.html")
 
-@app.route('/project')
+"""@app.route('/project')
 def project():
-	return render_template("project.html")
->>>>>>> beceec1d6d35e17b4001f2a41472646de9b3588e
+	return render_template("project.html")"""
 	
 @app.route('/rent', methods=['GET','POST'])
 def rent():
