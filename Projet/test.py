@@ -59,6 +59,16 @@ file = Table('file', metadata,
 	Column('weight', Float),
 	Column('price', String), # exemple: '€23.4'
 	Column('name', String))
+	
+	
+printer = Table('printer', metadata,
+	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
+	Column('creation_date', String),
+	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
+	Column('dimensions', String), # exemple: '3cmx4cm'
+	Column('weight', Float),
+	Column('price', String)) # exemple: '€23.4'
+
 				
 comment = Table('comment', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
@@ -187,6 +197,13 @@ def send_upload(somepath):
 @app.route('/')
 @app.route('/index')
 def index():
+	data=request.cookies.get('username')
+	if data is None:
+		session['logged']=False
+		print('No cookie')
+	else:
+		session['logged']=True
+		session['username']=data
 	#data=request.cookies.get('logged')
 	#if data is None:
 	#	session['logged']=False				# fait systématiquement déconnecter la session...
@@ -277,7 +294,9 @@ def logout():
 	from_page = request.args.get('from', 'Main')
 	session.pop('logged_in', None)
 	session.clear()
-	return redirect('/')
+	resp = make_response(render_template('index.html'))
+	resp.set_cookie('username', '', expires=0)
+	return resp
 	#return redirect('/pages/' + from_page)
 
 @app.route('/profile')
@@ -308,14 +327,41 @@ def profile(username):
 		if result[9] is None:	
 			birthdate='Non renseigné'
 		
-		return render_template("userpagetemplate.html", name= "Profil", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
+	return render_template("userpagetemplate.html", name= "Profil", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
 
-				
-@app.route('/propose')
+	
+@app.route('/propose', methods=['GET','POST'])
 def propose():
-	if session.get('logged') is False:
-		return redirect('/login')
-	return render_template("propose.html", name = "Proposer une imprimante")
+	db = engine.connect()
+		
+	if request.method == 'GET':
+		data=request.cookies.get('username')
+		if data is None:
+			print('Pas de cookie')
+			return redirect('/')
+		else:
+			return render_template("propose.html", name = "Proposer une imprimante")
+			
+	if request.method == 'POST':
+		session['username']=request.cookies.get('username')
+		result = db.execute(select([file.c.project]).where(file.c.name==session['username'])).fetchone()
+		#if result is None:
+		#db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
+		print('create project')
+		return redirect('/project/'+request.form['title'])
+		#else:
+		#	print('Vous avez déjà créé ce projet')
+		return redirect('/')
+		
+@app.route('/project/<title>')
+def project(title):
+	db = engine.connect()
+		
+	if request.method == 'GET':
+		return render_template("project.html", title=title)
+	#if session.get('logged') is False:
+		#return redirect('/login')
+	#return render_template("propose.html", name = "Proposer une imprimante")
 
 @app.route('/projet')
 def projet():
@@ -325,9 +371,16 @@ def projet():
 def project():
 	return render_template("project.html")
 
-@app.route('/printers')
+@app.route('/printers', methods=['GET','POST'])
 def printers():
+	db = engine.connect()
+	if request.method == 'POST':
+		print(type(request.form['resolution']))
 	return render_template('printers.html')
+
+@app.route('/printer')
+def printer():
+	return render_template('printer.html')
 	
 @app.route('/rent', methods=['GET','POST'])
 def rent():
