@@ -23,7 +23,7 @@ engine = create_engine('sqlite:///lama.db', echo=True)
 metadata = MetaData()
 
 # Pour l'upload de fichiers
-UPLOAD_FOLDER = '/uploads'
+UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024
@@ -85,6 +85,13 @@ def allowed_file(filename):
 	return '.' in filename and \
 		filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+"""def upload_file():
+	if request.method == 'POST':
+		file = request.files['file']
+		if file and allowed_file(file.filename):
+			filename = secure_filename(file.filename)
+			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			return redirect(url_for('uploaded_file', filename=filename))"""
 
 def hash_for(password):
 	salted = '%s @ %s' % (SALT, password)
@@ -299,9 +306,17 @@ def logout():
 	return resp
 	#return redirect('/pages/' + from_page)
 
-"""@app.route('/profile')
+@app.route('/modifyprofile', methods=['GET','POST'])
 def profile2():
-	return render_template("profile.html")"""
+	if request.method == 'POST':
+		file = request.files['file']
+		if file and allowed_file(file.filename):
+			filename = secure_filename(file.filename)
+			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename).replace('\\','/'))
+			return redirect(url_for('uploaded_file', filename=filename))
+
+	else:
+		return render_template("profile.html", name="Modifier le profil")
 
 @app.route('/profile/<username>', methods=['GET','POST'])	
 def profile(username):
