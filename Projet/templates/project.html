@@ -1,132 +1,78 @@
-<!DOCTYPE html>
+{% extends "main.html" %}
 
-<html>
+{% block title %}{{ name }}{% endblock %}
 
-    <head>
+{% block head %}
+{{ super() }}
+{% endblock %}
 
-        <meta charset="utf-8" />
+{% block navbar %}
+{{ super() }}
+{% endblock %}
 
-        <title href="index.html">Projet</title><!-- affichage dans l'encadré onglet-->
+{% block content %}
+<div class="content">
+	<header>
+	</header>
+
+	<div class="container register-text">
 		
-		<script type="text/javascript" src="../../jquery/jquery-1.12.3.min.js" ></script>
-		<script type="text/javascript" src="../../bootstrap/js/bootstrap.min.js" ></script>
-		
-		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.min.css" />
-		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap-theme.min.css" />
-		<link rel="stylesheet" type="text/css" href="../static/lamaprint.css" />
-
-			
-    </head>
-
-    <body>
-	
-		<nav class="navbar navbar-inverse navbar-fixed-top">
-		  <div class="container navbar-no-margin">
-			<div class="navbar-header">
-			  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-				<span class="sr-only">Toggle navigation</span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-				<span class="icon-bar"></span>
-			  </button>
-			  <a class="navbar-brand" href="#">Lamaprint</a>
-			</div>
-			<div id="navbar" class="navbar-collapse collapse">
-			  <ul class="nav navbar-nav">
-				<li class="active"><a href="index.html">Home</a></li>
-				<li><a href="#about">About</a></li>
-				<li><a href="#contact">Contact</a></li>
-				<li class="dropdown">
-				  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-				  <ul class="dropdown-menu">
-					<li><a href="#">Action</a></li>
-					<li><a href="#">Another action</a></li>
-					<li><a href="#">Something else here</a></li>
-					<li role="separator" class="divider"></li>
-					<li class="dropdown-header">Nav header</li>
-					<li><a href="#">Separated link</a></li>
-					<li><a href="#">One more separated link</a></li>
-				  </ul>
-				</li>
-			  </ul>
-			  <ul class="nav navbar-nav pull-right">
-				  <a href="login.html"><li><button type="button" class="btn btn-lg btn-default navbar-button">Login</button></li></a>
-			  </ul>
-			</div><!--/.nav-collapse -->
-		  </div>
-		</nav>
-		
-		<div class="content">
-			<header>
-				
-			</header>
-			
+		<div class="container-co jumbotron propose-form-title">
+			<p>
+				<label for="titletext" class="login-form-title">#ProjectTitle#</label>
+			</p>
 		</div>
 		
-		<div class="container register-text">
-			
-			<div class="container-co jumbotron propose-form-title">
-				<p>
-					<label for="titletext" class="login-form-title">#ProjectTitle#</label>
-				</p>
-			</div>
-			
-			<div class="container-globalregister"> 				
-				<div class="col-md-6 no-padding">
-					<div  id="registerleftwindow" class="jumbotron-propose container-halfproject">
-						
-						<image src="../Image/lama.png"/>
-						
-						</br></br>
-						<p>Prix : #,## €</p>
-						<p>Masse : #,# g</p
-						<p>Dimensions :  #,#  x  #,#  x  #,#  cm</p>
-						<p>Description : </p>
-						<p style="text-align:left">lol</p>
-						
-						
-						
-						<a class="btn btn-lg btn-warning register-button-style" role="button">Télécharger</a>
-						
-					</div>
-				
+		<div class="container-globalregister"> 				
+			<div class="col-md-6 no-padding">
+				<div  id="registerleftwindow" class="jumbotron-propose container-halfproject">
+					
+					<img src="../image/lama.png">
+					
+					</br></br>
+					<p>Prix : #,## €</p>
+					<p>Masse : #,# g</p>
+					<p>Dimensions :  #,#  x  #,#  x  #,#  cm</p>
+					<p>Description : </p>
+					<p style="text-align:left">lol</p>
+					
+					
+					
+					<a class="btn btn-lg btn-warning register-button-style" role="button">Télécharger</a>
+					
 				</div>
-				<div class="col-md-6 no-padding">
-					<div id="registerrightwindow" class="jumbotron-propose container-halfproject">
-						
-						<p>★★★★★</p>
-						
-						<form method="post" action="#" enctype="multipart/form-data">
-							
-							
-							<!-- SI connecté-->
-							<p><label for="description">Laisser un commentaire </label> : <br />
-							<textarea name="description" id="description" rows="2" cols="42%" style="margin-bottom:11px"></textarea></p>
-							
-							<a class="btn btn-lg btn-warning register-button-style" href="#" role="button">Envoyer</a>
-							<!-- SINON
-							<p>Connectez-vous pour laisser un commentaire !</p>
-							
-							OVERFLOW SCROLL
-							-->
-							
-							
-						</form>
-					</div>
-				</div>
-				
+			
 			</div>
-			
-			
+			<div class="col-md-6 no-padding">
+				<div id="registerrightwindow" class="jumbotron-propose container-halfproject">
+					
+					<p>★★★★★</p>
+					
+					<form method="post" action="#" enctype="multipart/form-data">
+						
+						
+						<!-- SI connecté-->
+						<p><label for="description">Laisser un commentaire </label> : <br />
+						<textarea name="description" id="description" rows="2" cols="42%" style="margin-bottom:11px"></textarea></p>
+						
+						<a class="btn btn-lg btn-warning register-button-style" href="#" role="button">Envoyer</a>
+						<!-- SINON
+						<p>Connectez-vous pour laisser un commentaire !</p>
+						
+						OVERFLOW SCROLL
+						-->
+						
+						
+					</form>
+				</div>
+			</div>
 			
 		</div>
-		
-    </body>
-	
-	<footer> 
-				<!--<div class="well">
-					Lamaprint
-				</div>-->
-	</footer>
-	
-</html>
+	</div>
+</div>
+{% endblock %}
+
+
+{% block footer %}
+{{ super() }}
+{% endblock %}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+
+		{% block head %}
+		
+		<meta charset="utf-8">
+
+		<title>{% block title %}{% endblock %} - LamaPrint</title>
+		<link rel="icon" type="image/png" href="../image/favicon.png" />
+
+		<script type="text/javascript" src="../jquery/jquery-1.12.3.min.js" ></script>
+		<script type="text/javascript" src="../bootstrap/js/bootstrap.min.js" ></script>
+		<script type="text/javascript" src="../api/session.js" defer></script>
+		<script type="text/javascript" src="../api/cookies.js" defer></script>
+
+		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap-theme.min.css" />
+		<link rel="stylesheet" type="text/css" href="static/lamaprint.css" />
+		
+		{% endblock %}
+
+	</head>
+
+
+	<body>
+		
+		{% block navbar %}
+		<!-- NAVBAR -->
+		<nav class="navbar navbar-inverse navbar-fixed-top">
+			<div class="container-fluid navbar-no-margin">
+				
+				<div class="navbar-header">
+					<!-- Collapsed navbar for mobile users -> navbar is shown only whe user touches button -->
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/">LamaPrint</a>
+				</div>
+
+				<ul class="nav navbar-nav">
+					
+					<!--PROJET DROPDOWN-->
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projet<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="/propose">Proposer un projet</a></li>
+							<li><a href="#">Répondre à un projet</a></li>
+						</ul>
+					</li>
+
+					<!--IMPRIMANTE DROPDOWN-->
+					<li class="dropdown">
+						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Imprimante 3D<span class="caret"></span></a>
+						<ul class="dropdown-menu">
+							<li><a href="/rent">Prêter votre imprimante</a></li>
+							<li><a href="#">Louer une imprimante</a></li>
+						</ul>
+					</li>
+				</ul>
+
+				<!-- Right part of navbar -->
+				<ul class="nav navbar-nav navbar-right">
+					{% if session.get('logged')==True %}
+					<li><a href="/profile/{{session['username']}}"><span class="glyphicon glyphicon-user"></span> {{session['username']}}</a></li>
+					<li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+					{% elif request.path == "/login" %}
+					<li><a href="/register"><span class="glyphicon glyphicon-user"></span> Register</a></li>
+					{% else %}
+					<li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+					{% endif %}
+				</ul>
+			</div>
+		</nav>
+
+		{% endblock %}
+
+
+		<!-- CONTENU -->
+		<div class="container">
+			{% block content %}{% endblock %}
+		</div>
+
+
+		{% block footer %}
+		<!-- FOOTER -->
+		<footer> 
+			<div class="well">
+				© LamaPrint 2016
+			</div>
+		</footer>
+		{% endblock %}
+
+	</body>
+
+</html>
