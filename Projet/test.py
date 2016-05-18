@@ -367,9 +367,9 @@ def project(title):
 def projet():
 	return render_template("projet.html")
 
-@app.route('/project')
+"""@app.route('/project')
 def project():
-	return render_template("project.html")
+	return render_template("project.html")"""
 
 @app.route('/printers', methods=['GET','POST'])
 def printers():
