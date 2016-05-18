@@ -11,12 +11,10 @@
 {% endblock %}
 
 {% block content %}
-	<div class="content">
-				<header>
-					
-				</header>
-				
-			</div>
+<div class="content">
+	<header>
+	</header>
+
 	<div class="container register-text">
 			
 			<div class="container-co jumbotron propose-form-title">
@@ -46,22 +44,23 @@
 							<input type="file" name="fichier" id="fichier" style="margin-left:25px" required /></p>
 								
 							<p><label for="images">Images</label> :
-							<input type="file" name="images" id="images" style="margin-left:25px" multiple /></p>
-							
-						</div>
-					
+							<input type="file" name="images" id="images" style="margin-left:25px" multiple /></p>			
 					</div>
-					<div class="col-md-6 no-padding">
-						<div id="registerrightwindow" class="jumbotron-propose container-halfpropose">
-							
-							<p><label for="description">Description </label> : <br />
-							<textarea name="description" id="description" rows="8" cols="42%" style="margin-bottom:11px"></textarea></p>
+				
+				</div>
+				<div class="col-md-6 no-padding">
+					<div id="registerrightwindow" class="jumbotron-propose container-halfpropose">
 						
-							<button class="btn btn-lg btn-warning register-button-style" href="/propose">Envoyer</button>
-						</div>
+						<p><label for="description">Description </label> : <br />
+						<textarea name="description" id="description" rows="8" cols="42%" style="margin-bottom:11px"></textarea></p>
+					
+						<button class="btn btn-lg btn-warning register-button-style" href="/propose">Envoyer</button>
 					</div>
-				</form>
-			</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
 {% endblock %}
 
 
