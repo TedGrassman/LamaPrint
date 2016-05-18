@@ -85,13 +85,23 @@ def allowed_file(filename):
 	return '.' in filename and \
 		filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-"""def upload_file():
-	if request.method == 'POST':
-		file = request.files['file']
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			return redirect(url_for('uploaded_file', filename=filename))"""
+def uploadFile(filepath="default"):
+	""" Upload de fichier
+		Exemple: pour uploader toto.jpg dans /uploads/test/ -> uploadFile("test"),
+		avec la dernière requête contenant un form qui contient un <input file>"""
+	print("UPLOAD!")
+	print("### upload du fichier", request.files['file'], "###")
+	dirpath = os.path.join(app.config['UPLOAD_FOLDER'], filepath).replace('\\','/')
+	if os.path.isdir(dirpath) is False:
+		os.mkdir(dirpath)
+	file = request.files['file']
+	if file and allowed_file(file.filename):
+		filename = secure_filename(file.filename)
+		path = os.path.join(dirpath, filename).replace('\\','/')
+		print("Path =", path)
+		file.save(path)
+		#file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename).replace('\\','/'))
+		#return redirect(url_for('uploaded_file', filename=filename))
 
 def hash_for(password):
 	salted = '%s @ %s' % (SALT, password)
@@ -307,13 +317,14 @@ def logout():
 	#return redirect('/pages/' + from_page)
 
 @app.route('/modifyprofile', methods=['GET','POST'])
-def profile2():
+def modifyprofile():
 	if request.method == 'POST':
-		file = request.files['file']
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename).replace('\\','/'))
-			return redirect(url_for('uploaded_file', filename=filename))
+		print("!!! Modification du profil !!!")
+		#upload_file(filepath="profiles")
+		uploadFile("profiles")
+		print("!!! upload fait !!!")
+		return render_template("profile.html", name="Modifier le profil")
+		#return redirect(url_for('uploaded_file', filename=filename))
 
 	else:
 		return render_template("profile.html", name="Modifier le profil")
