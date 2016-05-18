@@ -5,6 +5,7 @@ from sqlalchemy import *
 from sqlalchemy.sql import *
 from sqlalchemy.orm import sessionmaker
 from markdown import markdown
+from werkzeug import secure_filename
 import os, hashlib
 import random
 
@@ -20,6 +21,12 @@ SALT = 'foo#BAR_{baz}^666'
 # Base de donnée : doit supporter les types "blob"
 engine = create_engine('sqlite:///lama.db', echo=True)
 metadata = MetaData()
+
+# Pour l'upload de fichiers
+UPLOAD_FOLDER = '/uploads'
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024
 
 user = Table('user', metadata,
 	Column('username', String, primary_key = True, unique = True, nullable = False),
@@ -64,6 +71,9 @@ comment = Table('comment', metadata,
 metadata.create_all(engine)		# remplit la BdD avec les informations par défaut
 
 
+def allowed_file(filename):
+	return '.' in filename and \
+		filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 def hash_for(password):
@@ -170,6 +180,9 @@ def send_jquery(somepath):
 @app.route('/lamaprint.css')
 def send_css():
 	return url_for('static', filename='lamaprint.css')
+@app.route('/uploads/<path:somepath>')
+def send_upload(somepath):
+	return send_from_directory('uploads', somepath)
 
 @app.route('/')
 @app.route('/index')
@@ -179,6 +192,15 @@ def index():
 	#	session['logged']=False				# fait systématiquement déconnecter la session...
 	#	print('No cookie')
 	return render_template('index.html', name="Main Page")
+
+@app.route('/', methods=['GET', 'POST'])
+def upload_file():
+	if request.method == 'POST':
+		file = request.files['file']
+		if file and allowed_file(file.filename):
+			filename = secure_filename(file.filename)
+			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			return redirect(url_for('uploaded_file', filename=filename))
 
 @app.route('/test')
 def test():
@@ -258,6 +280,10 @@ def logout():
 	return redirect('/')
 	#return redirect('/pages/' + from_page)
 
+@app.route('/profile')
+def profile2():
+	return render_template("profile.html")	
+
 @app.route('/profile/<username>', methods=['GET','POST'])	
 def profile(username):
 	if request.method=='GET':
@@ -283,7 +309,7 @@ def profile(username):
 			birthdate='Non renseigné'
 		
 		return render_template("userpagetemplate.html", name= "Profil", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
-				
+
 				
 @app.route('/propose')
 def propose():
@@ -316,6 +342,10 @@ def rent():
 			
 	else:
 		return render_template("rentprinter.html", name = "Louer une imprimante")
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+	return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # ............................................................................................... #
 if __name__ == '__main__':
