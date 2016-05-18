@@ -345,6 +345,10 @@ def projet():
 def printers():
 	return render_template('printers.html')
 
+@app.route('/search')
+def search():
+	return render_template('searchproject.html')
+
 @app.route('/printer')
 def printer():
 	return render_template('printer.html')
