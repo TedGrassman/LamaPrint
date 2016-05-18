@@ -345,8 +345,11 @@ def projet():
 def project():
 	return render_template("project.html")
 
-@app.route('/printers')
+@app.route('/printers', methods=['GET','POST'])
 def printers():
+	db = engine.connect()
+	if request.method == 'POST':
+		print(type(request.form['resolution']))
 	return render_template('printers.html')
 
 @app.route('/printer')
