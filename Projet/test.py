@@ -181,7 +181,7 @@ def index():
 	else:
 		session['logged']=True
 		session['username']=data
-	return render_template('index.html')
+	return render_template('index.html', name="Main Page")
 
 @app.route('/test')
 def test():
@@ -207,7 +207,7 @@ def login():
 			print('Unexistant user or invalid password for login ' +request.form['login'])
 			return redirect('/login?from=' + from_page)
 	else:	# méthode HTML GET
-		return render_template('login.html', from_page=from_page)
+		return render_template('login.html', name="Login", from_page=from_page)
 
 
 @app.route('/register', methods=['GET','POST'])
@@ -250,7 +250,7 @@ def register():
 			print('Creation fail: user \"'+ request.form['login'] + '\" already exists')
 			return redirect('/register?from=' + from_page)
 	if request.method == 'GET':
-		return render_template('register.html')
+		return render_template('register.html', name="Register", from_page=from_page)
 
 
 @app.route('/logout')
@@ -268,7 +268,7 @@ def profile(username):
 	if request.method=='GET':
 		print(session.get('username'))
 		result=getUserInfo(username)
-			
+		
 		#Nom de Famille
 		if result[3] is not None:
 			nom=result[3]
@@ -287,7 +287,7 @@ def profile(username):
 		if result[9] is None:	
 			birthdate='Non renseigné'
 		
-		return render_template("userpagetemplate.html",username=user,nom=nom,prenom=prenom, birthdate=birthdate)
+		return render_template("userpagetemplate.html", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
 				
 				
 @app.route('/propose', methods=['GET','POST'])
@@ -304,13 +304,21 @@ def propose():
 			
 	if request.method == 'POST':
 		session['username']=request.cookies.get('username')
-		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'])).fetchone()
-		if result is None:
-			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
-			print('create project')
-		else:
-			print('Vous avez déjà créé ce projet')
+		result = db.execute(select([file.c.project]).where(file.c.name==session['username'])).fetchone()
+		#if result is None:
+		#db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
+		print('create project')
+		return redirect('/project/'+request.form['title'])
+		#else:
+		#	print('Vous avez déjà créé ce projet')
 		return redirect('/')
+		
+@app.route('/project/<title>')
+def project(title):
+	db = engine.connect()
+		
+	if request.method == 'GET':
+		return render_template("project.html", title=title)
 	
 	
 	
@@ -335,6 +343,3 @@ if __name__ == '__main__':
 	app.logger.debug("Debug")
 	pause
 # ............................................................................................... #
-
-
-('ouhoezhrezhr',)

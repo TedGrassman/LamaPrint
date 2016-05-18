@@ -53,8 +53,8 @@
 }*/
 
 .maps{
-width:100%;
-Height: 500px;
+	width:100%;
+	Height: 500px;
 }
 
 .row-no-margin {
@@ -108,7 +108,6 @@ Height: 500px;
 
 .container-index{
 	width:80%;
-	
 }
 
 	
@@ -388,7 +387,8 @@ header{
 
 .older-comments{
 	max-height:300px;
-	overflow: scroll;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 .commentaire{
 	text-align:left;
