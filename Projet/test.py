@@ -301,7 +301,7 @@ def profile(username):
 		if result[9] is None:	
 			birthdate='Non renseigné'
 		
-		return render_template("userpagetemplate.html", name= "Profil", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
+		return render_template("userpagetemplate.html", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
 				
 				
 @app.route('/propose', methods=['GET','POST'])
@@ -335,7 +335,7 @@ def project(title):
 		return render_template("project.html", title=title)
 	if session.get('logged') is False:
 		return redirect('/login')
-	return render_template("propose.html", name = "Proposer une imprimante")
+	return render_template("propose.html")
 
 @app.route('/projet')
 def projet():
@@ -348,20 +348,24 @@ def project():
 @app.route('/printers')
 def printers():
 	return render_template('printers.html')
+
+@app.route('/printer')
+def printer():
+	return render_template('printer.html')
 	
 @app.route('/rent', methods=['GET','POST'])
 def rent():
 	if request.method == 'POST':
 		if session.get('logged') == False :
 			print('User not connected')
-			return render_template("rentprinter.html", name = "Louer une imprimante")
+			return render_template("rentprinter.html")
 		
 		else: 
 			printer_create()
-			return render_template("rentprinter.html", name = "Louer une imprimante")
+			return render_template("rentprinter.html")
 			
 	else:
-		return render_template("rentprinter.html", name = "Louer une imprimante")
+		return render_template("rentprinter.html")
 
 # ............................................................................................... #
 if __name__ == '__main__':
