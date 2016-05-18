@@ -4,7 +4,6 @@ from flask import *
 from sqlalchemy import *
 from sqlalchemy.sql import *
 from sqlalchemy.orm import sessionmaker
-from markdown import markdown
 from werkzeug import secure_filename
 import os, hashlib
 import random
@@ -17,16 +16,16 @@ app = Flask(__name__)
 app.secret_key = os.urandom(256)
 SALT = 'foo#BAR_{baz}^666'
 
-# Création de la base de données
-# Base de donnée : doit supporter les types "blob"
-engine = create_engine('sqlite:///lama.db', echo=True)
-metadata = MetaData()
-
 # Pour l'upload de fichiers
 UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024
+
+# Création de la base de données
+# Base de donnée : doit supporter les types "blob"
+engine = create_engine('sqlite:///lama.db', echo=True)
+metadata = MetaData()
 
 user = Table('user', metadata,
 	Column('username', String, primary_key = True, unique = True, nullable = False),
@@ -35,9 +34,10 @@ user = Table('user', metadata,
 	Column('lastname', String),
 	Column('name', String),
 	Column('address', String),
+	Column('profile_image_path', String),
 	Column('creation_date', String),
-	Column('score', Integer),
 	Column('printer', String), #'yes' ou 'no'
+	Column('score', Integer),
 	Column('birthdate', String),
 	Column('telephone', String))
 
@@ -46,16 +46,21 @@ project = Table('project', metadata,
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
 	Column('project_name', String),
+	Column('image_path', String),
 	Column('score', Integer),
 	Column('project_type', Integer), #'rquest', 'publication' ou 'offer'
-	Column('description', Integer))
+	Column('description', String))
 
 file = Table('file', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
 	Column('creation_date', String),
 	Column('score', Integer),
 	Column('project', Integer, ForeignKey('project.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('dimensions', String), # exemple: '3cmx4cm'
+	Column('file_path', String),
+	Column('dimensionsx', String),
+	Column('dimensionsy', String),
+	Column('dimensionsz', String),
+	Column('city', String),
 	Column('weight', Float),
 	Column('price', String), # exemple: '€23.4'
 	Column('name', String))
@@ -65,7 +70,12 @@ printer = Table('printer', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('dimensions', String), # exemple: '3cmx4cm'
+	Column('dimensionsx', String),
+	Column('dimensionsy', String),
+	Column('dimensionsz', String),
+	Column('resolution', String),
+	Column('postal_code', Integer),
+	Column('country', String),
 	Column('weight', Float),
 	Column('price', String)) # exemple: '€23.4'
 
@@ -207,9 +217,6 @@ def send_jquery(somepath):
 @app.route('/lamaprint.css')
 def send_css():
 	return url_for('static', filename='lamaprint.css')
-@app.route('/uploads/<path:somepath>')
-def send_upload(somepath):
-	return send_from_directory('uploads', somepath)
 
 @app.route('/')
 @app.route('/index')
@@ -226,15 +233,6 @@ def index():
 	#	session['logged']=False				# fait systématiquement déconnecter la session...
 	#	print('No cookie')
 	return render_template('index.html', name="Main Page")
-
-@app.route('/', methods=['GET', 'POST'])
-def upload_file():
-	if request.method == 'POST':
-		file = request.files['file']
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			return redirect(url_for('uploaded_file', filename=filename))
 
 @app.route('/test')
 def test():
@@ -316,6 +314,7 @@ def logout():
 	return resp
 	#return redirect('/pages/' + from_page)
 
+
 @app.route('/modifyprofile', methods=['GET','POST'])
 def modifyprofile():
 	if request.method == 'POST':
@@ -328,6 +327,7 @@ def modifyprofile():
 
 	else:
 		return render_template("profile.html", name="Modifier le profil")
+
 
 @app.route('/profile/<username>', methods=['GET','POST'])	
 def profile(username):
@@ -344,7 +344,7 @@ def profile(username):
 		#Prenom
 		if result[4] is not None:
 			prenom=result[4]
-		if result[4] is None:
+		if result[4] is None:	
 			prenom='Non renseigné'
 			
 		#Date de naissance
@@ -353,9 +353,9 @@ def profile(username):
 		if result[9] is None:	
 			birthdate='Non renseigné'
 		
-	return render_template("userpagetemplate.html", name= "Profil", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
-
-	
+		return render_template("userpagetemplate.html", name=Profile, username=user, nom=nom, prenom=prenom, birthdate=birthdate)
+				
+				
 @app.route('/propose', methods=['GET','POST'])
 def propose():
 	db = engine.connect()
@@ -386,22 +386,63 @@ def project(title):
 	if request.method == 'GET':
 		return render_template("project.html", title=title)
 	#if session.get('logged') is False:
-		#return redirect('/login')
-	#return render_template("propose.html", name = "Proposer une imprimante")
+	#	return redirect('/login')
+	#return redirect('/propose')
 
 @app.route('/projet')
 def projet():
 	return render_template("projet.html")
 
-"""@app.route('/project')
-def project():
-	return render_template("project.html")"""
-
 @app.route('/printers', methods=['GET','POST'])
 def printers():
 	db = engine.connect()
 	if request.method == 'POST':
-		print(type(request.form['resolution']))
+		s = "select * from printer where "
+		prev = 0
+		if request.form['dimxmax']:
+			s = s + "dimensionsx <= " + request.form['dimxmax']
+			prev = 1
+		if request.form['dimymax']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "dimensionsy <= " + request.form['dimymax']
+			prev = 1
+		if request.form['dimzmax']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "dimensionsz <= " + request.form['dimzmax']
+			prev = 1
+		if request.form['resolution']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "resolution <= " + request.form['resolution']
+			prev = 1
+		if request.form['prix']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "price = " + request.form['prix']
+			prev = 1
+		if request.form['codepostal']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "postal_code = " + request.form['codepostal']
+			prev = 1
+		if request.form['ville']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "city = " + request.form['ville']
+			prev = 1
+		if request.form['pays']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "country = " + request.form['pays']
+			prev = 1
+
+		if prev == 0:
+			print("pitulin flacido")
+		else:
+			print("pitulin cargado")
+			print(s)
 	return render_template('printers.html')
 
 @app.route('/printer')
@@ -413,18 +454,19 @@ def rent():
 	if request.method == 'POST':
 		if session.get('logged') == False :
 			print('User not connected')
-			return render_template("rentprinter.html", name = "Louer une imprimante")
+			return render_template("rentprinter.html")
 		
 		else: 
 			printer_create()
-			return render_template("rentprinter.html", name = "Louer une imprimante")
+			return render_template("rentprinter.html")
 			
 	else:
-		return render_template("rentprinter.html", name = "Louer une imprimante")
+		return render_template("rentprinter.html")
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
 	return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 # ............................................................................................... #
 if __name__ == '__main__':
