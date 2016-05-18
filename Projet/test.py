@@ -31,7 +31,6 @@ user = Table('user', metadata,
 	Column('profile_image_path', String),
 	Column('creation_date', String),
 	Column('score', Integer),
-	Column('printer', String), #'yes' ou 'no'
 	Column('birthdate', String),
 	Column('telephone', String))
 

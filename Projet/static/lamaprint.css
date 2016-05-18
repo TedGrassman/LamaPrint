@@ -274,6 +274,20 @@ header{
 		border-color:#c27800;
 	}
 
+/* SEARCH PROJECT */
+
+.search-button-style{
+	border-color:#f7aa2d;
+	margin-bottom:0px;
+	margin-top:0px;
+	margin-left:35px;
+}
+	.search-button-style:hover{
+		border-color:#db8e12;
+	}
+	.search-button-style:focus{
+		border-color:#c27800;
+	}
 	
 /*PROPOSE PROJET ----------------------------------------*/
 
