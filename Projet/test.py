@@ -323,7 +323,6 @@ def profile(username):
 	if request.method=='GET':
 		print(session.get('username'))
 		result=getUserInfo(username)
-		
 		#Nom de Famille
 		if result[3] is not None:
 			nom=result[3]
