@@ -299,9 +299,9 @@ def logout():
 	return resp
 	#return redirect('/pages/' + from_page)
 
-@app.route('/profile')
+"""@app.route('/profile')
 def profile2():
-	return render_template("profile.html")	
+	return render_template("profile.html")"""
 
 @app.route('/profile/<username>', methods=['GET','POST'])	
 def profile(username):
@@ -318,7 +318,7 @@ def profile(username):
 		#Prenom
 		if result[4] is not None:
 			prenom=result[4]
-		if result[4] is None:	
+		if result[4] is None:
 			prenom='Non renseigné'
 			
 		#Date de naissance
