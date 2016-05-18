@@ -341,9 +341,13 @@ def project(title):
 def projet():
 	return render_template("projet.html")
 
-"""@app.route('/project')
+@app.route('/project')
 def project():
-	return render_template("project.html")"""
+	return render_template("project.html")
+
+@app.route('/printers')
+def printers():
+	return render_template('printers.html')
 	
 @app.route('/rent', methods=['GET','POST'])
 def rent():
