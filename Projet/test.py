@@ -299,10 +299,6 @@ def logout():
 	return resp
 	#return redirect('/pages/' + from_page)
 
-@app.route('/profile')
-def profile2():
-	return render_template("profile.html")	
-
 @app.route('/profile/<username>', methods=['GET','POST'])	
 def profile(username):
 	if request.method=='GET':
@@ -327,7 +323,7 @@ def profile(username):
 		if result[9] is None:	
 			birthdate='Non renseigné'
 		
-	return render_template("userpagetemplate.html", name= "Profil", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
+	return render_template("userpagetemplate.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate)
 
 	
 @app.route('/propose', methods=['GET','POST'])
@@ -366,7 +362,6 @@ def project_form(title):
 @app.route('/projet')
 def projet():
 	return render_template("projet.html")
-
 
 @app.route('/printers', methods=['GET','POST'])
 def printers():
