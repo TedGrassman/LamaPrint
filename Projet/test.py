@@ -20,7 +20,7 @@ SALT = 'foo#BAR_{baz}^666'
 UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024
+app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024		# taille max = 4Mo
 
 # Création de la base de données
 # Base de donnée : doit supporter les types "blob"
@@ -97,7 +97,7 @@ def allowed_file(filename):
 
 def uploadFile(filepath="default"):
 	""" Upload de fichier
-		Exemple: pour uploader toto.jpg dans /uploads/test/ -> uploadFile("test"),
+		Exemple: pour uploader toto.jpg dans /uploads/test/ -> uploadFile("test")
 		avec la dernière requête contenant un form qui contient un <input file>"""
 	print("UPLOAD!")
 	print("### upload du fichier", request.files['file'], "###")
@@ -318,10 +318,7 @@ def logout():
 @app.route('/modifyprofile', methods=['GET','POST'])
 def modifyprofile():
 	if request.method == 'POST':
-		print("!!! Modification du profil !!!")
-		#upload_file(filepath="profiles")
 		uploadFile("profiles")
-		print("!!! upload fait !!!")
 		return render_template("profile.html", name="Modifier le profil")
 		#return redirect(url_for('uploaded_file', filename=filename))
 
@@ -353,7 +350,7 @@ def profile(username):
 		if result[9] is None:	
 			birthdate='Non renseigné'
 		
-		return render_template("userpagetemplate.html", name=Profile, username=user, nom=nom, prenom=prenom, birthdate=birthdate)
+		return render_template("userpagetemplate.html", name="Profil", username=result[0], nom=nom, prenom=prenom, birthdate=birthdate)
 				
 				
 @app.route('/propose', methods=['GET','POST'])
