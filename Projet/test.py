@@ -428,17 +428,17 @@ def printers():
 		s = "select * from printer where "
 		prev = 0
 		if request.form['dimxmax']:
-			s = s + "dimensionsx <= " + request.form['dimxmax']
+			s = s + "dimensionsx >= " + request.form['dimxmax']
 			prev = 1
 		if request.form['dimymax']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "dimensionsy <= " + request.form['dimymax']
+			s = s + "dimensionsy >= " + request.form['dimymax']
 			prev = 1
 		if request.form['dimzmax']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "dimensionsz <= " + request.form['dimzmax']
+			s = s + "dimensionsz >= " + request.form['dimzmax']
 			prev = 1
 		if request.form['resolution']:
 			if prev == 1:
