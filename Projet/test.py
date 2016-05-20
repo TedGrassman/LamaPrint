@@ -36,7 +36,6 @@ user = Table('user', metadata,
 	Column('address', String),
 	Column('profile_image_path', String),
 	Column('creation_date', String),
-	Column('printer', String), #'yes' ou 'no'
 	Column('score', Integer),
 	Column('birthdate', String),
 	Column('telephone', String))
@@ -46,7 +45,11 @@ project = Table('project', metadata,
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
 	Column('project_name', String),
+	Column('dimensionsx', Integer),
+	Column('dimensionsy', Integer),
+	Column('dimensionsz', Integer),
 	Column('image_path', String),
+	Column('price', Integer),
 	Column('score', Integer),
 	Column('project_type', Integer), #'rquest', 'publication' ou 'offer'
 	Column('description', String))
@@ -57,12 +60,12 @@ file = Table('file', metadata,
 	Column('score', Integer),
 	Column('project', Integer, ForeignKey('project.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
 	Column('file_path', String),
-	Column('dimensionsx', String),
-	Column('dimensionsy', String),
-	Column('dimensionsz', String),
+	Column('dimensionsx', Integer),
+	Column('dimensionsy', Integer),
+	Column('dimensionsz', Integer),
 	Column('city', String),
 	Column('weight', Float),
-	Column('price', String), # exemple: '€23.4'
+	Column('price', Integer),
 	Column('name', String))
 	
 	
@@ -70,9 +73,9 @@ printer = Table('printer', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('dimensionsx', String),
-	Column('dimensionsy', String),
-	Column('dimensionsz', String),
+	Column('dimensionsx', Integer),
+	Column('dimensionsy', Integer),
+	Column('dimensionsz', Integer),
 	Column('resolution', String),
 	Column('postal_code', Integer),
 	Column('country', String),
@@ -89,6 +92,7 @@ comment = Table('comment', metadata,
 	Column('comment_text', String))
 
 metadata.create_all(engine)		# remplit la BdD avec les informations par défaut
+
 
 
 def allowed_file(filename):
@@ -118,6 +122,7 @@ def uploadFile(filepath="default"):
 			#return redirect(url_for('uploaded_file', filename=filename))
 	finally:
 		db.close()
+
 
 def hash_for(password):
 	salted = '%s @ %s' % (SALT, password)
@@ -412,6 +417,7 @@ def profile(username):
 	if request.method=='GET':
 		print(session.get('username'))
 		result=getUserInfo(username)
+		
 		#Nom de Famille
 		if result[3] is not None:
 			nom=result[3]
@@ -447,8 +453,7 @@ def profile(username):
 		if result[11] is None:	
 			phone='NaN'
 
-		
-	return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
+		return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
 
 
 @app.route('/demand', methods=['GET','POST'])
@@ -482,13 +487,14 @@ def demandDisplay(title):
 			return render_template("demand_display.html",name= "Demande:"+title, title=title)
 		else:
 			return render_template("demand_display.html",name= "Demande:"+title, title=title, description=result[0])
-	
+
+
+
 @app.route('/propose', methods=['GET','POST'])
 def propose():
 	db = engine.connect()
 		
 	if request.method == 'GET':
-		print('PROJECT !!!!!!')
 		data=request.cookies.get('username')
 		if data is None:
 			print('Pas de cookie')
@@ -497,24 +503,25 @@ def propose():
 			return render_template("propose.html", name = "Proposer une imprimante")
 			
 	if request.method == 'POST':
-		print('ICICICICICICI')
 		session['username']=request.cookies.get('username')
-		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
-		if result is None:
-			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username'], }])
-			print('create project')
-			return redirect('/project/'+request.form['title'])
-		else:
-			print('Vous avez déjà créé ce projet')
+		result = db.execute(select([file.c.project]).where(file.c.name==session['username'])).fetchone()
+		#if result is None:
+		#db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
+		print('create project')
+		return redirect('/project/'+request.form['title'])
+		#else:
+		#	print('Vous avez déjà créé ce projet')
 		return redirect('/')
 		
 @app.route('/project/<title>')
-def project_form(title):
+def project(title):
+	db = engine.connect()
+		
 	if request.method == 'GET':
 		return render_template("project.html", title=title)
-	#if session.get('logged') is False:
-	#	return redirect('/login')
-	#return redirect('/propose')
+	if session.get('logged') is False:
+		return redirect('/login')
+	return render_template("propose.html")
 
 @app.route('/projet')
 def projet():
@@ -523,6 +530,7 @@ def projet():
 @app.route('/printers', methods=['GET','POST'])
 def printers():
 	db = engine.connect()
+
 	if request.method == 'POST':
 		s = "select * from printer where "
 		prev = 0
@@ -537,53 +545,93 @@ def printers():
 		if request.form['dimzmax']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "dimensionsz >= " + request.form['dimzmax']
+			s = s + "dimensionsz >= " +  request.form['dimzmax']
 			prev = 1
 		if request.form['resolution']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "resolution <= " + request.form['resolution']
+			s = s + "resolution <= " + "\"" + request.form['resolution'] + "\""
 			prev = 1
 		if request.form['prix']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "price = " + request.form['prix']
+			s = s + "price <= " + "\"" + request.form['prix'] + "\""
 			prev = 1
 		if request.form['codepostal']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "postal_code = " + request.form['codepostal']
+			s = s + "postal_code = " + "\"" + request.form['codepostal'] + "\""
 			prev = 1
 		if request.form['ville']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "city = " + request.form['ville']
+			s = s + "city = " + "\"" + request.form['ville'] + "\""
 			prev = 1
 		if request.form['pays']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "country = " + request.form['pays']
+			s = s + "country = " + "\"" + request.form['pays'] + "\""
+			prev = 1
+		
+		if prev == 0:
+			print("Empty request")
+		else:
+			print("Request made: ")
+			#s = "select * from printer"
+			print(s)
+	
+			for row in db.execute(s):
+				print(row)
+			print('\n')
+			
+			message = Markup("<h1>Voila! Platform is ready to used</h1>")
+			flash(message)
+	return render_template('printers.html',city="[ville]",country="[pays]",price="[prix]",resolution="[resolution]",dimxmax="[Xmax]",dimymax="[Ymax]",dimzmax="[Zmax]",user="[Pseudo]", idprinter="1234")
+
+	
+@app.route('/searchproject', methods=['GET','POST'])
+def searchproject():
+	db = engine.connect()
+	if request.method == 'POST':
+		s = "select * from project where "
+		prev = 0
+		if request.form['dimxmax']:
+			s = s + "dimensionsx <= " + "\"" + request.form['dimxmax'] + "\""
+			prev = 1
+		if request.form['dimymax']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "dimensionsy <= " + "\"" + request.form['dimymax'] + "\""
+			prev = 1
+		if request.form['dimzmax']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "dimensionsz <= " + "\"" + request.form['dimzmax'] + "\""
+			prev = 1
+		if request.form['field']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "description like " + "\"%" + request.form['field'] + "%\""
+			prev = 1
+		if request.form['prix']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "price <= " + "\"" + request.form['prix'] + "\""
 			prev = 1
 
 		if prev == 0:
-			print("pitulin flacido")
+			print("Empty request")
 		else:
-			print("pitulin cargado")
+			print("Request made: ")
 			print(s)
-	return render_template('printers.html')
 
-"""@app.route('/project')
-def project():
-	return render_template("project.html")"""
-
-
-
-@app.route('/search')
-def search():
+			for row in db.execute(s):
+				print(row)
+			print('\n')
 	return render_template('searchproject.html')
 
-@app.route('/printer')
-def printer():
+@app.route('/printer/<id>')
+def printer(id):
 	return render_template('printer.html')
 	
 @app.route('/rent', methods=['GET','POST'])
@@ -599,11 +647,6 @@ def rent():
 			
 	else:
 		return render_template("rentprinter.html")
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-	return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
 
 # ............................................................................................... #
 if __name__ == '__main__':

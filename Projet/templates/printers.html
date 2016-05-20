@@ -40,8 +40,9 @@
 							<input type="text" name="codepostal" id="codepostal" style="width: 3em;margin-right:25px;" />
 														
 							<input type="text" name="ville" id="ville" style="width: 6em; margin-right:25px;"  />
-																			
-							<select name="pays" id="pays" style="width: 7em" style="margin-right:25px;" required>
+							
+							<select name="pays" id="pays" style="width: 7em" style="margin-right:25px;" >
+								<option value="" selected="selected">Tous</option>
 								<optgroup label="Afrique">
 								<option value="afriqueDuSud">Afrique Du Sud</option>
 								<option value="algerie">Algérie</option>
@@ -197,7 +198,7 @@
 								<option value="espagne">Espagne</option>
 								<option value="estonie">Estonie</option>
 								<option value="finlande">Finlande</option>
-								<option value="france" selected="selected">France</option>
+								<option value="france">France</option>
 								<option value="grece">Grèce</option>
 								<option value="hongrie">Hongrie</option>
 								<option value="irlande">Irlande</option>
@@ -253,8 +254,35 @@
 
 					<div class="col-md-6 no-padding">
 						<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose">
-							Aucun résultat.
+							
+							{% if (0>1): %}
+							Aucun résultat. <br />
+
+							{% else: %}
+								{% for i in range(21): %}
+								
+
+									----------------------------- {{i}} -----------------------------<br />
+									<b><a href="/printer/{{idprinter}}">Imprimande de {{user}}</a></b> <br />
+									<b>Résolution</b> : {{resolution}} µm<br />
+									<b>Taille maximale</b> : {{dimxmax}} x {{dimymax}} x {{dimzmax}} cm<br />
+									<b>Prix min</b> : {{price}} €/kg<br />
+									<b>Ville</b> : {{city}}, {{country}} <br />
+
+									<br />
+								
+								{% endfor %}
+							{% endif %}
+
+
+							<div class="flashes">
+							  {% for message in get_flashed_messages() %}
+								{{ message }}
+							  {% endfor %}
+							</div>
 						</div>
+						
+
 					
 					</div>
 											
