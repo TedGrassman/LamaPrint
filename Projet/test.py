@@ -411,6 +411,9 @@ def printers():
 			for row in db.execute(s):
 				print(row)
 			print('\n')
+			
+			message = Markup("<h1>Voila! Platform is ready to used</h1>")
+			flash(message)
 	return render_template('printers.html',city="[ville]",country="[pays]",price="[prix]",resolution="[resolution]",dimxmax="[Xmax]",dimymax="[Ymax]",dimzmax="[Zmax]",user="[Pseudo]", idprinter="1234")
 
 	
