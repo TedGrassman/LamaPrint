@@ -64,17 +64,19 @@ file = Table('file', metadata,
 	
 	
 printer = Table('printer', metadata,
-	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
+	Column('ID', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),	
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('dimensionsx', Integer),
-	Column('dimensionsy', Integer),
-	Column('dimensionsz', Integer),
-	Column('resolution', String),
-	Column('postal_code', Integer),
-	Column('country', String),
-	Column('weight', Float),
-	Column('price', String)) # exemple: '€23.4'
+	Column('dimensionsx', Float),
+	Column('dimensionsy', Float),
+	Column('dimensionsz', Float),
+	Column('res', Integer),
+	Column('price', Float), # exemple: '€23.4'
+	Column('material', String),
+	Column('address', String),
+	Column('postcode', String),
+	Column('city', String),
+	Column('country', String))
 
 				
 comment = Table('comment', metadata,
@@ -410,11 +412,26 @@ def printers():
 	
 			for row in db.execute(s):
 				print(row)
+				s = "----------------------------------------------------------<br /><b><a href=\"/printer/"
+				s=s+str(row.id)
+				s=s+"\">Imprimande de user</a></b> <br /><br />"
+				s=s+"<b>Résolution</b> : "
+				s=s+str(row.resolution)
+				s=s+" µm <br /> <b>Taille maximale</b> : "
+				s=s+str(row.dimensionsx)
+				s=s+" x "
+				s=s+str(row.dimensionsy)
+				s=s+" x "
+				s=s+str(row.dimensionsz)+" cm<br />"
+				s=s+"<b>Prix min</b> : "+str(row.price)+" €/kg<br />"
+				s=s+"<b>Ville</b> : "+row.city+", "+row.country+" <br /><br />"
+				message = Markup(s)
+				flash(message)
 			print('\n')
 			
-			message = Markup("<h1>Voila! Platform is ready to used</h1>")
+			message = Markup("Voila! Platform is ready to used")
 			flash(message)
-	return render_template('printers.html',city="[ville]",country="[pays]",price="[prix]",resolution="[resolution]",dimxmax="[Xmax]",dimymax="[Ymax]",dimzmax="[Zmax]",user="[Pseudo]", idprinter="1234")
+	return render_template('printers.html')
 
 	
 @app.route('/searchproject', methods=['GET','POST'])
