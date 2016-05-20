@@ -67,19 +67,17 @@ printer = Table('printer', metadata,
 	Column('ID', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),	
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('dimensionsx', Integer),
-	Column('dimensionsy', Integer),
-	Column('dimensionsz', Integer),
+	Column('dimensionsx', Float),
+	Column('dimensionsy', Float),
+	Column('dimensionsz', Float),
 	Column('res', Integer),
-	Column('weight', Float),
-	Column('price', String), # exemple: '€23.4'
-	Column('material', Integer),
+	Column('price', Float), # exemple: '€23.4'
+	Column('material', String),
 	Column('address', String),
 	Column('postcode', String),
 	Column('city', String),
 	Column('country', String))
 	
-
 				
 comment = Table('comment', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
@@ -92,11 +90,39 @@ comment = Table('comment', metadata,
 metadata.create_all(engine)		# remplit la BdD avec les informations par défaut
 
 
+def allowed_file(filename):
+	return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+def uploadFile(filepath="default"):
+	""" Upload de fichier
+		Exemple: pour uploader toto.jpg dans /uploads/test/ -> uploadFile("test")
+		avec la dernière requête contenant un form qui contient un <input file>"""
+	db = engine.connect()
+	try:
+		print("UPLOAD!")
+		print("### upload du fichier", request.files['file'], "###")
+		dirpath = os.path.join(app.config['UPLOAD_FOLDER'], filepath).replace('\\','/')
+		if os.path.isdir(dirpath) is False:
+			os.mkdir(dirpath)
+		file = request.files['file']
+		if file and allowed_file(file.filename):
+			filename = secure_filename(file.filename)
+			path = os.path.join(dirpath, filename).replace('\\','/')
+			print("Path =", path)
+			file.save(path)
+			db.execute(user.update().values(profile_image_path = path).where(user.c.username == session.get('username')))
+			return path
+
+			#file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename).replace('\\','/'))
+			#return redirect(url_for('uploaded_file', filename=filename))
+	finally:
+		db.close()
 
 
 def hash_for(password):
 	salted = '%s @ %s' % (SALT, password)
 	return hashlib.sha256(salted.encode('utf-8')).hexdigest()
+
 
 def authenticate(login, password):
 	"""Authentifier un utilisateur"""
@@ -132,7 +158,7 @@ def authenticate(login, password):
 				print('**Authentication fail: wrong password**')
 				return False
 	finally:
-		db.close();
+		db.close()
 		
 def getUserInfo(username):
 	db = engine.connect()
@@ -164,8 +190,8 @@ def create(login, password):
 			print('**Creation fail: login already exists**')
 			return False
 	finally:
-		db.close();
-		
+		db.close()		
+
 
 def printer_create():
 	#engine = create_engine('sqlite:///lama.db', echo=True)
@@ -294,6 +320,92 @@ def logout():
 	return resp
 	#return redirect('/pages/' + from_page)
 
+@app.route('/editprofile/<username>', methods=['GET','POST'])
+def editprofile(username):
+	
+	print("*****MODIFYPROFILE*****")
+	data=request.cookies.get('username')
+	print(data)
+	if data is None:
+			print('Pas de cookie')
+			return redirect('/login')
+	elif data==username:
+		#rien
+		print("data =", data, "; username =", username)
+		if request.method == 'POST':
+			
+			print("POST modifyprofile")
+			path = uploadFile("profile_images")
+			if path is not None:
+				image = "../"+path
+			else:
+				image='../image/garou.png'
+			print("IMAGE =", image)
+			
+			db = engine.connect()
+			try:
+				if request.form['firstname'] is not None:
+					print("Add Firstname: "+request.form['firstname']+" to DB")
+					smt=user.update().values(name=request.form['firstname']).where(user.c.username==username)
+					db.execute(smt)
+				if request.form['lastname'] is not None:
+					print("Add lastname: "+request.form['lastname']+" to DB")
+					smt=user.update().values(lastname=request.form['lastname']).where(user.c.username==username)
+					db.execute(smt)
+				if request.form['birthdate'] is not None:
+					print("Add birthdate: "+request.form['birthdate']+" to DB")
+					smt=user.update().values(birthdate=request.form['birthdate']).where(user.c.username==username)
+					db.execute(smt)
+				if request.form['phonenumber'] is not None:
+					print("Add phonenumber: "+request.form['phonenumber']+" to DB")
+					smt=user.update().values(telephone=request.form['phonenumber']).where(user.c.username==username)
+					db.execute(smt)
+			finally:
+				db.close()
+
+			return redirect("/profile/"+username)
+			#return redirect(url_for('uploaded_file', filename=filename))
+
+		else:
+			print("GET modifyprofile")
+			print(session.get('username'))
+			result=getUserInfo(username)
+			
+			#Nom de Famille
+			if result[3] is not None:
+				nom=result[3]
+			if result[3] is None:	
+				nom='Non renseigné'	
+			#Prenom
+			if result[4] is not None:
+				prenom=result[4]
+			if result[4] is None:	
+				prenom='Non renseigné'
+			#Date de naissance
+			if result[10] is not None:
+				birthdate=result[10]
+			if result[10] is None:	
+				birthdate='Non renseigné'
+			#Image de profil
+			if result[6] is not None:
+				image="../"+result[6]
+			if result[6] is None:	
+				image='../image/garou.png'		# image par défaut :)
+			#print("IMAGE =", image)
+			#Mail
+			if result[2] is not None:
+				mail=result[2]
+			if result[2] is None:	
+				mail='lama@lamacorp.com'
+			#Phone
+			if result[11] is not None:
+				phone=result[11]
+			if result[11] is None:	
+				phone='NaN'
+
+			return render_template("editprofile.html", name="Modifier le profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
+
+
 @app.route('/profile/<username>', methods=['GET','POST'])	
 def profile(username):
 	if request.method=='GET':
@@ -313,14 +425,66 @@ def profile(username):
 			prenom='Non renseigné'
 			
 		#Date de naissance
-		if result[9] is not None:
-			birthdate=result[9]
-		if result[9] is None:	
+		if result[10] is not None:
+			birthdate=result[10]
+		if result[10] is None:	
 			birthdate='Non renseigné'
+
+		#Image de profil
+		if result[6] is not None:
+			image="../"+result[6]
+		if result[6] is None:	
+			image='../image/garou.png'		# image par défaut :)
+		print("FETCH USER : image =", image)
+		#Mail
+		if result[2] is not None:
+			mail=result[2]
+		if result[2] is None:	
+			mail='lama@lamacorp.com'
+		#Phone
+		if result[11] is not None:
+			phone=result[11]
+		if result[11] is None:	
+			phone='NaN'
+
+		return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
+
+
+@app.route('/demand', methods=['GET','POST'])
+def demand():
+	if request.method == 'GET':
+		data=request.cookies.get('username')
+		if data is None:
+			print('Pas de cookie')
+			return redirect('/')
+		else:
+			return render_template("demand.html", name = "Demande de projet")
+	if request.method == 'POST':
+		db = engine.connect()
+		session['username']=request.cookies.get('username')
+		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
+		if result is None:
+			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username'], 'description': request.form['description']}])
+			print('create project')
+			return redirect('/demand/'+request.form['title'])
+		else:
+			print('Vous avez déjà créé ce projet')
+		return redirect('/')
 		
-		return render_template("userpagetemplate.html", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
-				
-				
+		
+@app.route('/demand/<title>', methods=['GET','POST'])
+def demandDisplay(title):
+	if request.method == 'GET':
+		db = engine.connect()
+		result = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
+		if result is None:
+			print('ERREUR BSD')
+			return render_template("demand_display.html",name= "Demande:"+title, title=title)
+		else:
+			return render_template("demand_display.html",name= "Demande:"+title, title=title, description=result[0])
+
+
+			
 @app.route('/propose', methods=['GET','POST'])
 def propose():
 	db = engine.connect()
@@ -367,22 +531,22 @@ def printers():
 		s = "select * from printer where "
 		prev = 0
 		if request.form['dimxmax']:
-			s = s + "dimensionsx <= " + request.form['dimxmax']
+			s = s + "dimensionsx >= " + request.form['dimxmax']
 			prev = 1
 		if request.form['dimymax']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "dimensionsy <= " + request.form['dimymax']
+			s = s + "dimensionsy >= " + request.form['dimymax']
 			prev = 1
 		if request.form['dimzmax']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "dimensionsz <= " +  request.form['dimzmax']
+			s = s + "dimensionsz >= " +  request.form['dimzmax']
 			prev = 1
 		if request.form['resolution']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "resolution <= " + "\"" + request.form['resolution'] + "\""
+			s = s + "res <= " + "\"" + request.form['resolution'] + "\""
 			prev = 1
 		if request.form['prix']:
 			if prev == 1:
@@ -490,10 +654,19 @@ def rent():
 				smt=printer.update().values(creation_date=str(datetime.date.today())).where(printer.c.ID==idd)
 				db.execute(smt)
 				
-				if request.form['dimxmax'] is not None and request.form['dimymax'] is not None and request.form['dimzmax'] is not None :
-					print("Add dimensions: "+request.form['dimxmax']+"cm"+request.form['dimymax']+"cm"+request.form['dimzmax']+"cm to DB")
-					smt=printer.update().values(dimensions=request.form['dimxmax']+"cm"+request.form['dimymax']+"cm"+request.form['dimzmax']+"cm").where(printer.c.ID==idd)
+				if request.form['dimxmax'] is not None :
+					print("Add dimensions: "+request.form['dimxmax'])
+					smt=printer.update().values(dimensionsx=request.form['dimxmax']).where(printer.c.ID==idd)
 					db.execute(smt)
+				if request.form['dimymax'] is not None :
+					print("Add dimensions: "+request.form['dimymax'])
+					smt=printer.update().values(dimensionsy=request.form['dimymax']).where(printer.c.ID==idd)
+					db.execute(smt)
+				if request.form['dimzmax'] is not None :
+					print("Add dimensions: "+request.form['dimzmax'])
+					smt=printer.update().values(dimensionsz=request.form['dimzmax']).where(printer.c.ID==idd)
+					db.execute(smt)	
+					
 				if request.form['resolution'] is not None:
 					print("Add resolution: "+request.form['resolution']+" to DB")
 					smt=printer.update().values(res=request.form['resolution']).where(printer.c.ID==idd)
