@@ -318,7 +318,7 @@ def register():
 			session['name'] = escape(request.form['firstname'])
 			if request.form['mail'] is not None:
 				print("Add mail: "+request.form['mail']+" to DB")
-				smt=user.update().values(name=request.form['mail']).where(user.c.username==request.form['login'])
+				smt=user.update().values(mail=request.form['mail']).where(user.c.username==request.form['login'])
 				db.execute(smt)
 			if request.form['firstname'] is not None:
 				print("Add Firstname: "+request.form['firstname']+" to DB")
