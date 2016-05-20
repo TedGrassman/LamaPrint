@@ -97,15 +97,15 @@ db.execute(printer.insert(), [
 ])
 
 db.execute(printer.insert(), [
-	{'dimensionsx':5, 'city':'Buenos Aires'},
-	{'dimensionsx':6, 'city':'Buenos Aires'}
+	{'dimensionsx':5, 'description':'good printer'},
+	{'dimensionsx':6, 'description':'bad printer'}
 ])
 
-stmt = "select * from printer where city = \"Buenos Aires\""
+#stmt = "select * from printer where dimensionsx = \"Buenos Aires\""
 
-for row in db.execute(stmt):
-    print(row[0])
-print('\n')
+#for row in db.execute(stmt):
+#    print(row[0])
+#print('\n')
 
 
 db.close()
