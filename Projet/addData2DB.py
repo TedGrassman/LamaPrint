@@ -62,9 +62,9 @@ printer = Table('printer', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('dimensionsx', String),
-	Column('dimensionsy', String),
-	Column('dimensionsz', String),
+	Column('dimensionsx', Integer),
+	Column('dimensionsy', Integer),
+	Column('dimensionsz', Integer),
 	Column('resolution', String),
 	Column('postal_code', Integer),
 	Column('country', String),
@@ -101,11 +101,12 @@ db.execute(printer.insert(), [
 	{'dimensionsx':6, 'description':'bad printer'}
 ])
 
-#stmt = "select * from printer where dimensionsx = \"Buenos Aires\""
+stmt = "select * from printer where dimensionsx <= \"6\""
+#stmt = "select * from printer"
 
-#for row in db.execute(stmt):
-#    print(row[0])
-#print('\n')
+for row in db.execute(stmt):
+    print(row)
+print('\n')
 
 
 db.close()

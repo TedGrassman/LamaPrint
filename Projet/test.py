@@ -67,9 +67,9 @@ printer = Table('printer', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('dimensionsx', String),
-	Column('dimensionsy', String),
-	Column('dimensionsz', String),
+	Column('dimensionsx', Integer),
+	Column('dimensionsy', Integer),
+	Column('dimensionsz', Integer),
 	Column('resolution', String),
 	Column('postal_code', Integer),
 	Column('country', String),
@@ -363,17 +363,17 @@ def printers():
 		s = "select * from printer where "
 		prev = 0
 		if request.form['dimxmax']:
-			s = s + "dimensionsx <= " + "\"" + request.form['dimxmax'] + "\""
+			s = s + "dimensionsx <= " + request.form['dimxmax']
 			prev = 1
 		if request.form['dimymax']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "dimensionsy <= " + "\"" + request.form['dimymax'] + "\""
+			s = s + "dimensionsy <= " + request.form['dimymax']
 			prev = 1
 		if request.form['dimzmax']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "dimensionsz <= " + "\"" + request.form['dimzmax'] + "\""
+			s = s + "dimensionsz <= " +  request.form['dimzmax']
 			prev = 1
 		if request.form['resolution']:
 			if prev == 1:
@@ -405,6 +405,7 @@ def printers():
 			print("Empty request")
 		else:
 			print("Request made: ")
+			#s = "select * from printer"
 			print(s)
 	
 			for row in db.execute(s):
@@ -448,7 +449,7 @@ def searchproject():
 		else:
 			print("Request made: ")
 			print(s)
-	
+
 			for row in db.execute(s):
 				print(row)
 			print('\n')
