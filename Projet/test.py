@@ -77,11 +77,6 @@ printer = Table('printer', metadata,
 	Column('postcode', String),
 	Column('city', String),
 	Column('country', String))
-<<<<<<< HEAD
-	
-=======
-
->>>>>>> 98e341521ee2eaf8ff9b26e6abe9992d4c5a92ab
 				
 comment = Table('comment', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
@@ -527,7 +522,7 @@ def projet():
 	return render_template("projet.html")
 
 
-@app.route('/printers')
+@app.route('/printers', methods=['GET','POST'])
 def printers():
 	db = engine.connect()
 
@@ -583,10 +578,10 @@ def printers():
 			for row in db.execute(s):
 				print(row)
 				s = "----------------------------------------------------------<br /><b><a href=\"/printer/"
-				s=s+str(row.id)
+				s=s+str(row.ID)
 				s=s+"\">Imprimande de user</a></b> <br /><br />"
 				s=s+"<b>Résolution</b> : "
-				s=s+str(row.resolution)
+				s=s+str(row.res)
 				s=s+" µm <br /> <b>Taille maximale</b> : "
 				s=s+str(row.dimensionsx)
 				s=s+" x "
@@ -599,7 +594,7 @@ def printers():
 				flash(message)
 			print('\n')
 			
-			message = Markup("Voila! Platform is ready to used")
+			message = Markup("get money f*ck bitche$")
 			flash(message)
 	return render_template('printers.html')
 
@@ -646,7 +641,7 @@ def searchproject():
 
 
 @app.route('/printer/<id>')
-def printerfunc():
+def printerfunc(id):
 	return render_template('printer.html')
 	
 @app.route('/rent', methods=['GET','POST'])
