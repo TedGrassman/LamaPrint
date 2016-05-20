@@ -23,18 +23,18 @@
 					<label for="titletext" class="login-form-title">Connexion</label>
 				</div>
 
-				<!--{% with messages = get_flashed_messages() %}
+				{% with messages = get_flashed_messages() %}
 					{% if messages %}
-						<div class="panel panel-danger" id="error" style="margin-left:35px; width:100%;">
+						<div class="panel panel-danger" id="error">
 							<div class="panel-heading">
 								<h3 class="panel-title">Error</h3>
 							</div>
 							<div class="panel-body">
-								{{messages}}
+								{{messages[0]}}
 							</div>
 						  </div>
 					{% endif %}
-				{% endwith %}-->
+				{% endwith %}
 				
 				<div class="jumbotron container-login">					
 				
