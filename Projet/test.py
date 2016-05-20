@@ -4,7 +4,7 @@ from flask import *
 from sqlalchemy import *
 from sqlalchemy.sql import *
 from sqlalchemy.orm import sessionmaker
-from markdown import markdown
+from werkzeug import secure_filename
 import os, hashlib
 import random
 
@@ -15,6 +15,12 @@ app = Flask(__name__)
 #app.secret_key = 'iswuygdedgv{&75619892__01;;>..zzqwQIHQIWS'
 app.secret_key = os.urandom(256)
 SALT = 'foo#BAR_{baz}^666'
+
+# Pour l'upload de fichiers
+UPLOAD_FOLDER = "uploads"
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024		# taille max = 4Mo
 
 # Création de la base de données
 # Base de donnée : doit supporter les types "blob"
@@ -30,6 +36,7 @@ user = Table('user', metadata,
 	Column('address', String),
 	Column('profile_image_path', String),
 	Column('creation_date', String),
+	Column('printer', String), #'yes' ou 'no'
 	Column('score', Integer),
 	Column('birthdate', String),
 	Column('telephone', String))
@@ -84,7 +91,27 @@ comment = Table('comment', metadata,
 metadata.create_all(engine)		# remplit la BdD avec les informations par défaut
 
 
+def allowed_file(filename):
+	return '.' in filename and \
+		filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
+def uploadFile(filepath="default"):
+	""" Upload de fichier
+		Exemple: pour uploader toto.jpg dans /uploads/test/ -> uploadFile("test")
+		avec la dernière requête contenant un form qui contient un <input file>"""
+	print("UPLOAD!")
+	print("### upload du fichier", request.files['file'], "###")
+	dirpath = os.path.join(app.config['UPLOAD_FOLDER'], filepath).replace('\\','/')
+	if os.path.isdir(dirpath) is False:
+		os.mkdir(dirpath)
+	file = request.files['file']
+	if file and allowed_file(file.filename):
+		filename = secure_filename(file.filename)
+		path = os.path.join(dirpath, filename).replace('\\','/')
+		print("Path =", path)
+		file.save(path)
+		#file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename).replace('\\','/'))
+		#return redirect(url_for('uploaded_file', filename=filename))
 
 def hash_for(password):
 	salted = '%s @ %s' % (SALT, password)
@@ -287,12 +314,23 @@ def logout():
 	return resp
 	#return redirect('/pages/' + from_page)
 
+
+@app.route('/modifyprofile', methods=['GET','POST'])
+def modifyprofile():
+	if request.method == 'POST':
+		uploadFile("profiles")
+		return render_template("profile.html", name="Modifier le profil")
+		#return redirect(url_for('uploaded_file', filename=filename))
+
+	else:
+		return render_template("profile.html", name="Modifier le profil")
+
+
 @app.route('/profile/<username>', methods=['GET','POST'])	
 def profile(username):
 	if request.method=='GET':
 		print(session.get('username'))
 		result=getUserInfo(username)
-		
 		#Nom de Famille
 		if result[3] is not None:
 			nom=result[3]
@@ -311,41 +349,73 @@ def profile(username):
 		if result[9] is None:	
 			birthdate='Non renseigné'
 		
-		return render_template("userpagetemplate.html", username=user, nom=nom, prenom=prenom, birthdate=birthdate)
-				
-				
-@app.route('/propose', methods=['GET','POST'])
-def propose():
-	db = engine.connect()
-		
+	return render_template("userpagetemplate.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate)
+
+
+@app.route('/demand', methods=['GET','POST'])
+def demand():
 	if request.method == 'GET':
 		data=request.cookies.get('username')
 		if data is None:
 			print('Pas de cookie')
 			return redirect('/')
 		else:
-			return render_template("propose.html")
-			
+			return render_template("demand.html", name = "Demande de projet")
 	if request.method == 'POST':
+		db = engine.connect()
 		session['username']=request.cookies.get('username')
-		result = db.execute(select([file.c.project]).where(file.c.name==session['username'])).fetchone()
-		#if result is None:
-		#db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
-		print('create project')
-		return redirect('/project/'+request.form['title'])
-		#else:
-		#	print('Vous avez déjà créé ce projet')
+		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
+		if result is None:
+			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username'], 'description': request.form['description']}])
+			print('create project')
+			return redirect('/demand/'+request.form['title'])
+		else:
+			print('Vous avez déjà créé ce projet')
 		return redirect('/')
 		
-@app.route('/project/<title>')
-def project(title):
+@app.route('/demand/<title>', methods=['GET','POST'])
+def demandDisplay(title):
+	if request.method == 'GET':
+		db = engine.connect()
+		result = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
+		if result is None:
+			print('ERREUR BSD')
+			return render_template("demand_display.html",name= "Demande:"+title, title=title)
+		else:
+			return render_template("demand_display.html",name= "Demande:"+title, title=title, description=result[0])
+	
+@app.route('/propose', methods=['GET','POST'])
+def propose():
 	db = engine.connect()
 		
 	if request.method == 'GET':
+		print('PROJECT !!!!!!')
+		data=request.cookies.get('username')
+		if data is None:
+			print('Pas de cookie')
+			return redirect('/')
+		else:
+			return render_template("propose.html", name = "Proposer une imprimante")
+			
+	if request.method == 'POST':
+		print('ICICICICICICI')
+		session['username']=request.cookies.get('username')
+		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
+		if result is None:
+			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username'], }])
+			print('create project')
+			return redirect('/project/'+request.form['title'])
+		else:
+			print('Vous avez déjà créé ce projet')
+		return redirect('/')
+		
+@app.route('/project/<title>')
+def project_form(title):
+	if request.method == 'GET':
 		return render_template("project.html", title=title)
-	if session.get('logged') is False:
-		return redirect('/login')
-	return render_template("propose.html")
+	#if session.get('logged') is False:
+	#	return redirect('/login')
+	#return redirect('/propose')
 
 @app.route('/projet')
 def projet():
@@ -358,17 +428,17 @@ def printers():
 		s = "select * from printer where "
 		prev = 0
 		if request.form['dimxmax']:
-			s = s + "dimensionsx <= " + request.form['dimxmax']
+			s = s + "dimensionsx >= " + request.form['dimxmax']
 			prev = 1
 		if request.form['dimymax']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "dimensionsy <= " + request.form['dimymax']
+			s = s + "dimensionsy >= " + request.form['dimymax']
 			prev = 1
 		if request.form['dimzmax']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "dimensionsz <= " + request.form['dimzmax']
+			s = s + "dimensionsz >= " + request.form['dimzmax']
 			prev = 1
 		if request.form['resolution']:
 			if prev == 1:
@@ -403,6 +473,16 @@ def printers():
 			print(s)
 	return render_template('printers.html')
 
+"""@app.route('/project')
+def project():
+	return render_template("project.html")"""
+
+
+
+@app.route('/search')
+def search():
+	return render_template('searchproject.html')
+
 @app.route('/printer')
 def printer():
 	return render_template('printer.html')
@@ -420,6 +500,11 @@ def rent():
 			
 	else:
 		return render_template("rentprinter.html")
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+	return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 # ............................................................................................... #
 if __name__ == '__main__':
