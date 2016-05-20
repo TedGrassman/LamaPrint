@@ -464,7 +464,7 @@ def demand():
 		data=request.cookies.get('username')
 		if data is None:
 			print('Pas de cookie')
-			return redirect('/')
+			return redirect('/login')
 		else:
 			return render_template("demand.html", name = "Demande de projet")
 	if request.method == 'POST':
