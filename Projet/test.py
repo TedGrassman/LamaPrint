@@ -354,6 +354,7 @@ def projet():
 @app.route('/printers', methods=['GET','POST'])
 def printers():
 	db = engine.connect()
+
 	if request.method == 'POST':
 		s = "select * from printer where "
 		prev = 0
@@ -405,10 +406,11 @@ def printers():
 			for row in db.execute(s):
 				print(row)
 			print('\n')
-	return render_template('printers.html')
 
-@app.route('/printer')
-def printer():
+	return render_template('printers.html',city="[ville]",country="[pays]",price="[prix]",resolution="[resolution]",dimxmax="[Xmax]",dimymax="[Ymax]",dimzmax="[Zmax]",user="[Pseudo]", idprinter="1234")
+
+@app.route('/printer/<id>')
+def printer(id):
 	return render_template('printer.html')
 	
 @app.route('/rent', methods=['GET','POST'])

@@ -42,7 +42,7 @@
 							<input type="text" name="ville" id="ville" style="width: 6em; margin-right:25px;"  />
 							
 							<select name="pays" id="pays" style="width: 7em" style="margin-right:25px;" >
-								<option value=""selected="selected">Tous</option>
+								<option value="" selected="selected">Tous</option>
 								<optgroup label="Afrique">
 								<option value="afriqueDuSud">Afrique Du Sud</option>
 								<option value="algerie">Algérie</option>
@@ -254,8 +254,27 @@
 
 					<div class="col-md-6 no-padding">
 						<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose">
+							
+							{% if (0>1): %}
 							Aucun résultat. <br />
-							{{name}}
+							{% else: %}
+								{% for i in range(21): %}
+								
+
+									----------------------------- {{i}} -----------------------------<br />
+									<b><a href="/printer/{{idprinter}}">Imprimande de {{user}}</a></b> <br />
+									<b>Résolution</b> : {{resolution}} µm<br />
+									<b>Taille maximale</b> : {{dimxmax}} x {{dimymax}} x {{dimzmax}} cm<br />
+									<b>Prix min</b> : {{price}} €/kg<br />
+									<b>Ville</b> : {{city}}, {{country}} <br />
+
+									<br />
+								
+								{% endfor %}
+							{% endif %}
+
+
+							
 						</div>
 					
 					</div>
