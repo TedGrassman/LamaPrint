@@ -39,7 +39,11 @@ project = Table('project', metadata,
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
 	Column('project_name', String),
+	Column('dimensionsx', Integer),
+	Column('dimensionsy', Integer),
+	Column('dimensionsz', Integer),
 	Column('image_path', String),
+	Column('price', Integer),
 	Column('score', Integer),
 	Column('project_type', Integer), #'rquest', 'publication' ou 'offer'
 	Column('description', String))
@@ -378,7 +382,7 @@ def printers():
 		if request.form['prix']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "price = " + "\"" + request.form['prix'] + "\""
+			s = s + "price <= " + "\"" + request.form['prix'] + "\""
 			prev = 1
 		if request.form['codepostal']:
 			if prev == 1:
@@ -395,7 +399,7 @@ def printers():
 				s = s + " and "
 			s = s + "country = " + "\"" + request.form['pays'] + "\""
 			prev = 1
-
+		
 		if prev == 0:
 			print("Empty request")
 		else:
@@ -406,6 +410,47 @@ def printers():
 				print(row)
 			print('\n')
 	return render_template('printers.html')
+	
+@app.route('/searchproject', methods=['GET','POST'])
+def searchproject():
+	db = engine.connect()
+	if request.method == 'POST':
+		s = "select * from project where "
+		prev = 0
+		if request.form['dimxmax']:
+			s = s + "dimensionsx <= " + "\"" + request.form['dimxmax'] + "\""
+			prev = 1
+		if request.form['dimymax']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "dimensionsy <= " + "\"" + request.form['dimymax'] + "\""
+			prev = 1
+		if request.form['dimzmax']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "dimensionsz <= " + "\"" + request.form['dimzmax'] + "\""
+			prev = 1
+		if request.form['field']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "description like " + "\"%" + request.form['field'] + "%\""
+			prev = 1
+		if request.form['prix']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "price <= " + "\"" + request.form['prix'] + "\""
+			prev = 1
+
+		if prev == 0:
+			print("Empty request")
+		else:
+			print("Request made: ")
+			print(s)
+	
+			for row in db.execute(s):
+				print(row)
+			print('\n')
+	return render_template('searchproject.html')
 
 @app.route('/printer')
 def printer():
