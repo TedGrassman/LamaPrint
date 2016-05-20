@@ -77,7 +77,11 @@ printer = Table('printer', metadata,
 	Column('postcode', String),
 	Column('city', String),
 	Column('country', String))
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 98e341521ee2eaf8ff9b26e6abe9992d4c5a92ab
 				
 comment = Table('comment', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
@@ -578,11 +582,26 @@ def printers():
 	
 			for row in db.execute(s):
 				print(row)
+				s = "----------------------------------------------------------<br /><b><a href=\"/printer/"
+				s=s+str(row.id)
+				s=s+"\">Imprimande de user</a></b> <br /><br />"
+				s=s+"<b>Résolution</b> : "
+				s=s+str(row.resolution)
+				s=s+" µm <br /> <b>Taille maximale</b> : "
+				s=s+str(row.dimensionsx)
+				s=s+" x "
+				s=s+str(row.dimensionsy)
+				s=s+" x "
+				s=s+str(row.dimensionsz)+" cm<br />"
+				s=s+"<b>Prix min</b> : "+str(row.price)+" €/kg<br />"
+				s=s+"<b>Ville</b> : "+row.city+", "+row.country+" <br /><br />"
+				message = Markup(s)
+				flash(message)
 			print('\n')
 			
-			message = Markup("<h1>Voila! Platform is ready to used</h1>")
+			message = Markup("Voila! Platform is ready to used")
 			flash(message)
-	return render_template('printers.html',city="[ville]",country="[pays]",price="[prix]",resolution="[resolution]",dimxmax="[Xmax]",dimymax="[Ymax]",dimzmax="[Zmax]",user="[Pseudo]", idprinter="1234")
+	return render_template('printers.html')
 
 @app.route('/searchproject', methods=['GET','POST'])
 def searchproject():
