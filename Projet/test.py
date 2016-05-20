@@ -574,12 +574,18 @@ def printers():
 			print("Request made: ")
 			#s = "select * from printer"
 			print(s)
-	
+			if db.execute(s) is None:
+				s2="Aucun r."
+				#message = Markup(s2)
+				#flash(message)
+
 			for row in db.execute(s):
 				print(row)
 				s = "----------------------------------------------------------<br /><b><a href=\"/printer/"
 				s=s+str(row.ID)
-				s=s+"\">Imprimande de user</a></b> <br /><br />"
+				s=s+"\">Imprimante de "
+				s=s+row.user
+				s=s+"</a></b> <br />"
 				s=s+"<b>Résolution</b> : "
 				s=s+str(row.res)
 				s=s+" µm <br /> <b>Taille maximale</b> : "
