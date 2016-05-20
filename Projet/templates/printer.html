@@ -19,7 +19,7 @@
 		<div class="container register-text">
 		
 			<div class="jumbotron profile-title">
-				<label for="titletext" class="profile-title">Imprimante de {{username}}</label>
+				<label for="titletext" class="profile-title">Imprimante de <a href="/profile/{{username}}">{{username}}</a></label>
 			</div>
 		
 			<div class="container-globalprofile">
@@ -45,17 +45,17 @@
 
 					<B><text class="profile-text">Loueur : 
 					</text></B>
-					<text style="color:#0065e5; text-align:center;">{{prenom}} {{nom}} ({{username}})</text>
+					<text style="color:#0065e5; text-align:center;">{{prenom}} {{nom}} (<a href="/profile/{{username}}">{{username}}</a>)</text>
 					<br />
 				
 					<B><text class="profile-text">Adresse : </text></B>
-						<text style="color:#0065e5; text-align:center;">Adresse, Code postal Ville, Pays</text>
+						<text style="color:#0065e5; text-align:center;">{{address}}, {{postcode}}, {{city}}, {{country}}</text>
 
 					<br />
 					
 					<!-- IF NumTel-->
 					<B><text class="profile-text">Numéro de téléphone : </text></B>
-					<text style="color:#0065e5; text-align:center;">N° de tel</text>
+					<text style="color:#0065e5; text-align:center;">{{phone}}</text>
 
 
 				
@@ -67,22 +67,22 @@
 					<br />	
 					
 					<B><text class="profile-text">Dimensions maximales : </text></B>
-					<text style="color:#0065e5; text-align:center;"> [x] </text>x <text style="color:#0065e5; text-align:center;">[y] </text>x <text style="color:#0065e5; text-align:center;">[z]</text> cm
+					<text style="color:#0065e5; text-align:center;"> [{{x}}] </text>x <text style="color:#0065e5; text-align:center;">[{{y}}] </text>x <text style="color:#0065e5; text-align:center;">[{{z}}]</text> cm
 					<br />
 					
 					<B><text class="profile-text">Resolution : </text></B>
-					<text style="color:#0065e5; text-align:center;">###</text> µm
+					<text style="color:#0065e5; text-align:center;">{{res}}</text> µm
 					<br />
 					
 					<B><text class="profile-text">Prix min : </text></B>
-					<text style="color:#0065e5; text-align:center;">###</text> €/Kg
+					<text style="color:#0065e5; text-align:center;">{{price}}</text> €/Kg
 					<br />
 
 					<B><text class="profile-text">Matériaux :</text></B>
-					<text style="color:#0065e5; text-align:center;"> ####</text>
+					<text style="color:#0065e5; text-align:center;"> {{material}}</text>
 					<br />
 					<B><text class="profile-text">Commentaires :</text></B><br />
-					<text style="color:#0065e5; text-align:center;"> ####</text>
+					<text style="color:#0065e5; text-align:center;"> Coming soon!</text>
 
 				</div>
 				
