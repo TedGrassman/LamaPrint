@@ -72,6 +72,7 @@ printer = Table('printer', metadata,
 	Column('resolution', String),
 	Column('postal_code', Integer),
 	Column('country', String),
+	Column('city', String),
 	Column('weight', Float),
 	Column('price', Integer)) # exemple: '€23.4'
 
@@ -96,10 +97,10 @@ db.execute(printer.insert(), [
 	{'dimensionsx':6, 'city':'Buenos Aires'}
 ])
 
-stmt = "select * from user where user.birthdate is null"
+stmt = "select * from printer where city = \"Buenos Aires\""
 
 for row in db.execute(stmt):
-    print(row)
+    print(row[0])
 print('\n')
 
 
