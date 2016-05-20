@@ -11,25 +11,17 @@
 {% endblock %}
 
 {% block content %}
-	<div class="content">
-				<header>
-					
-				</header>
-				
-			</div>
+<div class="content">
+	<header>
+	</header>
+
 	<div class="container register-text">
 			
-			<div class="container-co jumbotron propose-form-title">
-				<p>
-					<label for="titletext" class="login-form-title">Nouveau projet</label>
-				</p>
-			</div>
-			
+
 			<div class="container-globalregister"> 
 				<form method="POST" action="/propose" enctype="multipart/form-data">
 					<div class="col-md-6 no-padding">
-						<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose">
-							
+						<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose">				
 							<p><label for="title">Titre</label> : </br>
 							<input type="text" name="title" id="title" size="42%" required /></p>
 							
@@ -43,25 +35,26 @@
 							<input type="number" min="0" step="0.1" name="dimz" id="dimz" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="z" /> cm </p>
 							
 							<p><label for="fichier">Fichier</label> :
-							<input type="file" name="fichier" id="fichier" style="margin-left:25px" <!--required--> /></p>
+							<input type="file" name="fichier" id="fichier" style="margin-left:25px" required /></p>
 								
 							<p><label for="images">Images</label> :
-							<input type="file" name="images" id="images" style="margin-left:25px" multiple /></p>
-							
-						</div>
-					
+							<input type="file" name="images" id="images" style="margin-left:25px" multiple /></p>			
 					</div>
-					<div class="col-md-6 no-padding">
-						<div id="registerrightwindow" class="jumbotron-propose container-halfpropose">
-							
-							<p><label for="description">Description </label> : <br />
-							<textarea name="description" id="description" rows="8" cols="42%" style="margin-bottom:11px"></textarea></p>
+				
+				</div>
+				<div class="col-md-6 no-padding">
+					<div id="registerrightwindow" class="jumbotron-propose container-halfpropose">
 						
-							<button class="btn btn-lg btn-warning register-button-style" href="/propose">Envoyer</button>
-						</div>
+						<p><label for="description">Description </label> : <br />
+						<textarea name="description" id="description" rows="8" cols="42%" style="margin-bottom:11px"></textarea></p>
+					
+						<button class="btn btn-lg btn-warning register-button-style" href="/propose">Envoyer</button>
 					</div>
-				</form>
-			</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
 {% endblock %}
 
 

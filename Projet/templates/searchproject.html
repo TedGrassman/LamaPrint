@@ -1,0 +1,68 @@
+{% extends "main.html" %}
+
+{% block title %}{{ name }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="content">
+	<header>
+	</header>
+		
+	<div class="container register-text">
+		
+		<div class="container-co jumbotron propose-form-title">
+			<p>
+				<label for="titletext" class="login-form-title">Chercher un projet</label>
+			</p>
+		</div>
+
+		
+		<div class="container-globalregister"> 
+			<form method="post" action="/searchproject" enctype="multipart/form-data">
+				<div  id="registerleftwindow" class="jumbotron-propose printers-head">
+					<p>
+
+					<label for="field" style="margin-left:0px">Mots Clés</label> :  
+
+					<label for="dimxmax" style="margin-left:160px">Taille maximale</label> :  
+
+					<label for="prix" style="margin-left: 130px;margin-right: 90px;">Prix max :</label>  <br />
+
+					<input type="text" name="field" id="field" style="width: 12em;" class="input-center" />
+
+
+					<input type="number" min="0" step="0.1" name="dimxmax" id="dimxmax" style="width: 4em; margin-left: 35px; margin-right: 8px;" class="input-center" placeholder="x" ] /> x
+					<input type="number" min="0" step="0.1" name="dimymax" id="dimymax" style="width: 4em; margin-left: 8px; margin-right: 8px;" class="input-center" placeholder="y" ] /> x
+					<input type="number" min="0" step="0.1" name="dimzmax" id="dimzmax" style="width: 4em; margin-left: 8px; margin-right: 8px;" class="input-center" placeholder="z" ] /> cm
+
+					
+					<input type="number" min="0" step="0.01" name="prix" id="prix" style="width: 5em;margin-left:25px" class="input-center" /> €
+
+					<button type="submit" class="btn btn-lg btn-warning search-button-style">Chercher</button></p>
+
+					</div>
+
+
+					<div  id="registerleftwindow" class="jumbotron-propose printers-head">
+						Aucun résultat.
+						
+					</div>
+											
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+
+{% block footer %}
+{{ super() }}
+{% endblock %}

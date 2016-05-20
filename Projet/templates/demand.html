@@ -1,0 +1,56 @@
+{% extends "main.html" %}
+
+{% block title %}{{ name }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="content">
+	<header>
+	</header>
+
+	<div class="container register-text">
+			
+		<div class="container-co jumbotron propose-form-title">
+			<p>
+				<label for="titletext" class="login-form-title">Demande de projet</label>
+			</p>
+		</div>
+		
+		<div class="container-globalregister"> 
+			<form method="POST" action="/demand" enctype="multipart/form-data">
+				<div class="col-md-6 no-padding">
+					<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose">
+						
+						<p><label for="title">Titre</label> : </br>
+						<input type="text" name="title" id="title" size="42%" required /></p>
+						<p><label for="images">Images</label> :
+						<input type="file" name="images" id="images" style="margin-left:25px" multiple /></p>					
+					</div>
+				
+				</div>
+				<div class="col-md-6 no-padding">
+					<div id="registerrightwindow" class="jumbotron-propose container-halfpropose">
+						
+						<p><label for="description">Description </label> : <br />
+						<textarea name="description" id="description" rows="8" cols="42%" style="margin-bottom:11px"></textarea></p>
+					
+						<button class="btn btn-lg btn-warning register-button-style">Envoyer</button>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+
+{% block footer %}
+{{ super() }}
+{% endblock %}

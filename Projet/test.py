@@ -39,18 +39,27 @@ project = Table('project', metadata,
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
 	Column('project_name', String),
+	Column('dimensionsx', Integer),
+	Column('dimensionsy', Integer),
+	Column('dimensionsz', Integer),
+	Column('image_path', String),
+	Column('price', Integer),
 	Column('score', Integer),
 	Column('project_type', Integer), #'rquest', 'publication' ou 'offer'
-	Column('description', Integer))
+	Column('description', String))
 
 file = Table('file', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
 	Column('creation_date', String),
 	Column('score', Integer),
 	Column('project', Integer, ForeignKey('project.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('dimensions', String), # exemple: '3cmx4cm'
+	Column('file_path', String),
+	Column('dimensionsx', Integer),
+	Column('dimensionsy', Integer),
+	Column('dimensionsz', Integer),
+	Column('city', String),
 	Column('weight', Float),
-	Column('price', String), # exemple: '€23.4'
+	Column('price', Integer),
 	Column('name', String))
 	
 	
@@ -58,7 +67,9 @@ printer = Table('printer', metadata,
 	Column('ID', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),	
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('dimensions', String), # exemple: '3cmx4cm'
+	Column('dimensionsx', Integer),
+	Column('dimensionsy', Integer),
+	Column('dimensionsz', Integer),
 	Column('res', Integer),
 	Column('weight', Float),
 	Column('price', String), # exemple: '€23.4'
@@ -350,9 +361,108 @@ def projet():
 
 @app.route('/printers')
 def printers():
-	return render_template('printers.html')
+	db = engine.connect()
 
-@app.route('/printer')
+	if request.method == 'POST':
+		s = "select * from printer where "
+		prev = 0
+		if request.form['dimxmax']:
+			s = s + "dimensionsx <= " + request.form['dimxmax']
+			prev = 1
+		if request.form['dimymax']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "dimensionsy <= " + request.form['dimymax']
+			prev = 1
+		if request.form['dimzmax']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "dimensionsz <= " +  request.form['dimzmax']
+			prev = 1
+		if request.form['resolution']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "resolution <= " + "\"" + request.form['resolution'] + "\""
+			prev = 1
+		if request.form['prix']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "price <= " + "\"" + request.form['prix'] + "\""
+			prev = 1
+		if request.form['codepostal']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "postal_code = " + "\"" + request.form['codepostal'] + "\""
+			prev = 1
+		if request.form['ville']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "city = " + "\"" + request.form['ville'] + "\""
+			prev = 1
+		if request.form['pays']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "country = " + "\"" + request.form['pays'] + "\""
+			prev = 1
+		
+		if prev == 0:
+			print("Empty request")
+		else:
+			print("Request made: ")
+			#s = "select * from printer"
+			print(s)
+	
+			for row in db.execute(s):
+				print(row)
+			print('\n')
+			
+			message = Markup("<h1>Voila! Platform is ready to used</h1>")
+			flash(message)
+	return render_template('printers.html',city="[ville]",country="[pays]",price="[prix]",resolution="[resolution]",dimxmax="[Xmax]",dimymax="[Ymax]",dimzmax="[Zmax]",user="[Pseudo]", idprinter="1234")
+
+@app.route('/searchproject', methods=['GET','POST'])
+def searchproject():
+	db = engine.connect()
+	if request.method == 'POST':
+		s = "select * from project where "
+		prev = 0
+		if request.form['dimxmax']:
+			s = s + "dimensionsx <= " + "\"" + request.form['dimxmax'] + "\""
+			prev = 1
+		if request.form['dimymax']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "dimensionsy <= " + "\"" + request.form['dimymax'] + "\""
+			prev = 1
+		if request.form['dimzmax']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "dimensionsz <= " + "\"" + request.form['dimzmax'] + "\""
+			prev = 1
+		if request.form['field']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "description like " + "\"%" + request.form['field'] + "%\""
+			prev = 1
+		if request.form['prix']:
+			if prev == 1:
+				s = s + " and "
+			s = s + "price <= " + "\"" + request.form['prix'] + "\""
+			prev = 1
+
+		if prev == 0:
+			print("Empty request")
+		else:
+			print("Request made: ")
+			print(s)
+
+			for row in db.execute(s):
+				print(row)
+			print('\n')
+	return render_template('searchproject.html')
+
+
+@app.route('/printer/<id>')
 def printerfunc():
 	return render_template('printer.html')
 	

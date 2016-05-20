@@ -16,7 +16,7 @@
 	<header>
 	</header>
 
-	<form method="post" action="#">
+	<form method="POST" action="/modifyprofile" enctype=multipart/form-data>
 		<body>
 			<div class="container register-text">
 			
@@ -32,10 +32,10 @@
 							<div class="form-style">
 								<label class="profile-subtitle">Gestion de l'avatar</label>
 								<br /><br />
-								<image src="../image/garou.png" name="avatar" id="avatar"/>
+								<img src="../image/garou.png" name="avatar" id="avatar">
 								<br />
 								<label class="profile-text">Modifier son avatar</label>
-								<input type="file" class="profile-text" style="width:300px; font-size:12px; margin-top:0px;" />
+								<input type="file" name="file" id="file" class="profile-text" style="width:300px; font-size:12px; margin-top:0px;" />
 							</div>
 						
 						</div>
@@ -102,10 +102,10 @@
 					</div>
 					
 				</div>
-				
+
 				<div class="col-md-12 no-padding">
 					<div class="jumbotron">
-						<a class="btn btn-lg btn-warning profile-button-style" href="#" role="button">Confirmer les modifications</a>
+						<button type="submit" class="btn btn-lg btn-warning profile-button-style">Confirmer les modifications</a>
 					</div>
 				</div>
 			</div>
