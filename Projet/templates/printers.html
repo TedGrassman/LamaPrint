@@ -255,8 +255,14 @@
 					<div class="col-md-6 no-padding">
 						<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose">
 							Aucun résultat. <br />
-							{{name}}
+							<div class="flashes">
+							  {% for message in get_flashed_messages() %}
+								{{ message }}
+							  {% endfor %}
+							</div>
 						</div>
+						
+
 					
 					</div>
 											
