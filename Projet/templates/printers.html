@@ -257,6 +257,7 @@
 							
 							{% if (0>1): %}
 							Aucun résultat. <br />
+
 							{% else: %}
 								{% for i in range(21): %}
 								
@@ -274,8 +275,14 @@
 							{% endif %}
 
 
-							
+							<div class="flashes">
+							  {% for message in get_flashed_messages() %}
+								{{ message }}
+							  {% endfor %}
+							</div>
 						</div>
+						
+
 					
 					</div>
 											
