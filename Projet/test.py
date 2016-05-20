@@ -382,9 +382,9 @@ def editprofile(username):
 			if result[4] is None:	
 				prenom='Non renseigné'
 			#Date de naissance
-			if result[10] is not None:
-				birthdate=result[10]
-			if result[10] is None:	
+			if result[9] is not None:
+				birthdate=result[9]
+			if result[9] is None:	
 				birthdate='Non renseigné'
 			#Image de profil
 			if result[6] is not None:
@@ -398,9 +398,9 @@ def editprofile(username):
 			if result[2] is None:	
 				mail='lama@lamacorp.com'
 			#Phone
-			if result[11] is not None:
-				phone=result[11]
-			if result[11] is None:	
+			if result[10] is not None:
+				phone=result[10]
+			if result[10] is None:	
 				phone='NaN'
 
 			return render_template("editprofile.html", name="Modifier le profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
@@ -442,9 +442,9 @@ def profile(username):
 		if result[2] is None:	
 			mail='lama@lamacorp.com'
 		#Phone
-		if result[11] is not None:
-			phone=result[11]
-		if result[11] is None:	
+		if result[10] is not None:
+			phone=result[10]
+		if result[10] is None:	
 			phone='NaN'
 
 		return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
@@ -456,7 +456,7 @@ def demand():
 		data=request.cookies.get('username')
 		if data is None:
 			print('Pas de cookie')
-			return redirect('/')
+			return redirect('/login')
 		else:
 			return render_template("demand.html", name = "Demande de projet")
 	if request.method == 'POST':
