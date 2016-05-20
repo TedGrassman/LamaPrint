@@ -66,14 +66,14 @@ printer = Table('printer', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('dimensionsx', String),
-	Column('dimensionsy', String),
-	Column('dimensionsz', String),
+	Column('dimensionsx', Integer),
+	Column('dimensionsy', Integer),
+	Column('dimensionsz', Integer),
 	Column('resolution', String),
 	Column('postal_code', Integer),
 	Column('country', String),
 	Column('weight', Float),
-	Column('price', String)) # exemple: '€23.4'
+	Column('price', Integer)) # exemple: '€23.4'
 
 
 metadata.create_all(engine)		# remplit la BdD avec les informations par défaut
@@ -92,7 +92,8 @@ db.execute(printer.insert(), [
 ])
 
 db.execute(printer.insert(), [
-	{'dimensionsx':},
+	{'dimensionsx':5, 'city':'Buenos Aires'},
+	{'dimensionsx':6, 'city':'Buenos Aires'}
 ])
 
 stmt = "select * from user where user.birthdate is null"
