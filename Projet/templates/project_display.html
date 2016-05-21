@@ -4,6 +4,7 @@
 
 {% block head %}
 {{ super() }}
+<script type="text/javascript" src="../api/project.js" defer></script>
 <script type="text/javascript" src="../api/comment.js" defer></script>
 {% endblock %}
 
@@ -12,6 +13,8 @@
 {% endblock %}
 
 {% block content %}
+
+
 <div class="content">
 	<header>
 	</header>
@@ -28,27 +31,52 @@
 			<div class="col-md-6 no-padding">
 				<div  id="registerleftwindow" class="jumbotron-propose container-halfproject">
 					
-					<img style="max-width:55%;" src={{image}}>
+					<img style="max-width:55%;" src="../image/lama.png">
 					
-					</br></br>
+					<!--</br></br>
+					<p>Prix : #,## €</p>
+					<p>Masse : #,# g</p>
+					<p>Dimensions :  #,#  x  #,#  x  #,#  cm</p>-->
 					<p>Description : </p>
-					<div style="overflow-y:auto; height:20%;">
+					<div style="overflow-y:auto; height:25%;">
 						{{description}}
 					</div>
-					<p><label for="description">Laisser un commentaire </label> : <br />
-					<textarea name="description" id="description" rows="2" cols="42%" style="margin-bottom:11px"></textarea></p>
 					
-					<button onclick="writeComment()" style="margin-top: 0px; margin-left:30%;" class="btn btn-lg btn-warning register-button-style" href="#" role="button">Envoyer</button>
-
+						
+						
+						<!-- SI connecté-->
+						<p><label for="description">Laisser un commentaire </label> : <br />
+						<textarea name="description" id="description" rows="2" cols="42%" style="margin-bottom:11px"></textarea></p>
+						
+						<button onclick="writeComment()" style="margin-top: 0px; margin-left:30%;" class="btn btn-lg btn-warning register-button-style" href="#" role="button">Envoyer</button>
+						<!-- SINON
+						<p>Connectez-vous pour laisser un commentaire !</p>
+						
+						OVERFLOW SCROLL
+						-->
+					
 				</div>
+					
+					
+					
+					<!--<a class="btn btn-lg btn-warning register-button-style" role="button">Télécharger</a>-->
 			
 			</div>
 			<div class="col-md-6 no-padding">
 				<div  id="registerleftwindow" class="jumbotron-propose container-halfproject">
 					<div style="text-align:center; margin-top:2%; font-size: 20px;">
-					Liste des réponses:
+					Liste des fichiers:
 					</div> </br>
 					<div class="file-block">
+						<a onclick="showText(this.id)" href="javascript:void(0);" id="file">FILE {{id}}</a>
+					
+						<div id="textfile" class="hide" >
+						prix: {{prix}} € </br>
+						{% if masse != None %}
+						masse: {{masse}}</br>
+						{%endif%}
+						dimension: {{dimx}} cm *{{dimy}} cm *{{dimy}} cm
+						</div>
 					
 					</div>
 					<div style="text-align:center; margin-top:1%; font-size: 20px;">

@@ -7,6 +7,8 @@ from werkzeug import secure_filename
 from markdown import markdown
 import os, hashlib
 import random
+import re
+
 import datetime
 
 app = Flask(__name__)
@@ -614,14 +616,59 @@ def demandDisplay(title):
 	if request.method == 'GET':
 		username = getUserName(request)
 		db = engine.connect()
-		desc = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==username)).fetchone()
-		img = db.execute(select([project.c.image_path]).where(project.c.project_name==title and project.c.user==username)).fetchone()
-		
-		return render_template("demand_display.html",name= "Demande:"+title, title=title, description=desc[0], image=img[0])
-
-
-			
+		result = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
+		if result is None:
+			print('ERREUR BSD')
+			return render_template("demand_display.html",name= "Demande:"+title, title=title)
+		else:
+			l=getCom(title)
+			l.reverse()
+			return render_template("demand_display.html",name= "Demande:"+title, title=title, description=result[0],list=l)
+	
 @app.route('/propose', methods=['GET','POST'])
+def propose():
+	db = engine.connect()
+	if request.method == 'GET':
+		data=request.cookies.get('username')
+		if data is None:
+			print('Pas de cookie')
+			return redirect('/')
+		else:
+			return render_template("propose.html", name = "Proposer une imprimante")
+	if request.method == 'POST':
+		db = engine.connect()
+		session['username']=request.cookies.get('username')
+		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
+		if result is None:
+			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username'], 'description': request.form['description']}])
+			db.execute(file.insert(), [{'project': request.form['title'], 'price':request.form['prix'], 'price':request.form['prix'], 'name':"A remplacer", 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
+			uploadFile("CAO")
+			print('create project')
+			return redirect('/project_display/'+request.form['title'])
+		else:
+			print('Vous avez déjà créé ce projet')
+			return redirect("/project_display/"+request.form['title'])
+		
+@app.route('/project_display/<title>')
+def projectDisplay(title):
+	db = engine.connect()
+	if request.method == 'GET':
+		result = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
+		f=db.execute(select([file]).where(file.c.project==title)).fetchone()
+		if result is None:
+			print('ERREUR BSD')
+		else:
+			img = db.execute(select([project.c.image_path]).where(project.c.project_name==title and project.c.user==username)).fetchone()
+			l=getCom(title)
+			l.reverse()
+			return render_template("project_display.html", title=title, image=img[0], description=result[0], id=f[0], dimx=f[5], dimy=f[6], dimz=f[7], prix=f[10], masse=f[9], list=l)
+	#if session.get('logged') is False:
+	#	return redirect('/login')
+	#return redirect('/propose')
+
+
+#TO DELETE IF OTEHR PROPOSE IS OK			
+"""@app.route('/propose', methods=['GET','POST'])
 def propose():
 	
 	username = getUserName(request)
@@ -642,7 +689,7 @@ def propose():
 			return redirect('/project/'+request.form['title'])
 			#else:
 			#	print('Vous avez déjà créé ce projet')
-			return redirect('/')
+			return redirect('/')"""
 		
 @app.route('/project/<title>')
 def viewproject(title):
@@ -653,6 +700,7 @@ def viewproject(title):
 	if session.get('logged') is False:
 		return redirect('/login')
 	return render_template("propose.html")
+
 
 @app.route('/projet')
 def projet():
@@ -782,6 +830,41 @@ def searchproject():
 			print('\n')
 	return render_template('searchproject.html', name="Recherche de projet")
 
+@app.route('/write_comment/<title>',methods=['GET','POST'])
+def writeCom(title):
+	session['username']=request.cookies.get('username')
+	value = request.args.get('key')
+	db = engine.connect()
+	
+	#get project id
+	result = db.execute(select([project.c.id]).where(project.c.project_name==title)).fetchone()
+	print(result[0])
+	#com= db.execute(select([comment.c.comment_text]).where(comment.c.project==result[0] )).fetchone()
+	print("Adding to DB: Project= "+str(result[0])+"User: "+session['username']+"Texte :"+value)
+	db.execute(comment.insert(), [ {'project': result[0], 'user':session['username'], 'comment_text': value}])
+	return ""
+
+def getCom(title):
+	#INIT
+	print('Getting com')
+	session['username']=request.cookies.get('username')
+	db = engine.connect()
+	
+	#get project id
+	result = db.execute(select([project.c.id]).where(project.c.project_name==title)).fetchone()
+	print("Searching for project number "+str(result[0])+" comment")
+	com=db.execute(select([comment.c.comment_text,comment.c.user]).where(comment.c.project==result[0])).fetchall()
+	#j = join(comment,project, comment.c.project == project.c.id)
+	#com=db.execute(select([comment.c.comment_text,comment.c.user, comment.c.project]).select_from(j)).fetchall()
+	print(len(com))
+	#if 
+	l=[]
+	for i in range(0, len(com)):
+		for j in range(0, len(com[i])):
+			l.append(com[i][j])
+		
+	return 	l
+	
 
 @app.route('/printer/<id>')
 def showprinter(id):

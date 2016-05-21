@@ -399,4 +399,25 @@ img {
 	padding-bottom: 20px;
 	border-bottom: 1px solid #6E5858;
 }
+
+.commentaire-block{
+	overflow-y: auto; 
+	height: 48%; 
 	
+}
+
+.file-block{
+	height:35%;
+	overflow-y: auto;
+	text-align:center;
+}
+
+/****** ANIMATION**/
+.smooth_appear{
+	 color: #888777; 
+	   -webkit-transition: color 1s ease-in;
+	   -moz-transition: color 1s ease-in;
+	   -o-transition: color 1s ease-in;
+	   -ms-transition: color 1s ease-in;
+	   transition: color 1s ease-in;
+}
