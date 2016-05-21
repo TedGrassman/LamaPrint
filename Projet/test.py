@@ -215,6 +215,23 @@ def getPrinterInfo(ID):
 		db.close()
 
 
+def getUserPrinter(username):
+	db = engine.connect()
+	print("### GetPrinterInfo, User="+username)
+	try:
+		result = db.execute(select([printer]).where(printer.c.user == username)).fetchone()
+		if result is None:
+			# L'imprimante n'existe pas
+			# code ...
+			print('**Encounter problem getting printer\'s info**')
+			return False
+		else:
+			print(result)
+			return result
+	finally:
+		db.close()
+
+
 def create(login, password):
 	"""Créer et enregistrer un utilisateur existant"""
 	db = engine.connect()
@@ -546,7 +563,14 @@ def profile(username):
 		if result[10] is None:	
 			phone='NaN'
 
-		return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
+		#Printer
+		result=getUserPrinter(username)
+		if result is not False:
+			printerid=result[0]
+		if result is False:	
+			printerid=0
+
+		return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone,printerid=printerid)
 
 
 @app.route('/demand', methods=['GET','POST'])
@@ -656,7 +680,7 @@ def printers():
 		if request.form['codepostal']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "postal_code = " + "\"" + request.form['codepostal'] + "\""
+			s = s + "postcode = " + "\"" + request.form['codepostal'] + "\""
 			prev = 1
 		if request.form['ville']:
 			if prev == 1:
@@ -676,9 +700,9 @@ def printers():
 			#s = "select * from printer"
 			print(s)
 			if db.execute(s) is None:
-				s2="Aucun r."
-				#message = Markup(s2)
-				#flash(message)
+				s2="Aucun résultat."
+				message = Markup(s2)
+				flash(message)
 
 			for row in db.execute(s):
 				print(row)
@@ -696,13 +720,11 @@ def printers():
 				s=s+" x "
 				s=s+str(row.dimensionsz)+" cm<br />"
 				s=s+"<b>Prix min</b> : "+str(row.price)+" €/kg<br />"
-				s=s+"<b>Ville</b> : "+row.city+", "+row.country+" <br /><br />"
+				s=s+"<b>Ville</b> : "+row.city+", "+row.country.upper()+" <br /><br />"
 				message = Markup(s)
 				flash(message)
 			print('\n')
 			
-			message = Markup("get money f*ck bitche$")
-			flash(message)
 		redirect('/printers')
 	else:
 		return render_template('printers.html')
@@ -836,6 +858,7 @@ def showprinter(id):
 		#Pays
 		if result[12] is not None:
 			country=result[12]
+			country=country.upper()
 		if result[12] is None:	
 			country='Non renseigné'
 
