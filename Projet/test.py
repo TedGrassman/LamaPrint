@@ -682,7 +682,7 @@ def printers():
 				s=s+" x "
 				s=s+str(row.dimensionsz)+" cm<br />"
 				s=s+"<b>Prix min</b> : "+str(row.price)+" €/kg<br />"
-				s=s+"<b>Ville</b> : "+row.city+", "+row.country+" <br /><br />"
+				s=s+"<b>Ville</b> : "+row.city+", "+row.country.upper()+" <br /><br />"
 				message = Markup(s)
 				flash(message)
 			print('\n')
@@ -820,6 +820,7 @@ def showprinter(id):
 		#Pays
 		if result[12] is not None:
 			country=result[12]
+			country=country.upper()
 		if result[12] is None:	
 			country='Non renseigné'
 
