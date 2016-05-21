@@ -642,7 +642,7 @@ def printers():
 		if request.form['codepostal']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "postal_code = " + "\"" + request.form['codepostal'] + "\""
+			s = s + "postcode = " + "\"" + request.form['codepostal'] + "\""
 			prev = 1
 		if request.form['ville']:
 			if prev == 1:
@@ -662,9 +662,9 @@ def printers():
 			#s = "select * from printer"
 			print(s)
 			if db.execute(s) is None:
-				s2="Aucun r."
-				#message = Markup(s2)
-				#flash(message)
+				s2="Aucun résultat."
+				message = Markup(s2)
+				flash(message)
 
 			for row in db.execute(s):
 				print(row)
