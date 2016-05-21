@@ -49,7 +49,7 @@
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Projet<span class="caret"></span></a>
 						<ul class="dropdown-menu">
 
-							<li><a href="/search">Chercher un projet</a></li>
+							<li><a href="/searchproject">Chercher un projet</a></li>
 							<li><a href="/demand">Demander un projet</a></li>
 							<li><a href="/propose">Proposer un projet</a></li>
 							<li><a href="#">Répondre à un projet</a></li>
@@ -73,8 +73,11 @@
 					<li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
 					{% elif request.path == "/login" %}
 					<li><a href="/register"><span class="glyphicon glyphicon-user"></span> Register</a></li>
+					{% elif request.path == "/register" %}
+					<li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 					{% else %}
 					<li><a href="/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+					<li><a href="/register"><span class="glyphicon glyphicon-user"></span> Register</a></li>
 					{% endif %}
 				</ul>
 			</div>
@@ -97,7 +100,9 @@
 			</div>
 		</footer>
 		{% endblock %}
+		
 
 	</body>
+
 
 </html>

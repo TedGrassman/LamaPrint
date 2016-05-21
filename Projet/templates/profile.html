@@ -11,105 +11,112 @@
 {% endblock %}
 
 {% block content %}
-		
 <div class="content">
 	<header>
 	</header>
-
-	<form method="POST" action="/modifyprofile" enctype=multipart/form-data>
-		<body>
-			<div class="container register-text">
-			
-				<div class="jumbotron profile-title">
-					<label for="titletext" class="profile-title">Modifier son profil</label>
-				</div>
-			
-				<div class="container-globalprofile">
-					
-					<div class="col-md-6 no-padding">
-						<div class="jumbotron container-leftprofile">
-							
-							<div class="form-style">
-								<label class="profile-subtitle">Gestion de l'avatar</label>
-								<br /><br />
-								<img src="../image/garou.png" name="avatar" id="avatar">
-								<br />
-								<label class="profile-text">Modifier son avatar</label>
-								<input type="file" name="file" id="file" class="profile-text" style="width:300px; font-size:12px; margin-top:0px;" />
-							</div>
-						
-						</div>
-						
+	
+	<form method="POST" action="#">
+		<div class="container register-text">
+		
+			<div class="jumbotron profile-title">
+				<label for="titletext" class="profile-title">Profil de {{username}}</label>
+				{% if session.get('username')==username %}
+				<a href="/editprofile/{{username}}" class="btn btn-lg btn-default navbar-button">Modifier mes informations</a>
+				{% endif %}
+			</div>
+		
+			<div class="container-globalprofile">
+				
+				<div class="col-md-6 no-padding">
 					<div class="jumbotron container-leftprofile">
-						<label class="profile-subtitle">Mot de passe</label>
-						<br />
-						
-						<label for="mdp" class="profile-text">Ancien Mot De Passe</label>
-						<br />
-						<input type="password" name="mdp" id="mdp" style="text-align:center;" placeholder="Ancien mot de passe" size="30" maxlength="64" />
-						<br />
-						
-						<label for="newmdp" class="profile-text">Nouveau Mot De Passe</label>
-						<br />
-						<input type="password" name="newmdp" id="newmdp" style="text-align:center;" placeholder="Nouveau mot de passe" size="30" maxlength="64"/>
-						<br />
-
+						<div class="form-style">
+							<label class="profile-subtitle">Avatar</label>
+							<br />
+							<br />
+							<img src="{{image}}" style="overflow: hidden" name="avatar" id="avatar">
+							<br />
+						</div>
 					</div>
 				</div>
-				
-				
+			
+			
 				<div class="col-md-6 no-padding">
 					<div class="jumbotron container-rightprofile">
 						
 						<label class="profile-subtitle">Informations personnelles</label>
+						<br />
+
+						<B><text class="profile-text">Prénom : 
+						</text></B>
+						<text style="color:#0065e5; text-align:center;">{{prenom}}</text>
+						<br />
+					
+						<B><text class="profile-text">Nom : </text></B>
+						<text style="color:#0065e5; text-align:center;">{{nom}}</text>
+						<br />
+					
+						<B><text class="profile-text">Date de naissance : </text></B>
+						<text style="color:#0065e5; text-align:center;">{{birthdate}}</text>
+
+					
+					</div>
+					
+					<div class="jumbotron container-rightprofile">
+						
+						<label class="profile-subtitle">Informations du compte</label>
 						<br />	
-					
-						<label for="firstname" class="profile-text">Prénom</label>
-						<br />
-						<input type="text" name="firstname" id="firstname" style="text-align:center;" placeholder="Entrez votre prénom ici" size="30" maxlength="64" />
-					
-						<label for="lastname" class="profile-text">Nom</label>
-						<br />
-						<input type="text" name="lastname" id="lastname" style="text-align:center;" placeholder="Entrez votre nom ici" size="30" maxlength="64" />
-					
-						<label for="birthdate" class="profile-text">Date de naissance</label>
-						<br />
-						<input type="date" name="birthdate" id="birthdate" style="text-align:center;" placeholder="JJ/MM/AAAA" size="30" maxlength="10" />
 						
-						<label for="phonenumber" class="profile-text">Numéro de téléphone</label>
+						<B><text class="profile-text">Nombre de projets initiés : </text></B>
+						<text style="color:#0065e5; text-align:center;">######</text>
 						<br />
-						<input type="text" name="phonenumber" id="phonenumber" style="text-align:center;" placeholder="Entrez votre numéro de téléphone" size="30" maxlength="10" />
+						
+						<B><text class="profile-text">Nombre de fichiers déposés : </text></B>
+						<text style="color:#0065e5; text-align:center;">######</text>
 						<br />
-						<br />
-						<label><input type="checkbox" id="idcheckbox" value="valeur"/>	Je souhaite rendre mes informations personnelles publiques </label>
-					
+						
+						{% if printerid!=0 %}
+							<br />
+							<B><a href="/printer/{{printerid}}">{{username}} a une imprimante 3D !</a></B>
+						{% endif %}
 					</div>
 
-					<div class="jumbotron container-rightprofile">	
+
+					<div class="jumbotron container-rightprofile">
 						
-							<label class="profile-subtitle">Suppression du compte</label>
-							
-							<br />
-							<br />
-							<input type="checkbox" id="idcheckbox" value="valeur"/>	
-							<label>Je suis sûr de vouloir supprimer mon compte <label style="color:#DD0000;"> définitivement </label></label>
-											
-							<label for="delconfirm" class="profile-text">Confirmation du Mot De Passe</label>
-							
-							<input type="password" name="delconfirm" id="delconfirm" style="text-align:center;" placeholder="Confirmation du mot de passe" size="30" maxlength="64" />
-							<br />
-							
+						<label class="profile-subtitle">Informations privées</label>
+						<br />
+						{% if session.get('username')==username %}
+						<B><text class="profile-text">e-mail : </text></B>
+						<text style="color:#0065e5; text-align:center;">{{mail}}</text>
+						<br />
+						<B><text class="profile-text">n° tél. : </text></B>
+						<text style="color:#0065e5; text-align:center;">{{phone}}</text>
+						<br />
+						{% else %}
+						<B><text class="profile-text">Cet utilisateur ne rend pas publiques ses informations.</text></B>
+						{% endif %}
+
 					</div>
-					
+				
 				</div>
-
+			
 				<div class="col-md-12 no-padding">
 					<div class="jumbotron">
-						<button type="submit" class="btn btn-lg btn-warning profile-button-style">Confirmer les modifications</a>
+						<B><text class="profile-subtitle">Commentaires</text></B>
+						</br>
+						<div id="older-comments" class="older-comments">
+						</div>
+
+						<div>
+							<textarea name="comments" id="com" class="comment-box"></textarea>
+						</div>
+						<button onclick="test()" class="btn btn-lg btn-default navbar-button">Envoyer</button>
 					</div>
 				</div>
+
 			</div>
-		</body>
+
+		</div>
 	</form>
 </div>
 {% endblock %}
