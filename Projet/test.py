@@ -195,6 +195,23 @@ def getPrinterInfo(ID):
 		db.close()
 
 
+def getUserPrinter(username):
+	db = engine.connect()
+	print("### GetPrinterInfo, User="+username)
+	try:
+		result = db.execute(select([printer]).where(printer.c.user == username)).fetchone()
+		if result is None:
+			# L'imprimante n'existe pas
+			# code ...
+			print('**Encounter problem getting printer\'s info**')
+			return False
+		else:
+			print(result)
+			return result
+	finally:
+		db.close()
+
+
 def create(login, password):
 	"""Créer et enregistrer un utilisateur existant"""
 	db = engine.connect()
@@ -509,7 +526,14 @@ def profile(username):
 		if result[10] is None:	
 			phone='NaN'
 
-		return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
+		#Printer
+		result=getUserPrinter(username)
+		if result is not False:
+			printerid=result[0]
+		if result is False:	
+			printerid=0
+
+		return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone,printerid=printerid)
 
 
 @app.route('/demand', methods=['GET','POST'])
@@ -663,8 +687,6 @@ def printers():
 				flash(message)
 			print('\n')
 			
-			message = Markup("get money f*ck bitche$")
-			flash(message)
 		redirect('/printers')
 	else:
 		return render_template('printers.html')

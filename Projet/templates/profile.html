@@ -74,9 +74,10 @@
 						<text style="color:#0065e5; text-align:center;">######</text>
 						<br />
 						
-						<B><text class="profile-text">Imprimante 3D possédée :</text></B>
-						<text style="color:#0065e5; text-align:center;">######</text>
-
+						{% if printerid!=0 %}
+							<br />
+							<B><a href="/printer/{{printerid}}">{{username}} a une imprimante 3D !</a></B>
+						{% endif %}
 					</div>
 
 
