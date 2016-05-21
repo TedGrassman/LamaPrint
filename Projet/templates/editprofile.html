@@ -37,72 +37,75 @@
 								<label class="profile-text">Modifier son avatar</label>
 								<input type="file" name="file" id="file" class="profile-text" style="width:300px; font-size:12px; margin-top:0px;" />
 							</div>
+						</div>
+
+						
+						<div class="jumbotron container-leftprofile">
+							<label class="profile-subtitle">Mot de passe</label>
+							<br />
+							
+							<label for="mdp" class="profile-text">Ancien Mot De Passe</label>
+							<br />
+							<input type="password" name="mdp" id="mdp" style="text-align:center;" placeholder="Ancien mot de passe" size="30" maxlength="64" />
+							<br />
+							
+							<label for="newmdp" class="profile-text">Nouveau Mot De Passe</label>
+							<br />
+							<input type="password" name="newmdp" id="newmdp" style="text-align:center;" placeholder="Nouveau mot de passe" size="30" maxlength="64"/>
+							<br />
+
+						</div>
+
+					</div>
+				
+				
+					<div class="col-md-6 no-padding">
+						<div class="jumbotron container-rightprofile">
+							
+							<label class="profile-subtitle">Informations personnelles</label>
+							<br />	
+						
+							<label for="firstname" class="profile-text">Prénom</label>
+							<br />
+							<input type="text" name="firstname" id="firstname" style="text-align:center;" value="{{prenom}}" placeholder="Entrez votre prénom ici" size="30" maxlength="64" />
+						
+							<label for="lastname" class="profile-text">Nom</label>
+							<br />
+							<input type="text" name="lastname" id="lastname" style="text-align:center;" value="{{nom}}" placeholder="Entrez votre nom ici" size="30" maxlength="64" />
+						
+							<label for="birthdate" class="profile-text">Date de naissance</label>
+							<br />
+							<input type="date" name="birthdate" id="birthdate" style="text-align:center;" value="{{birthdate}}" placeholder="JJ/MM/AAAA" size="30" maxlength="10" />
+
+							<label for="mail" class="profile-text">Adresse e-mail</label>
+							<br />
+							<input type="email" name="mail" id="mail" style="text-align:center;" value="{{mail}}" placeholder="Entrez votre adresse e-mail" size="30" maxlength="64" />
+							
+							<label for="phonenumber" class="profile-text">Numéro de téléphone</label>
+							<br />
+							<input type="text" name="phonenumber" id="phonenumber" style="text-align:center;" value="{{phone}}" placeholder="Entrez votre numéro de téléphone" size="30" maxlength="10" />
+							<br />
+							<br />
+							<label><input type="checkbox" id="idcheckbox" value="valeur"/>	Je souhaite rendre mes informations personnelles publiques </label>
 						
 						</div>
-						
-					<div class="jumbotron container-leftprofile">
-						<label class="profile-subtitle">Mot de passe</label>
-						<br />
-						
-						<label for="mdp" class="profile-text">Ancien Mot De Passe</label>
-						<br />
-						<input type="password" name="mdp" id="mdp" style="text-align:center;" placeholder="Ancien mot de passe" size="30" maxlength="64" />
-						<br />
-						
-						<label for="newmdp" class="profile-text">Nouveau Mot De Passe</label>
-						<br />
-						<input type="password" name="newmdp" id="newmdp" style="text-align:center;" placeholder="Nouveau mot de passe" size="30" maxlength="64"/>
-						<br />
 
-					</div>
-				</div>
-				
-				
-				<div class="col-md-6 no-padding">
-					<div class="jumbotron container-rightprofile">
-						
-						<label class="profile-subtitle">Informations personnelles</label>
-						<br />	
-					
-						<label for="firstname" class="profile-text">Prénom</label>
-						<br />
-						<input type="text" name="firstname" id="firstname" style="text-align:center;" value="{{prenom}}" placeholder="Entrez votre prénom ici" size="30" maxlength="64" />
-					
-						<label for="lastname" class="profile-text">Nom</label>
-						<br />
-						<input type="text" name="lastname" id="lastname" style="text-align:center;" value="{{nom}}" placeholder="Entrez votre nom ici" size="30" maxlength="64" />
-					
-						<label for="birthdate" class="profile-text">Date de naissance</label>
-						<br />
-						<input type="date" name="birthdate" id="birthdate" style="text-align:center;" value="{{birthdate}}" placeholder="JJ/MM/AAAA" size="30" maxlength="10" />
-
-						<label for="mail" class="profile-text">Adresse e-mail</label>
-						<br />
-						<input type="email" name="mail" id="mail" style="text-align:center;" value="{{mail}}" placeholder="Entrez votre adresse e-mail" size="30" maxlength="64" />
-						
-						<label for="phonenumber" class="profile-text">Numéro de téléphone</label>
-						<br />
-						<input type="text" name="phonenumber" id="phonenumber" style="text-align:center;" value="{{phone}}" placeholder="Entrez votre numéro de téléphone" size="30" maxlength="10" />
-						<br />
-						<br />
-						<label><input type="checkbox" id="idcheckbox" value="valeur"/>	Je souhaite rendre mes informations personnelles publiques </label>
-					
-					</div>
-
-					<div class="jumbotron container-rightprofile">	
-						
-							<label class="profile-subtitle">Suppression du compte</label>
+						<div class="jumbotron container-rightprofile">	
 							
-							<br />
-							<br />
-							
-							<label><input type="checkbox" id="idcheckbox" value="valeur"/> Je suis sûr de vouloir supprimer mon compte <label style="color:#DD0000;"> définitivement </label></label>
-											
-							<label for="delconfirm" class="profile-text">Confirmation du Mot De Passe</label>
-							
-							<input type="password" name="delconfirm" id="delconfirm" style="text-align:center;" placeholder="Confirmation du mot de passe" size="30" maxlength="64" />
-							<br />
-							
+								<label class="profile-subtitle">Suppression du compte</label>
+								
+								<br />
+								<br />
+								
+								<label><input type="checkbox" id="idcheckbox" value="valeur"/> Je suis sûr de vouloir supprimer mon compte <label style="color:#DD0000;"> définitivement </label></label>
+												
+								<label for="delconfirm" class="profile-text">Confirmation du Mot De Passe</label>
+								
+								<input type="password" name="delconfirm" id="delconfirm" style="text-align:center;" placeholder="Confirmation du mot de passe" size="30" maxlength="64" />
+								<br />
+								
+						</div>
+					
 					</div>
 					
 				</div>
