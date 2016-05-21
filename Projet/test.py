@@ -26,6 +26,9 @@ UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024		# taille max = 4Mo
+uploadpath = os.path.join(app.config['UPLOAD_FOLDER']).replace('\\','/')
+if os.path.isdir(uploadpath) is False:
+	os.mkdir(uploadpath)
 
 user = Table('user', metadata,
 	Column('username', String, primary_key = True, unique = True, nullable = False),
@@ -98,18 +101,18 @@ metadata.create_all(engine)		# remplit la BdD avec les informations par défaut
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
-def uploadFile(filepath="default"):
+def uploadFile(request, filestr, filepath="default"):
 	""" Upload de fichier
 		Exemple: pour uploader toto.jpg dans /uploads/test/ -> uploadFile("test")
 		avec la dernière requête contenant un form qui contient un <input file>"""
 	db = engine.connect()
 	try:
 		print("UPLOAD!")
-		print("### upload du fichier", request.files['file'], "###")
+		file = request.files[filestr]
+		print("### upload du fichier", file, "###")
 		dirpath = os.path.join(app.config['UPLOAD_FOLDER'], filepath).replace('\\','/')
 		if os.path.isdir(dirpath) is False:
 			os.mkdir(dirpath)
-		file = request.files['file']
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
 			path = os.path.join(dirpath, filename).replace('\\','/')
@@ -275,8 +278,8 @@ def printer_create(username, xyz, res, price, material, address):
 		pass"""
 	try:
 		print(datetime.datetime.now())
-		db.execute(printer.insert(), [ {'user': username, 'creation_date': 'LOL', 'dimensionsx': xyz[0], 'dimensionsy': xyz[1], 'dimensionsz': xyz[2], 'res': res, 'price': price, 'material': material, 'address': address[0], 'postcode':address[1], 'city': address[2], 'country': address[3]} ] )
-		return True
+		idd = db.execute(printer.insert(), [ {'user': username, 'creation_date': str(datetime.date.today()) , 'dimensionsx': xyz[0], 'dimensionsy': xyz[1], 'dimensionsz': xyz[2], 'res': res, 'price': price, 'material': material, 'address': address[0], 'postcode':address[1], 'city': address[2], 'country': address[3]} ] )
+		return idd.lastrowid
 	finally:
 		db.close()
 
@@ -410,7 +413,7 @@ def editprofile(username):
 			db = engine.connect()
 
 			print("POST editprofile")
-			path = uploadFile("profile_images")
+			path = uploadFile(request, "file", filepath="profile_images")
 			if path is not None:
 				image = "../"+path
 				db.execute(user.update().values(profile_image_path = image).where(user.c.username == session.get('username')))
@@ -585,11 +588,21 @@ def demand():
 			return render_template("demand.html", name = "Demande de projet")
 		if request.method == 'POST':
 			db = engine.connect()
-			session['username']=request.cookies.get('username')
-			result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
+			result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==username)).fetchone()
 			if result is None:
-				db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username'], 'description': request.form['description']}])
-				print('create project')
+				db.execute(project.insert(), [ {'project_name': request.form['title'], 'user': username, 'description': request.form['description']}])
+				fichier = request.files["images"]
+				print("Fichiers =", fichier)
+				print("type(fichier) =", type(fichier))
+				path = uploadFile(request, "images", filepath="project_images")
+				if path is not None:
+					image = "../"+path
+					db.execute(project.update().values(image_path = image).where(project.c.project_name == request.form['title']))
+				else:
+					image='../image/lama.png'
+				print("IMAGE =", image)
+
+				print('### PROJECT CREATED ###')
 				return redirect('/demand/'+request.form['title'])
 			else:
 				print('Vous avez déjà créé ce projet')
@@ -599,13 +612,12 @@ def demand():
 @app.route('/demand/<title>', methods=['GET','POST'])
 def demandDisplay(title):
 	if request.method == 'GET':
+		username = getUserName(request)
 		db = engine.connect()
-		result = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
-		if result is None:
-			print('ERREUR BSD')
-			return render_template("demand_display.html",name= "Demande:"+title, title=title)
-		else:
-			return render_template("demand_display.html",name= "Demande:"+title, title=title, description=result[0])
+		desc = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==username)).fetchone()
+		img = db.execute(select([project.c.image_path]).where(project.c.project_name==title and project.c.user==username)).fetchone()
+		
+		return render_template("demand_display.html",name= "Demande:"+title, title=title, description=desc[0], image=img[0])
 
 
 			
@@ -619,11 +631,11 @@ def propose():
 	elif username is not None:
 
 		if request.method == 'GET':
-				return render_template("propose.html", name = "Proposer un projet")
+				return render_template("propose.html", name = "Proposition de projet")
 		
 		if request.method == 'POST':
-			session['username']=request.cookies.get('username')
-			result = db.execute(select([file.c.project]).where(file.c.name==session['username'])).fetchone()
+			db = engine.connect()
+			result = db.execute(select([file.c.project]).where(file.c.name==username)).fetchone()
 			#if result is None:
 			#db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
 			print('create project')
@@ -633,11 +645,11 @@ def propose():
 			return redirect('/')
 		
 @app.route('/project/<title>')
-def project(title):
+def viewproject(title):
 	db = engine.connect()
 		
 	if request.method == 'GET':
-		return render_template("project.html", title=title)
+		return render_template("project.html", name="Projet \"" +title+ "\"", title=title)
 	if session.get('logged') is False:
 		return redirect('/login')
 	return render_template("propose.html")
@@ -768,7 +780,7 @@ def searchproject():
 			for row in db.execute(s):
 				print(row)
 			print('\n')
-	return render_template('searchproject.html')
+	return render_template('searchproject.html', name="Recherche de projet")
 
 
 @app.route('/printer/<id>')
@@ -879,8 +891,9 @@ def rent():
 			material = request.form['materiaux']
 			address = (request.form['adresse'], request.form['codepostal'], request.form['ville'], request.form['pays'])
 			print("### /rent : printer_create")
-			printer_create(username=username, xyz=xyz, res=res, price=price, material=material, address=address)
-			return redirect('/rent')
+			idd=printer_create(username=username, xyz=xyz, res=res, price=price, material=material, address=address)
+			print("idd ",idd)
+			return redirect('/printer/'+str(idd))
 			
 		else:
 			return render_template("rentprinter.html")
