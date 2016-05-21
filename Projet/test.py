@@ -129,6 +129,29 @@ def hash_for(password):
 	return hashlib.sha256(salted.encode('utf-8')).hexdigest()
 
 
+def isUserLogged(username, request):
+	print("??? Is " +username+ " logged ???")
+	user=request.cookies.get('username')
+	print("request.cookies.get('username') =", user)
+	if(user==username):
+		session['logged']=True
+		session['username']=username
+		return True
+	else:
+		return False
+
+def getUserName(request):
+	username=request.cookies.get('username')
+	print("??? Is any user logged ???")
+	print("Current User =", username)
+	if username is None:
+		print('Pas de cookie')
+	elif username is not None:
+		session['logged']=True
+		session['username']=username
+	return username
+
+
 def authenticate(login, password):
 	"""Authentifier un utilisateur"""
 	db = engine.connect()
@@ -150,9 +173,6 @@ def authenticate(login, password):
 			print(login)
 			print(password)
 			#result = db.execute("select password_hash from user where login=\'"+login+"\'")
-			"""for i in result:
-				print(i)
-				storedHash = i"""
 			#storedHash = result.fetchone()[0]
 			print(passhash)
 			print(storedHash)
@@ -268,17 +288,7 @@ def send_uploads(somepath):
 @app.route('/')
 @app.route('/index')
 def index():
-	data=request.cookies.get('username')
-	if data is None:
-		session['logged']=False
-		print('No cookie')
-	else:
-		session['logged']=True
-		session['username']=data
-	#data=request.cookies.get('logged')
-	#if data is None:
-	#	session['logged']=False				# fait systématiquement déconnecter la session...
-	#	print('No cookie')
+	username = getUserName(request)
 	return render_template('index.html', name="Main Page")
 
 @app.route('/test')
@@ -289,72 +299,79 @@ def test():
 def login():
 
 	print("### LOGIN ###")
-	if request.method == 'POST':
-		if authenticate(request.form['login'], request.form['password']):	# le login a réussi (True)
-			session['username'] = request.form['login']
-			#session['name'] = escape(request.form['name'])              
-			session['logged'] = True
-			response = make_response(redirect('/'))
-			response.set_cookie('username', session['username'])
-			
-			#flash('Authentication successfull')
-			print('Authentication successfull')
-			return response		# on redirige à l'index
-		else:		# authenticate a échoué (False)
-			flash('Unexistant user or invalid password for login ' +request.form['login'])
-			print('Unexistant user or invalid password for login ' +request.form['login'])
-			return redirect('/login')
-	else:	# méthode HTML GET
-		return render_template('login.html', name="Login")
+	username = getUserName(request)
+	if username is not None:
+		return(redirect('/'))
+	else:
+		if request.method == 'POST':
+			if authenticate(request.form['login'], request.form['password']):	# le login a réussi (True)
+				session['username'] = request.form['login']
+				#session['name'] = escape(request.form['name'])              
+				session['logged'] = True
+				response = make_response(redirect('/'))
+				response.set_cookie('username', session['username'])
+				
+				#flash('Authentication successfull')
+				print('Authentication successfull')
+				return response		# on redirige à l'index
+			else:		# authenticate a échoué (False)
+				flash('Unexistant user or invalid password for login ' +request.form['login'])
+				print('Unexistant user or invalid password for login ' +request.form['login'])
+				return redirect('/login')
+		else:	# méthode HTML GET
+			return render_template('login.html', name="Login")
 
 
 @app.route('/register', methods=['GET','POST'])
 def register():
-	db = engine.connect()
-	from_page=request.args.get('from', 'Main')
-	if request.method == 'POST':
-		if create(request.form['login'], request.form['password']):	# create a réussi (True)*
-			session['username'] = request.form['login']
-			session['name'] = escape(request.form['firstname'])
-			if request.form['mail'] is not None:
-				print("Add mail: "+request.form['mail']+" to DB")
-				smt=user.update().values(mail=request.form['mail']).where(user.c.username==request.form['login'])
-				db.execute(smt)
-			if request.form['firstname'] is not None:
-				print("Add Firstname: "+request.form['firstname']+" to DB")
-				smt=user.update().values(name=request.form['firstname']).where(user.c.username==request.form['login'])
-				db.execute(smt)
-			if request.form['lastname'] is not None:
-				print("Add lastname: "+request.form['lastname']+" to DB")
-				smt=user.update().values(lastname=request.form['lastname']).where(user.c.username==request.form['login'])
-				db.execute(smt)
-			if request.form['birthdate'] is not None:
-				print("Add birthdate: "+request.form['birthdate']+" to DB")
-				smt=user.update().values(birthdate=request.form['birthdate']).where(user.c.username==request.form['login'])
-				db.execute(smt)
-			if request.form['phonenumber'] is not None:
-				print("Add phonenumber: "+request.form['phonenumber']+" to DB")
-				smt=user.update().values(telephone=request.form['phonenumber']).where(user.c.username==request.form['login'])
-				db.execute(smt)
+	
+	username = getUserName(request)
+	if username is not None:
+		return(redirect('/'))
+	else:
+		db = engine.connect()
+		if request.method == 'POST':
+			if create(request.form['login'], request.form['password']):	# create a réussi (True)*
+				session['username'] = request.form['login']
+				session['name'] = escape(request.form['firstname'])
+				if request.form['mail'] is not None:
+					print("Add mail: "+request.form['mail']+" to DB")
+					smt=user.update().values(mail=request.form['mail']).where(user.c.username==request.form['login'])
+					db.execute(smt)
+				if request.form['firstname'] is not None:
+					print("Add Firstname: "+request.form['firstname']+" to DB")
+					smt=user.update().values(name=request.form['firstname']).where(user.c.username==request.form['login'])
+					db.execute(smt)
+				if request.form['lastname'] is not None:
+					print("Add lastname: "+request.form['lastname']+" to DB")
+					smt=user.update().values(lastname=request.form['lastname']).where(user.c.username==request.form['login'])
+					db.execute(smt)
+				if request.form['birthdate'] is not None:
+					print("Add birthdate: "+request.form['birthdate']+" to DB")
+					smt=user.update().values(birthdate=request.form['birthdate']).where(user.c.username==request.form['login'])
+					db.execute(smt)
+				if request.form['phonenumber'] is not None:
+					print("Add phonenumber: "+request.form['phonenumber']+" to DB")
+					smt=user.update().values(telephone=request.form['phonenumber']).where(user.c.username==request.form['login'])
+					db.execute(smt)
+					
+				session['logged'] = True
+				response = make_response(render_template('index.html'))
+				response.set_cookie('username', session['username'])
+				print('User creation successfull!')
 				
-			session['logged'] = True
-			response = make_response(render_template('index.html'))
-			response.set_cookie('username', session['username'])
-			print('User creation successfull!')
-			
-			return response		# on redirige à l'index
-		else:		# create a échoué (False)
-			flash('Creation fail: user \"'+ request.form['login'] + '\" already exists')
-			print('Creation fail: user \"'+ request.form['login'] + '\" already exists')
-			return redirect('/register')
-	if request.method == 'GET':
-		return render_template('register.html', name="Register")
+				return response		# on redirige à l'index
+			else:		# create a échoué (False)
+				flash('Creation fail: user \"'+ request.form['login'] + '\" already exists')
+				print('Creation fail: user \"'+ request.form['login'] + '\" already exists')
+				return redirect('/register')
+		if request.method == 'GET':
+			return render_template('register.html', name="Register")
 
 
 @app.route('/logout')
 def logout():
-	from_page = request.args.get('from', 'Main')
-	session.pop('logged_in', None)
+	session.pop('logged', None)
 	session.clear()
 	resp = make_response(redirect('/'))
 	resp.set_cookie('username', '', expires=0)
@@ -365,18 +382,16 @@ def logout():
 def editprofile(username):
 	
 	print("*****MODIFYPROFILE*****")
-	data=request.cookies.get('username')
-	print(data)
-	if data is None:
+	userLogged = isUserLogged(username, request)
+	if userLogged is False:
 			print('Pas de cookie')
 			return redirect('/login')
-	elif data==username:
-		#rien
-		print("data =", data, "; username =", username)
-		
+	elif userLogged is True:
+
 		if request.method == 'POST':
 			
 			db = engine.connect()
+
 			print("POST editprofile")
 			path = uploadFile("profile_images")
 			if path is not None:
@@ -421,6 +436,28 @@ def editprofile(username):
 						print("Change password: "+newpassword+" to DB")
 						smt=user.update().values(password=newpasshash).where(user.c.username==username)
 						db.execute(smt)
+					else:
+						print("Change password failed : wrong old password")
+
+				# Suppression de compte !!
+				#print("request.form.get('DeletionCheckbox') =", request.form.get('DeletionCheckbox'))	# None or value=valeur
+				if request.form.get('DeletionCheckbox') is not None:
+					print("##### ! DELETION ASKED ! #####")
+					password = request.form['delconfirm']
+					passhash = hash_for(password)
+					result = db.execute(select([user.c.password]).where(user.c.username == username)).fetchone()
+					storedpasshash = result[0]
+					print(passhash)
+					print(storedpasshash)
+					if passhash==storedpasshash:
+						print("! Correct password, deletion authorized !")
+						smt = user.delete(user).where(user.c.username==username)
+						print("user.delete(user).where(user.c.username==username) =", smt)
+						print(db.execute(smt))
+						print("##### ! DELETION COMPLETE ! #####")
+						return(redirect('/logout'))		# on déconnecte l'utilisateur, car sa page n'existe plus
+					else:
+						print("! Deletion failed : wrong password !")
 					
 			finally:
 				db.close()
@@ -514,24 +551,25 @@ def profile(username):
 
 @app.route('/demand', methods=['GET','POST'])
 def demand():
-	if request.method == 'GET':
-		data=request.cookies.get('username')
-		if data is None:
+	username = getUserName(request)
+	if username is None:
 			print('Pas de cookie')
 			return redirect('/login')
-		else:
+	elif username is not None:
+		
+		if request.method == 'GET':
 			return render_template("demand.html", name = "Demande de projet")
-	if request.method == 'POST':
-		db = engine.connect()
-		session['username']=request.cookies.get('username')
-		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
-		if result is None:
-			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username'], 'description': request.form['description']}])
-			print('create project')
-			return redirect('/demand/'+request.form['title'])
-		else:
-			print('Vous avez déjà créé ce projet')
-		return redirect('/')
+		if request.method == 'POST':
+			db = engine.connect()
+			session['username']=request.cookies.get('username')
+			result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
+			if result is None:
+				db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username'], 'description': request.form['description']}])
+				print('create project')
+				return redirect('/demand/'+request.form['title'])
+			else:
+				print('Vous avez déjà créé ce projet')
+			return redirect('/')
 		
 		
 @app.route('/demand/<title>', methods=['GET','POST'])
@@ -549,26 +587,26 @@ def demandDisplay(title):
 			
 @app.route('/propose', methods=['GET','POST'])
 def propose():
-	db = engine.connect()
-		
-	if request.method == 'GET':
-		data=request.cookies.get('username')
-		if data is None:
+	
+	username = getUserName(request)
+	if username is None:
 			print('Pas de cookie')
 			return redirect('/login')
-		else:
-			return render_template("propose.html", name = "Proposer un projet")
-	
-	if request.method == 'POST':
-		session['username']=request.cookies.get('username')
-		result = db.execute(select([file.c.project]).where(file.c.name==session['username'])).fetchone()
-		#if result is None:
-		#db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
-		print('create project')
-		return redirect('/project/'+request.form['title'])
-		#else:
-		#	print('Vous avez déjà créé ce projet')
-		return redirect('/')
+	elif username is not None:
+
+		if request.method == 'GET':
+				return render_template("propose.html", name = "Proposer un projet")
+		
+		if request.method == 'POST':
+			session['username']=request.cookies.get('username')
+			result = db.execute(select([file.c.project]).where(file.c.name==session['username'])).fetchone()
+			#if result is None:
+			#db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
+			print('create project')
+			return redirect('/project/'+request.form['title'])
+			#else:
+			#	print('Vous avez déjà créé ce projet')
+			return redirect('/')
 		
 @app.route('/project/<title>')
 def project(title):
@@ -806,22 +844,21 @@ def showprinter(id):
 
 @app.route('/rent', methods=['GET','POST'])
 def rent():
-	username=request.cookies.get('username')
-	print(username)
+	username = getUserName(request)
 	if username is None:
-		print('Pas de cookie')
-		return redirect('/login')
-	else:
+			print('Pas de cookie')
+			return redirect('/login')
+	elif username is not None:
 		if request.method == 'POST':
-				xyz = (request.form['dimxmax'], request.form['dimymax'], request.form['dimzmax'])
-				res = request.form['resolution']
-				price = request.form['prix']
-				material = request.form['materiaux']
-				address = (request.form['adresse'], request.form['codepostal'], request.form['ville'], request.form['pays'])
-				print("### /rent : printer_create")
-				printer_create(username=username, xyz=xyz, res=res, price=price, material=material, address=address)
-				return redirect('/rent')
-				
+			xyz = (request.form['dimxmax'], request.form['dimymax'], request.form['dimzmax'])
+			res = request.form['resolution']
+			price = request.form['prix']
+			material = request.form['materiaux']
+			address = (request.form['adresse'], request.form['codepostal'], request.form['ville'], request.form['pays'])
+			print("### /rent : printer_create")
+			printer_create(username=username, xyz=xyz, res=res, price=price, material=material, address=address)
+			return redirect('/rent')
+			
 		else:
 			return render_template("rentprinter.html")
 
