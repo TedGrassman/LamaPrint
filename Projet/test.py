@@ -8,20 +8,22 @@ from markdown import markdown
 import os, hashlib
 import random
 import re
-
 import datetime
 
 app = Flask(__name__)
+
+
+#____________________________________________________________#
+#____________________________________________________________#
+#			INITIALISATION
+#____________________________________________________________#
+#____________________________________________________________#
+
 
 # Pour le hash du password
 #app.secret_key = 'iswuygdedgv{&75619892__01;;>..zzqwQIHQIWS'
 app.secret_key = os.urandom(256)
 SALT = 'foo#BAR_{baz}^666'
-
-# Création de la base de données
-# Base de donnée : doit supporter les types "blob"
-engine = create_engine('sqlite:///lama.db', echo=True)
-metadata = MetaData()
 
 # Pour l'upload de fichiers
 UPLOAD_FOLDER = "uploads"
@@ -31,6 +33,15 @@ app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024		# taille max = 4Mo
 uploadpath = os.path.join(app.config['UPLOAD_FOLDER']).replace('\\','/')
 if os.path.isdir(uploadpath) is False:
 	os.mkdir(uploadpath)
+
+
+#____________________________________________________________#
+#		DATABASE INITIALISATION
+#____________________________________________________________#
+
+# Création de la base de données
+engine = create_engine('sqlite:///lama.db', echo=True)
+metadata = MetaData()
 
 user = Table('user', metadata,
 	Column('username', String, primary_key = True, unique = True, nullable = False),
@@ -49,7 +60,7 @@ project = Table('project', metadata,
 	Column('id', Integer, autoincrement = True, primary_key = True, nullable = False, unique = True),
 	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('project_name', String),
+	Column('project_name', String, unique = True, nullable = False),
 	Column('dimensionsx', Integer),
 	Column('dimensionsy', Integer),
 	Column('dimensionsz', Integer),
@@ -72,7 +83,6 @@ file = Table('file', metadata,
 	Column('weight', Float),
 	Column('price', Integer),
 	Column('name', String))
-	
 	
 printer = Table('printer', metadata,
 	Column('ID', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),	
@@ -99,6 +109,18 @@ comment = Table('comment', metadata,
 
 metadata.create_all(engine)		# remplit la BdD avec les informations par défaut
 
+
+
+#____________________________________________________________#
+#____________________________________________________________#
+#			Fonctions annexes
+#____________________________________________________________#
+#____________________________________________________________#
+
+
+#____________________________________________________________#
+#		UPLOAD MANAGEMENT
+#____________________________________________________________#
 
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
@@ -128,6 +150,10 @@ def uploadFile(request, filestr, filepath="default"):
 	finally:
 		db.close()
 
+
+#____________________________________________________________#
+#		PASSWORD & USER MANAGEMENT
+#____________________________________________________________#
 
 def hash_for(password):
 	salted = '%s @ %s' % (SALT, password)
@@ -189,53 +215,6 @@ def authenticate(login, password):
 				return False
 	finally:
 		db.close()
-		
-def getUserInfo(username):
-	db = engine.connect()
-	try:
-		result = db.execute(select([user]).where(user.c.username == username)).fetchone()
-		if result is None:
-			# L'utilisateur n'existe pas
-			# code ...
-			print('**Encounter problem getting user\'s info**')
-			return False
-		else:
-			return result
-	finally:
-		db.close()
-
-def getPrinterInfo(ID):
-	db = engine.connect()
-	print("### GetPrinterInfo, ID="+str(ID))
-	try:
-		result = db.execute(select([printer]).where(printer.c.ID == str(ID))).fetchone()
-		if result is None:
-			# L'imprimante n'existe pas
-			# code ...
-			print('**Encounter problem getting printer\'s info**')
-			return False
-		else:
-			return result
-	finally:
-		db.close()
-
-
-def getUserPrinter(username):
-	db = engine.connect()
-	print("### GetPrinterInfo, User="+username)
-	try:
-		result = db.execute(select([printer]).where(printer.c.user == username)).fetchone()
-		if result is None:
-			# L'imprimante n'existe pas
-			# code ...
-			print('**Encounter problem getting printer\'s info**')
-			return False
-		else:
-			print(result)
-			return result
-	finally:
-		db.close()
-
 
 def create(login, password):
 	"""Créer et enregistrer un utilisateur existant"""
@@ -253,31 +232,62 @@ def create(login, password):
 			print('**Creation fail: login already exists**')
 			return False
 	finally:
-		db.close()		
+		db.close()
 
+		
+def getUserInfo(username):
+	db = engine.connect()
+	try:
+		result = db.execute(select([user]).where(user.c.username == username)).fetchone()
+		if result is None:
+			# L'utilisateur n'existe pas
+			# code ...
+			print('**Encounter problem getting user\'s info**')
+			return False
+		else:
+			return result
+	finally:
+		db.close()
+
+
+#____________________________________________________________#
+#		PRINTER MANAGEMENT
+#____________________________________________________________#
+
+def getPrinterInfo(ID):
+	db = engine.connect()
+	print("### GetPrinterInfo, ID="+str(ID))
+	try:
+		result = db.execute(select([printer]).where(printer.c.ID == str(ID))).fetchone()
+		if result is None:
+			# L'imprimante n'existe pas
+			# code ...
+			print('**Encounter problem getting printer\'s info**')
+			return False
+		else:
+			return result
+	finally:
+		db.close()
+
+def getUserPrinter(username):
+	db = engine.connect()
+	print("### GetPrinterInfo, User="+username)
+	try:
+		result = db.execute(select([printer]).where(printer.c.user == username)).fetchone()
+		if result is None:
+			# L'imprimante n'existe pas
+			# code ...
+			print('**Encounter problem getting printer\'s info**')
+			return False
+		else:
+			print(result)
+			return result
+	finally:
+		db.close()
 
 def printer_create(username, xyz, res, price, material, address):
 	#engine = create_engine('sqlite:///lama.db', echo=True)
 	db = engine.connect()
-	"""try:
-		Session=sessionmaker()
-		Session.configure(bind=engine)
-		db_session=Session()
-		id=db_session.query(user.username).first()
-		print('id= '+id)
-		print('User:'+session.get('username'))
-
-		db = engine.connect()
-		try:
-
-			idd = db.execute(printer.insert(),[{}])
-			
-		finally:
-			db.close();
-			return idd.lastrowid
-
-	finally:
-		pass"""
 	try:
 		print(datetime.datetime.now())
 		idd = db.execute(printer.insert(), [ {'user': username, 'creation_date': str(datetime.date.today()) , 'dimensionsx': xyz[0], 'dimensionsy': xyz[1], 'dimensionsz': xyz[2], 'res': res, 'price': price, 'material': material, 'address': address[0], 'postcode':address[1], 'city': address[2], 'country': address[3]} ] )
@@ -286,8 +296,18 @@ def printer_create(username, xyz, res, price, material, address):
 		db.close()
 
 
-"""Pour récupérer les ressource statiques contenues dans différents dossiers (autre que "static")"""
-#os.path.join('js', path).replace('\\','/')
+
+#____________________________________________________________#
+#____________________________________________________________#
+# Fonctions gestionnaires de routes
+#____________________________________________________________#
+#____________________________________________________________#
+
+
+#____________________________________________________________#
+#		STATIC RESOURCES
+#____________________________________________________________#
+
 @app.route('/api/<path:somepath>')
 def send_api(somepath):
 	return send_from_directory('api', somepath)
@@ -307,6 +327,11 @@ def send_css():
 def send_uploads(somepath):
 	return send_from_directory('uploads', somepath)
 
+
+#____________________________________________________________#
+#		GLOBAL AND TEST
+#____________________________________________________________#
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -317,9 +342,13 @@ def index():
 def test():
 	return "Hello !"
 
+
+#____________________________________________________________#
+#		USER MANAGEMENT
+#____________________________________________________________#
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-
 	print("### LOGIN ###")
 	username = getUserName(request)
 	if username is not None:
@@ -333,11 +362,11 @@ def login():
 				response = make_response(redirect('/'))
 				response.set_cookie('username', session['username'])
 				
-				#flash('Authentication successfull')
-				print('Authentication successfull')
+				flash('Authentication successfull ! Welcome back, '+request.form['login']+ ' =)', 'success')
+				print('Authentication successfull ! Welcome back, '+request.form['login'])
 				return response		# on redirige à l'index
 			else:		# authenticate a échoué (False)
-				flash('Unexistant user or invalid password for login ' +request.form['login'])
+				flash('Unexistant user or invalid password for login ' +request.form['login'], 'danger')
 				print('Unexistant user or invalid password for login ' +request.form['login'])
 				return redirect('/login')
 		else:	# méthode HTML GET
@@ -349,6 +378,7 @@ def register():
 	
 	username = getUserName(request)
 	if username is not None:
+		flash('You must log out to register as a new user', 'info')
 		return(redirect('/'))
 	else:
 		db = engine.connect()
@@ -380,11 +410,12 @@ def register():
 				session['logged'] = True
 				response = make_response(render_template('index.html'))
 				response.set_cookie('username', session['username'])
-				print('User creation successfull!')
+				flash('User creation successfull ! Welcome, '+request.form['login']+ ' =)', 'success')
+				print('User creation successfull ! Welcome, '+request.form['login']+ ' =)')
 				
 				return response		# on redirige à l'index
 			else:		# create a échoué (False)
-				flash('Creation fail: user \"'+ request.form['login'] + '\" already exists')
+				flash('Creation fail: user \"'+ request.form['login'] + '\" already exists', 'danger')
 				print('Creation fail: user \"'+ request.form['login'] + '\" already exists')
 				return redirect('/register')
 		if request.method == 'GET':
@@ -395,9 +426,67 @@ def register():
 def logout():
 	session.pop('logged', None)
 	session.clear()
+	flash('You have been successfully logged out. See you soon !', 'info')
 	resp = make_response(redirect('/'))
 	resp.set_cookie('username', '', expires=0)
 	return resp
+
+
+@app.route('/profile/<username>', methods=['GET','POST'])	
+def profile(username):
+	if request.method=='GET':
+		print(session.get('username'))
+		result=getUserInfo(username)
+		
+		if result is False:
+			flash('Error: user \"'+ username + '\" may not exist.', 'warning')
+			print('Error: user \"'+ username + '\" may not exist.')
+			return redirect('/')
+
+		else:
+			#Nom de Famille
+			if result[3] is not None:
+				nom=result[3]
+			if result[3] is None:	
+				nom='Non renseigné'
+				
+			#Prenom
+			if result[4] is not None:
+				prenom=result[4]
+			if result[4] is None:	
+				prenom='Non renseigné'
+				
+			#Date de naissance
+			if result[9] is not None:
+				birthdate=result[9]
+			if result[9] is None:	
+				birthdate='Non renseigné'
+
+			#Image de profil
+			if result[6] is not None:
+				image="../"+result[6]
+			if result[6] is None:	
+				image='../image/garou.png'		# image par défaut :)
+			print("FETCH USER : image =", image)
+			#Mail
+			if result[2] is not None:
+				mail=result[2]
+			if result[2] is None:	
+				mail='lama@lamacorp.com'
+			#Phone
+			if result[10] is not None:
+				phone=result[10]
+			if result[10] is None:	
+				phone='NaN'
+
+			#Printer
+			result=getUserPrinter(username)
+			if result is not False:
+				printerid=result[0]
+			if result is False:	
+				printerid=0
+
+			return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone,printerid=printerid)
 
 
 @app.route('/editprofile/<username>', methods=['GET','POST'])
@@ -407,6 +496,7 @@ def editprofile(username):
 	userLogged = isUserLogged(username, request)
 	if userLogged is False:
 			print('Pas de cookie')
+			flash('You must log in as correct user to edit your profile', 'info')
 			return redirect('/login')
 	elif userLogged is True:
 
@@ -422,7 +512,6 @@ def editprofile(username):
 			else:
 				image='../image/garou.png'
 			print("IMAGE =", image)
-			
 			
 			try:
 				if request.form['firstname'] is not None:
@@ -458,8 +547,10 @@ def editprofile(username):
 						print("Change password: "+newpassword+" to DB")
 						smt=user.update().values(password=newpasshash).where(user.c.username==username)
 						db.execute(smt)
+						flash('Your password has been successfully changed', 'success')
 					else:
-						print("Change password failed : wrong old password")
+						print("Password changed failed : wrong old password")
+						flash("Password changed failed : wrong old password", 'warning')
 
 				# Suppression de compte !!
 				#print("request.form.get('DeletionCheckbox') =", request.form.get('DeletionCheckbox'))	# None or value=valeur
@@ -477,13 +568,17 @@ def editprofile(username):
 						print("user.delete(user).where(user.c.username==username) =", smt)
 						print(db.execute(smt))
 						print("##### ! DELETION COMPLETE ! #####")
+						flash("Your account has been successfully deleted", 'danger')
 						return(redirect('/logout'))		# on déconnecte l'utilisateur, car sa page n'existe plus
 					else:
-						print("! Deletion failed : wrong password !")
+						print("! Account deletion failed : wrong password !")
+						flash("Account deletion failed : wrong password", 'warning')
+						return redirect("/profile/"+username)
 					
 			finally:
 				db.close()
 
+			flash("Your informations have been successfully updated", 'success')
 			return redirect("/profile/"+username)
 			#return redirect(url_for('uploaded_file', filename=filename))
 
@@ -492,97 +587,184 @@ def editprofile(username):
 			print(session.get('username'))
 			result=getUserInfo(username)
 			
+			if result is False:
+				flash('Error: user \"'+ username + '\" may not exist.', 'warning')
+				print('Error: user \"'+ username + '\" may not exist.')
+				return redirect('/')
+
+			else:
+				#Nom de Famille
+				if result[3] is not None:
+					nom=result[3]
+				if result[3] is None:	
+					nom='Non renseigné'	
+				#Prenom
+				if result[4] is not None:
+					prenom=result[4]
+				if result[4] is None:	
+					prenom='Non renseigné'
+				#Date de naissance
+				if result[9] is not None:
+					birthdate=result[9]
+				if result[9] is None:	
+					birthdate='Non renseigné'
+				#Image de profil
+				if result[6] is not None:
+					image="../"+result[6]
+				if result[6] is None:	
+					image='../image/garou.png'		# image par défaut :)
+				#print("IMAGE =", image)
+				#Mail
+				if result[2] is not None:
+					mail=result[2]
+				if result[2] is None:	
+					mail='Non renseigné'
+				#Phone
+				if result[10] is not None:
+					phone=result[10]
+				if result[10] is None:	
+					phone='NaN'
+
+				return render_template("editprofile.html", name="Modifier le profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
+
+
+#____________________________________________________________#
+#		PRINTER MANAGEMENT
+#____________________________________________________________#
+
+@app.route('/rent', methods=['GET','POST'])
+def rent():
+	username = getUserName(request)
+	if username is None:
+			print('Pas de cookie')
+			flash('You must log in to rent your printer', 'info')
+			return redirect('/login')
+	elif username is not None:
+		if request.method == 'POST':
+			xyz = (request.form['dimxmax'], request.form['dimymax'], request.form['dimzmax'])
+			res = request.form['resolution']
+			price = request.form['prix']
+			material = request.form['materiaux']
+			address = (request.form['adresse'], request.form['codepostal'], request.form['ville'], request.form['pays'])
+			print("### /rent : printer_create")
+			idd=printer_create(username=username, xyz=xyz, res=res, price=price, material=material, address=address)
+			print("idd ",idd)
+			flash('Printer n°'+ str(idd) + ' has been successfully rented.', 'success')
+			return redirect('/printer/'+str(idd))
+			
+		else:
+			return render_template("rentprinter.html")
+
+
+@app.route('/printer/<idd>')
+def showprinter(idd):
+	
+	idd = int(idd)
+	result=getPrinterInfo(idd);
+	print("### /printer, result=", result)
+
+	username="Aucun"
+	nom=prenom='Non renseigné'
+	phone='NaN'
+	x=y=z=0
+	res=price=0
+	material=address=postcode=city=country="Non renseigné"
+
+	
+	if result is not False:
+		#User
+		if result[2] is not None:
+			username=result[2]
+		if result[2] is None:	
+			username='Non renseigné'
+		userInfo=getUserInfo(username)
+		if userInfo is not False:
 			#Nom de Famille
-			if result[3] is not None:
-				nom=result[3]
-			if result[3] is None:	
-				nom='Non renseigné'	
+			if userInfo[3] is not None:
+				nom=userInfo[3]
+			if userInfo[3] is None:	
+				nom='Non renseigné'
 			#Prenom
-			if result[4] is not None:
-				prenom=result[4]
-			if result[4] is None:	
+			if userInfo[4] is not None:
+				prenom=userInfo[4]
+			if userInfo[4] is None:	
 				prenom='Non renseigné'
-			#Date de naissance
-			if result[9] is not None:
-				birthdate=result[9]
-			if result[9] is None:	
-				birthdate='Non renseigné'
-			#Image de profil
-			if result[6] is not None:
-				image="../"+result[6]
-			if result[6] is None:	
-				image='../image/garou.png'		# image par défaut :)
-			#print("IMAGE =", image)
-			#Mail
-			if result[2] is not None:
-				mail=result[2]
-			if result[2] is None:	
-				mail='Non renseigné'
 			#Phone
-			if result[10] is not None:
-				phone=result[10]
-			if result[10] is None:	
+			if userInfo[10] is not None:
+				phone=userInfo[10]
+			if userInfo[10] is None:	
 				phone='NaN'
 
-			return render_template("editprofile.html", name="Modifier le profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
-
-
-@app.route('/profile/<username>', methods=['GET','POST'])	
-def profile(username):
-	if request.method=='GET':
-		print(session.get('username'))
-		result=getUserInfo(username)
-		
-		#Nom de Famille
+		#x
 		if result[3] is not None:
-			nom=result[3]
+			x=result[3]
 		if result[3] is None:	
-			nom='Non renseigné'
-			
-		#Prenom
+			x='Non renseigné'
+		#y
 		if result[4] is not None:
-			prenom=result[4]
+			y=result[4]
 		if result[4] is None:	
-			prenom='Non renseigné'
-			
-		#Date de naissance
-		if result[9] is not None:
-			birthdate=result[9]
-		if result[9] is None:	
-			birthdate='Non renseigné'
-
-		#Image de profil
+			y='Non renseigné'
+		#z
+		if result[5] is not None:
+			z=result[5]
+		if result[5] is None:	
+			z='Non renseigné'
+		#Résolution
 		if result[6] is not None:
-			image="../"+result[6]
-		if result[6] is None:	
-			image='../image/garou.png'		# image par défaut :)
-		print("FETCH USER : image =", image)
-		#Mail
-		if result[2] is not None:
-			mail=result[2]
-		if result[2] is None:	
-			mail='lama@lamacorp.com'
-		#Phone
+			res=result[6]
+		if result[6] is None:
+			res='Non renseigné'
+		#Prix
+		if result[7] is not None:
+			price=result[7]
+		if result[7] is None:	
+			price='Non renseigné'
+		#Matière
+		if result[8] is not None:
+			material=result[8]
+		if result[8] is None:	
+			material='Non renseigné'
+		#Adresse
+		if result[9] is not None:
+			address=result[9]
+		if result[9] is None:	
+			address='Non renseigné'
+		#Code postal
 		if result[10] is not None:
-			phone=result[10]
+			postcode=result[10]
 		if result[10] is None:	
-			phone='NaN'
+			postcode='Non renseigné'
+		#Ville
+		if result[11] is not None:
+			city=result[11]
+		if result[11] is None:	
+			city='Non renseigné'
+		#Pays
+		if result[12] is not None:
+			country=result[12]
+			country=country.upper()
+		if result[12] is None:	
+			country='Non renseigné'
 
-		#Printer
-		result=getUserPrinter(username)
-		if result is not False:
-			printerid=result[0]
-		if result is False:	
-			printerid=0
+		return render_template('printer.html', name=" Imprimante n°"+str(idd), username=username, prenom=prenom, nom=nom, x=x, y=y, z=z, res=res, price=price, material=material, address=address, postcode=postcode, city=city, country=country, phone=phone)
 
-		return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone,printerid=printerid)
+	elif result is False:
+		flash('Error: printer n°'+ str(idd) + ' may not exist.', 'warning')
+		print('Error: printer n°'+ str(idd) + ' may not exist.')
+		return redirect('/')
 
+
+#____________________________________________________________#
+#		PROJECT MANAGEMENT
+#____________________________________________________________#
 
 @app.route('/demand', methods=['GET','POST'])
 def demand():
 	username = getUserName(request)
 	if username is None:
 			print('Pas de cookie')
+			flash('You must log in to make a demand', 'info')
 			return redirect('/login')
 	elif username is not None:
 		
@@ -590,7 +772,7 @@ def demand():
 			return render_template("demand.html", name = "Demande de projet")
 		if request.method == 'POST':
 			db = engine.connect()
-			result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==username)).fetchone()
+			result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'])).fetchone()
 			if result is None:
 				db.execute(project.insert(), [ {'project_name': request.form['title'], 'user': username, 'description': request.form['description']}])
 				fichier = request.files["images"]
@@ -605,10 +787,12 @@ def demand():
 				print("IMAGE =", image)
 
 				print('### PROJECT CREATED ###')
+				flash('Demand ' +request.form['title']+ ' has been succefully created', 'success')
 				return redirect('/demand/'+request.form['title'])
 			else:
+				flash('Demand creation failed: ' +request.form['title']+ ' may already exist', 'danger')
 				print('Vous avez déjà créé ce projet')
-			return redirect('/')
+				return redirect('/demand')
 		
 		
 @app.route('/demand/<title>', methods=['GET','POST'])
@@ -617,80 +801,63 @@ def demandDisplay(title):
 		username = getUserName(request)
 		db = engine.connect()
 		result = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
+		img = db.execute(select([project.c.image_path]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
 		if result is None:
 			print('ERREUR BSD')
-			return render_template("demand_display.html",name= "Demande:"+title, title=title)
+			return render_template("demand_display.html",name= "Demande : "+title, title=title)
 		else:
 			l=getCom(title)
 			l.reverse()
-			return render_template("demand_display.html",name= "Demande:"+title, title=title, description=result[0],list=l)
+			return render_template("demand_display.html",name= "Demande : "+title, title=title, description=result[0], list=l, image=img[0])
 	
+
 @app.route('/propose', methods=['GET','POST'])
 def propose():
-	db = engine.connect()
-	if request.method == 'GET':
-		data=request.cookies.get('username')
-		if data is None:
-			print('Pas de cookie')
-			return redirect('/')
-		else:
-			return render_template("propose.html", name = "Proposer une imprimante")
-	if request.method == 'POST':
-		db = engine.connect()
-		session['username']=request.cookies.get('username')
-		result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'] and project.c.user==session['username'])).fetchone()
-		if result is None:
-			db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username'], 'description': request.form['description']}])
-			db.execute(file.insert(), [{'project': request.form['title'], 'price':request.form['prix'], 'price':request.form['prix'], 'name':"A remplacer", 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
-			uploadFile("CAO")
-			print('create project')
-			return redirect('/project_display/'+request.form['title'])
-		else:
-			print('Vous avez déjà créé ce projet')
-			return redirect("/project_display/"+request.form['title'])
-		
+
+	username = getUserName(request)
+	
+	if username is None:
+		print('Pas de cookie')
+		flash('You must log in to propose a project', 'info')
+		return redirect('/login')
+	
+	elif username is not None:
+		if request.method == 'GET':
+				return render_template("propose.html", name = "Proposer une imprimante")
+		if request.method == 'POST':
+			db = engine.connect()
+			result = db.execute(select([project.c.id]).where(project.c.project_name==request.form['title'])).fetchone()
+			if result is None:
+				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'user': username, 'description': request.form['description']}])
+				db.execute(file.insert(), [{'project': request.form['title'], 'price':request.form['prix'], 'price':request.form['prix'], 'name':"A remplacer", 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
+				uploadFile("CAO")
+				print('create project')
+				flash('Project ' +request.form['title']+ 'has been succefully created', 'success')
+				return redirect('/project_display/'+request.form['title'])
+			else:
+				print('Vous avez déjà créé ce projet')
+				flash('Project creation failed: ' +request.form['title']+ ' may already exist', 'danger')
+				return redirect("/project_display/"+request.form['title'])
+			db.close()
+
+	
 @app.route('/project_display/<title>')
 def projectDisplay(title):
 	db = engine.connect()
 	if request.method == 'GET':
-		result = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
-		f=db.execute(select([file]).where(file.c.project==title)).fetchone()
+		result = db.execute(select([project]).where(project.c.project_name==title)).fetchone()
+		f = db.execute(select([file]).where(file.c.project==result[0])).fetchone()
 		if result is None:
 			print('ERREUR BSD')
 		else:
-			img = db.execute(select([project.c.image_path]).where(project.c.project_name==title and project.c.user==username)).fetchone()
 			l=getCom(title)
 			l.reverse()
-			return render_template("project_display.html", title=title, image=img[0], description=result[0], id=f[0], dimx=f[5], dimy=f[6], dimz=f[7], prix=f[10], masse=f[9], list=l)
+			return render_template("project_display.html", name="Projet "+title, title=title, image=result[7], description=result[11], id=f[0], dimx=f[5], dimy=f[6], dimz=f[7], prix=f[10], masse=f[9], list=l)
 	#if session.get('logged') is False:
 	#	return redirect('/login')
 	#return redirect('/propose')
 
 
-#TO DELETE IF OTEHR PROPOSE IS OK			
-"""@app.route('/propose', methods=['GET','POST'])
-def propose():
-	
-	username = getUserName(request)
-	if username is None:
-			print('Pas de cookie')
-			return redirect('/login')
-	elif username is not None:
-
-		if request.method == 'GET':
-				return render_template("propose.html", name = "Proposition de projet")
-		
-		if request.method == 'POST':
-			db = engine.connect()
-			result = db.execute(select([file.c.project]).where(file.c.name==username)).fetchone()
-			#if result is None:
-			#db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
-			print('create project')
-			return redirect('/project/'+request.form['title'])
-			#else:
-			#	print('Vous avez déjà créé ce projet')
-			return redirect('/')"""
-		
 @app.route('/project/<title>')
 def viewproject(title):
 	db = engine.connect()
@@ -706,6 +873,10 @@ def viewproject(title):
 def projet():
 	return render_template("projet.html")
 
+
+#____________________________________________________________#
+#		SEARCH MANAGEMENT
+#____________________________________________________________#
 
 @app.route('/printers', methods=['GET','POST'])
 def printers():
@@ -830,18 +1001,25 @@ def searchproject():
 			print('\n')
 	return render_template('searchproject.html', name="Recherche de projet")
 
+
+#____________________________________________________________#
+#		COMMENTS MANAGEMENT
+#____________________________________________________________#
+
 @app.route('/write_comment/<title>',methods=['GET','POST'])
 def writeCom(title):
-	session['username']=request.cookies.get('username')
+	username=getUserName(request)
 	value = request.args.get('key')
 	db = engine.connect()
-	
 	#get project id
 	result = db.execute(select([project.c.id]).where(project.c.project_name==title)).fetchone()
-	print(result[0])
+	idd = result[0]
+	print(type(idd), idd)
+	stridd = str(idd)
 	#com= db.execute(select([comment.c.comment_text]).where(comment.c.project==result[0] )).fetchone()
-	print("Adding to DB: Project= "+str(result[0])+"User: "+session['username']+"Texte :"+value)
-	db.execute(comment.insert(), [ {'project': result[0], 'user':session['username'], 'comment_text': value}])
+	if result[0] is not None:
+		print("Adding to DB: Project= "+stridd+" User: "+username+" Text :"+value)
+		db.execute(comment.insert(), [ {'project': result[0], 'user': username, 'comment_text': value}])
 	return ""
 
 def getCom(title):
@@ -863,204 +1041,9 @@ def getCom(title):
 		for j in range(0, len(com[i])):
 			l.append(com[i][j])
 		
-	return 	l
-	
-
-@app.route('/printer/<id>')
-def showprinter(id):
-	
-	id = int(id)
-	result=getPrinterInfo(id);
-	print("### /printer, result=", result)
-
-	username="Aucun"
-	nom=prenom='Non renseigné'
-	phone='NaN'
-	x=y=z=0
-	res=price=0
-	material=address=postcode=city=country="Non renseigné"
-
-	
-	if result is not False:
-		#User
-		if result[2] is not None:
-			username=result[2]
-		if result[2] is None:	
-			username='Non renseigné'
-		userInfo=getUserInfo(username)
-		if userInfo is not False:
-			#Nom de Famille
-			if userInfo[3] is not None:
-				nom=userInfo[3]
-			if userInfo[3] is None:	
-				nom='Non renseigné'
-			#Prenom
-			if userInfo[4] is not None:
-				prenom=userInfo[4]
-			if userInfo[4] is None:	
-				prenom='Non renseigné'
-			#Phone
-			if userInfo[10] is not None:
-				phone=userInfo[10]
-			if userInfo[10] is None:	
-				phone='NaN'
-
-		#x
-		if result[3] is not None:
-			x=result[3]
-		if result[3] is None:	
-			x='Non renseigné'
-		#y
-		if result[4] is not None:
-			y=result[4]
-		if result[4] is None:	
-			y='Non renseigné'
-		#z
-		if result[5] is not None:
-			z=result[5]
-		if result[5] is None:	
-			z='Non renseigné'
-		#Résolution
-		if result[6] is not None:
-			res=result[6]
-		if result[6] is None:
-			res='Non renseigné'
-		#Prix
-		if result[7] is not None:
-			price=result[7]
-		if result[7] is None:	
-			price='Non renseigné'
-		#Matière
-		if result[8] is not None:
-			material=result[8]
-		if result[8] is None:	
-			material='Non renseigné'
-		#Adresse
-		if result[9] is not None:
-			address=result[9]
-		if result[9] is None:	
-			address='Non renseigné'
-		#Code postal
-		if result[10] is not None:
-			postcode=result[10]
-		if result[10] is None:	
-			postcode='Non renseigné'
-		#Ville
-		if result[11] is not None:
-			city=result[11]
-		if result[11] is None:	
-			city='Non renseigné'
-		#Pays
-		if result[12] is not None:
-			country=result[12]
-			country=country.upper()
-		if result[12] is None:	
-			country='Non renseigné'
-
-	return render_template('printer.html', name=" Imprimante n°"+str(id), username=username, prenom=prenom, nom=nom, x=x, y=y, z=z, res=res, price=price, material=material, address=address, postcode=postcode, city=city, country=country, phone=phone)
+	return l
 
 
-@app.route('/rent', methods=['GET','POST'])
-def rent():
-	username = getUserName(request)
-	if username is None:
-			print('Pas de cookie')
-			return redirect('/login')
-	elif username is not None:
-		if request.method == 'POST':
-			xyz = (request.form['dimxmax'], request.form['dimymax'], request.form['dimzmax'])
-			res = request.form['resolution']
-			price = request.form['prix']
-			material = request.form['materiaux']
-			address = (request.form['adresse'], request.form['codepostal'], request.form['ville'], request.form['pays'])
-			print("### /rent : printer_create")
-			idd=printer_create(username=username, xyz=xyz, res=res, price=price, material=material, address=address)
-			print("idd ",idd)
-			return redirect('/printer/'+str(idd))
-			
-		else:
-			return render_template("rentprinter.html")
-
-"""	
-@app.route('/rent', methods=['GET','POST'])
-def rent():		
-	if request.cookies.get('username') is None:
-		print('User not connected')
-		return redirect('/login')
-
-	else: 				
-		
-		if request.method == 'POST':
-			db = engine.connect()
-			idd=printer_create()
-			
-			print("idd ",idd)
-			if idd>0 :	
-				
-				print("Add name :"+ request.cookies.get('username'))
-				smt=printer.update().values(user=request.cookies.get('username')).where(printer.c.ID==idd)
-				db.execute(smt)
-				
-				print("Add creation_date :"+ str(datetime.date.today()))
-				smt=printer.update().values(creation_date=str(datetime.date.today())).where(printer.c.ID==idd)
-				db.execute(smt)
-				
-				if request.form['dimxmax'] is not None :
-					print("Add dimensions: "+request.form['dimxmax'])
-					smt=printer.update().values(dimensionsx=request.form['dimxmax']).where(printer.c.ID==idd)
-					db.execute(smt)
-				if request.form['dimymax'] is not None :
-					print("Add dimensions: "+request.form['dimymax'])
-					smt=printer.update().values(dimensionsy=request.form['dimymax']).where(printer.c.ID==idd)
-					db.execute(smt)
-				if request.form['dimzmax'] is not None :
-					print("Add dimensions: "+request.form['dimzmax'])
-					smt=printer.update().values(dimensionsz=request.form['dimzmax']).where(printer.c.ID==idd)
-					db.execute(smt)	
-					
-				if request.form['resolution'] is not None:
-					print("Add resolution: "+request.form['resolution']+" to DB")
-					smt=printer.update().values(res=request.form['resolution']).where(printer.c.ID==idd)
-					db.execute(smt)
-				if request.form['prix'] is not None:
-					print("Add price: "+request.form['prix']+" to DB")
-					smt=printer.update().values(price=request.form['prix']).where(printer.c.ID==idd)
-					db.execute(smt)
-				if request.form['materiaux'] is not None:
-					print("Add material: "+request.form['materiaux']+" to DB")
-					smt=printer.update().values(material=request.form['materiaux']).where(printer.c.ID==idd)
-					db.execute(smt)
-				if request.form['adresse'] is not None:
-					print("Add address: "+request.form['adresse']+" to DB")
-					smt=printer.update().values(address=request.form['adresse']).where(printer.c.ID==idd)
-					db.execute(smt)
-				if request.form['codepostal'] is not None:
-					print("Add postcode: "+request.form['codepostal']+" to DB")
-					smt=printer.update().values(postcode=request.form['codepostal']).where(printer.c.ID==idd)
-					db.execute(smt)
-				if request.form['ville'] is not None:
-					print("Add city: "+request.form['ville']+" to DB")
-					smt=printer.update().values(city=request.form['ville']).where(printer.c.ID==idd)
-					db.execute(smt)
-				if request.form['pays'] is not None:
-					print("Add country: "+request.form['pays']+" to DB")
-					smt=printer.update().values(country=request.form['pays']).where(printer.c.ID==idd)
-					db.execute(smt)
-						
-					print('Printer creation successful!')
-					
-					for row in db.execute('select * from printer'):
-						print(row)
-					print('\n')
-					
-					return render_template("rentprinter.html")
-					
-			else:
-				print('Printer creation failed')
-				return render_template("rentprinter.html")	
-		else:
-			return render_template("rentprinter.html")	
-"""
 
 # ............................................................................................... #
 if __name__ == '__main__':

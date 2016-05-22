@@ -28,18 +28,18 @@
 			<div class="col-md-6 no-padding">
 				<div  id="registerleftwindow" class="jumbotron-propose container-halfproject">
 					
-					<img style="max-width:55%;" src={{image}}>
+					<img style="max-width:100%;" src={{image}}>
 					
 					</br></br>
-					<p>Description : </p>
-					<div style="overflow-y:auto; height:20%;">
+					<label for="description">Description :</label>
+					<div id="description" name="description" style="overflow-y:auto; height:20%;">
 						{{description}}
 					</div>
-					<p><label for="description">Laisser un commentaire </label> : <br />
-					<textarea name="description" id="description" rows="2" cols="42%" style="margin-bottom:11px"></textarea></p>
-					
-					<button onclick="writeComment()" style="margin-top: 0px; margin-left:30%;" class="btn btn-lg btn-warning register-button-style" href="#" role="button">Envoyer</button>
 
+					<label for="writecomment">Laisser un commentaire :</label>
+					<div class=textareawrapper> <textarea name="writecomment" id="writecomment" rows="2" style="width:100%; margin-bottom: 5px"></textarea> </div>
+					<div class=buttonwrapper><button onclick="writeComment()" style="position: relative; margin-left: auto; margin-right: auto; margin-top: 0px" class="btn btn-lg btn-warning register-button-style" href="#" role="button">Envoyer</button> </div>
+					
 				</div>
 			
 			</div>
