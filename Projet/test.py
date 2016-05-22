@@ -408,12 +408,12 @@ def register():
 					db.execute(smt)
 					
 				session['logged'] = True
-				response = make_response(render_template('index.html'))
+				response = make_response(redirect('/'))
 				response.set_cookie('username', session['username'])
 				flash('User creation successfull ! Welcome, '+request.form['login']+ ' =)', 'success')
 				print('User creation successfull ! Welcome, '+request.form['login']+ ' =)')
-				
 				return response		# on redirige à l'index
+
 			else:		# create a échoué (False)
 				flash('Creation fail: user \"'+ request.form['login'] + '\" already exists', 'danger')
 				print('Creation fail: user \"'+ request.form['login'] + '\" already exists')
@@ -536,7 +536,8 @@ def editprofile(username):
 					db.execute(smt)
 				
 				# Mot de Passe !
-				if request.form['newmdp'] is not None:
+				if request.form.get('newmdp') is not "" and request.form.get('mdp') is not "":		# les champs ne sont jamais None mais plutôt ""
+					print("##### CHANGE PASSWORD ASKED #####")
 					newpassword = request.form['newmdp']
 					password = request.form['mdp']
 					passhash = hash_for(password)
@@ -569,7 +570,11 @@ def editprofile(username):
 						print(db.execute(smt))
 						print("##### ! DELETION COMPLETE ! #####")
 						flash("Your account has been successfully deleted", 'danger')
-						return(redirect('/logout'))		# on déconnecte l'utilisateur, car sa page n'existe plus
+						session.pop('logged', None)
+						session.clear()
+						resp = make_response(redirect('/'))
+						resp.set_cookie('username', '', expires=0)
+						return(resp)		# on déconnecte l'utilisateur, car sa page n'existe plus
 					else:
 						print("! Account deletion failed : wrong password !")
 						flash("Account deletion failed : wrong password", 'warning')
@@ -856,17 +861,6 @@ def projectDisplay(title):
 	#if session.get('logged') is False:
 	#	return redirect('/login')
 	#return redirect('/propose')
-
-
-@app.route('/project/<title>')
-def viewproject(title):
-	db = engine.connect()
-		
-	if request.method == 'GET':
-		return render_template("project.html", name="Projet \"" +title+ "\"", title=title)
-	if session.get('logged') is False:
-		return redirect('/login')
-	return render_template("propose.html")
 
 
 @app.route('/projet')

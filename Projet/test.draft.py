@@ -22,6 +22,17 @@ def printer_create(username, xyz, res, price, material, address):
 	finally:
 		pass
 
+# Le template n'existe plus (renommé)
+@app.route('/project/<title>')
+def viewproject(title):
+	db = engine.connect()
+		
+	if request.method == 'GET':
+		return render_template("project.html", name="Projet \"" +title+ "\"", title=title)
+	if session.get('logged') is False:
+		return redirect('/login')
+	return render_template("propose.html")
+
 
 #TO DELETE IF OTEHR PROPOSE IS OK			
 @app.route('/propose', methods=['GET','POST'])
