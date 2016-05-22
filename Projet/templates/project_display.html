@@ -23,7 +23,7 @@
 		
 		<div class="container-co jumbotron propose-form-title">
 			<p>
-				<label for="titletext" class="login-form-title">{{title}}</label>
+				<label for="titletext" class="login-form-title">{{title}} (par <a href="/profile/{{username}}">{{username}}</a>)</label>
 			</p>
 		</div>
 		
@@ -31,29 +31,25 @@
 			<div class="col-md-6 no-padding">
 				<div  id="registerleftwindow" class="jumbotron-propose container-halfproject">
 					
-					<img style="max-width:55%;" src="../image/lama.png">
+					<div class="image-wrapper"> <img style="max-width:100%; margin-left:auto; margin-right: auto" src={{image}}> </div>
 					
 					<!--</br></br>
 					<p>Prix : #,## €</p>
 					<p>Masse : #,# g</p>
 					<p>Dimensions :  #,#  x  #,#  x  #,#  cm</p>-->
-					<p>Description : </p>
+					<p><label for="description">Description</label><br/>
 					<div style="overflow-y:auto; height:25%;">
 						{{description}}
 					</div>
+					</p>
 					
-						
-						
-						<!-- SI connecté-->
-						<p><label for="description">Laisser un commentaire </label> : <br />
-						<textarea name="description" id="description" rows="2" cols="42%" style="margin-bottom:11px"></textarea></p>
-						
+					{% if session.get('logged')==True %}
+						<p><label for="writecomment">Laisser un commentaire :</label><br />
+						<textarea name="writecomment" id="writecomment" rows="2" cols="42%" style="margin-bottom:11px"></textarea></p>
 						<button onclick="writeComment()" style="margin-top: 0px; margin-left:30%;" class="btn btn-lg btn-warning register-button-style" href="#" role="button">Envoyer</button>
-						<!-- SINON
+					{% else %}
 						<p>Connectez-vous pour laisser un commentaire !</p>
-						
-						OVERFLOW SCROLL
-						-->
+					{% endif %}
 					
 				</div>
 					
@@ -75,7 +71,8 @@
 						{% if masse != None %}
 						masse: {{masse}}</br>
 						{%endif%}
-						dimension: {{dimx}} cm *{{dimy}} cm *{{dimy}} cm
+						dimension: {{dimx}} cm *{{dimy}} cm *{{dimy}} cm</br>
+						<a href="/profile/{{userfile}}">User {{userfile}}</a>
 						</div>
 					
 					</div>

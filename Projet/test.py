@@ -82,7 +82,8 @@ file = Table('file', metadata,
 	Column('city', String),
 	Column('weight', Float),
 	Column('price', Integer),
-	Column('name', String))
+	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
+	Column('image_path', String))
 	
 printer = Table('printer', metadata,
 	Column('ID', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),	
@@ -296,6 +297,63 @@ def printer_create(username, xyz, res, price, material, address, description):
 	finally:
 		db.close()
 
+
+#____________________________________________________________#
+#		PROJECT & FILE MANAGEMENT
+#____________________________________________________________#
+
+def getProjectInfo(title):
+	db = engine.connect()
+	print("### GetProjectInfo, title = "+title)
+	try:
+		result = db.execute(select([project]).where(project.c.project_name == title)).fetchone()
+		if result is None:
+			# Le projet n'existe pas
+			# code ...
+			print('**Encounter problem getting project\'s info**')
+			return False
+		else:
+			return result
+	finally:
+		db.close()
+
+def getFileInfo(idd):
+	db = engine.connect()
+	print("### GetFileInfo, title = "+str(idd))
+	try:
+		result = db.execute(select([file]).where(file.c.id == idd)).fetchone()
+		if result is None:
+			# Le fichier n'existe pas
+			# code ...
+			print('**Encounter problem getting file\'s info**')
+			return False
+		else:
+			return result
+	finally:
+		db.close()
+
+def getProjectFile(title):
+	db = engine.connect()
+	print("### getProjectFile, title = "+title)
+	try:
+		# id du projet
+		idd = db.execute(select([project.c.id]).where(project.c.project_name == title)).fetchone()
+		print("ID du projet =", idd, type(idd))
+		# fichiers correspondant
+		idd = idd[0]
+		result = db.execute(select([file]).where(file.c.project == idd)).fetchall()
+		if result is None:
+			# Aucun fichier
+			# code ...
+			print('**Encounter problem getting file\'s info**')
+			return False
+		else:
+			print(result)
+			for row in result:
+				print(row)
+			return result
+	finally:
+		db.close()
 
 
 #____________________________________________________________#
@@ -785,23 +843,24 @@ def demand():
 		
 		if request.method == 'GET':
 			return render_template("demand.html", name = "Demande de projet")
-		if request.method == 'POST':
+		elif request.method == 'POST':
 			db = engine.connect()
+			print("## DEMAND CREATION")
 			result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'])).fetchone()
 			if result is None:
-				db.execute(project.insert(), [ {'project_name': request.form['title'], 'user': username, 'description': request.form['description']}])
+				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description']}])
 				fichier = request.files["images"]
-				print("Fichiers =", fichier)
+				print("Fichier =", fichier)
 				print("type(fichier) =", type(fichier))
 				path = uploadFile(request, "images", filepath="project_images")
 				if path is not None:
 					image = "../"+path
-					db.execute(project.update().values(image_path = image).where(project.c.project_name == request.form['title']))
 				else:
 					image='../image/lama.png'
+				db.execute(project.update().values(image_path = image).where(project.c.project_name == request.form['title']))
 				print("IMAGE =", image)
 
-				print('### PROJECT CREATED ###')
+				print('### DEMAND CREATED ###')
 				flash('Demand ' +request.form['title']+ ' has been succefully created', 'success')
 				return redirect('/demand/'+request.form['title'])
 			else:
@@ -815,15 +874,36 @@ def demandDisplay(title):
 	if request.method == 'GET':
 		username = getUserName(request)
 		db = engine.connect()
-		result = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
-		img = db.execute(select([project.c.image_path]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
-		if result is None:
-			print('ERREUR BSD')
-			return render_template("demand_display.html",name= "Demande : "+title, title=title)
+		#description = db.execute(select([project.c.description]).where(project.c.project_name==title)).fetchone()
+		#img = db.execute(select([project.c.image_path]).where(project.c.project_name==title)).fetchone()
+		result = getProjectInfo(title)
+		print(result)
+		
+		if result is False:
+			flash('Error: project \"'+ title + '\" may not exist.', 'warning')
+			print('Error: project \"'+ title + '\" may not exist.')
+			return redirect('/')
 		else:
+			#User
+			if result[2] is not None:
+				user=result[2]
+			if result[2] is None:	
+				user='Non renseigné'
+			#Image
+			if result[7] is not None:
+				image=result[7]
+			if result[7] is None:	
+				image='../image/lama.png'
+			#Description
+			if result[11] is not None:
+				description=result[11]
+			if result[11] is None:	
+				description='-- Aucune description --'
+
 			l=getCom(title)
 			l.reverse()
-			return render_template("demand_display.html",name= "Demande : "+title, title=title, description=result[0], list=l, image=img[0])
+
+			return render_template("demand_display.html", name= "Demande : "+title, username=user, title=title, description=description, list=l, image=image)
 	
 
 @app.route('/propose', methods=['GET','POST'])
@@ -841,12 +921,31 @@ def propose():
 				return render_template("propose.html", name = "Proposer une imprimante")
 		if request.method == 'POST':
 			db = engine.connect()
+			print("## PROPOSE CREATION")
 			result = db.execute(select([project.c.id]).where(project.c.project_name==request.form['title'])).fetchone()
 			if result is None:
-				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'user': username, 'description': request.form['description']}])
-				db.execute(file.insert(), [{'project': request.form['title'], 'price':request.form['prix'], 'price':request.form['prix'], 'name':"A remplacer", 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
-				uploadFile("CAO")
-				print('create project')
+				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description']}])
+				idd=idd.lastrowid
+				db.execute(file.insert(), [{'project': idd, 'creation_date': str(datetime.date.today()), 'price':request.form['prix'], 'weight':request.form['masse'], 'user': username, 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
+				
+				#UPLOAD DES FICHIERS
+				path = uploadFile(request, "fichier", filepath="CAO")
+				if path is not None:
+					fichier = "../"+path
+				else:
+					fichier = ""	# chemin vide -> aucun fichier. Normalement, n'arrive pas !
+				db.execute(file.update().values(file_path = fichier).where(file.c.project == idd))
+				print("FICHIER =", fichier)
+				path = uploadFile(request, "images", filepath="project_images")
+				if path is not None:
+					image = "../"+path
+				else:
+					image='../image/lama.png'
+				db.execute(file.update().values(image_path = image).where(file.c.project == idd))
+				db.execute(project.update().values(image_path = image).where(project.c.id == idd))
+				print("IMAGE =", image)
+
+				print('### PROJECT CREATED ###')
 				flash('Project ' +request.form['title']+ 'has been succefully created', 'success')
 				return redirect('/project_display/'+request.form['title'])
 			else:
@@ -860,14 +959,46 @@ def propose():
 def projectDisplay(title):
 	db = engine.connect()
 	if request.method == 'GET':
-		result = db.execute(select([project]).where(project.c.project_name==title)).fetchone()
-		f = db.execute(select([file]).where(file.c.project==result[0])).fetchone()
-		if result is None:
-			print('ERREUR BSD')
+		project = getProjectInfo(title)
+		files = getProjectFile(title)
+		print("Project =", project)
+		print("Files =", files)
+
+		for row in files:
+			print(row)
+
+		if project is False:
+			flash('Error: project \"'+ title + '\" may not exist.', 'warning')
+			print('Error: project \"'+ title + '\" may not exist.')
+			return redirect('/')
 		else:
+			#User
+			if project[2] is not None:
+				user=project[2]
+			if project[2] is None:	
+				user='Non renseigné'
+			#Image
+			if project[7] is not None:
+				image=project[7]
+			if project[7] is None:	
+				image='../image/lama.png'
+			#Description
+			if project[11] is not None:
+				description=project[11]
+			if project[11] is None:	
+				description='-- Aucune description --'
+		
 			l=getCom(title)
 			l.reverse()
-			return render_template("project_display.html", name="Projet "+title, title=title, image=result[7], description=result[11], id=f[0], dimx=f[5], dimy=f[6], dimz=f[7], prix=f[10], masse=f[9], list=l)
+
+			# A améliorer, notamment dans le template !! (c'est pas top...)
+			if files == []:
+				print('Aucun fichier pour le project \"'+ title + '\".')
+				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, id=0, dimx=0, dimy=0, dimz=0, prix=0, masse=0, list=l, userfile="")
+			else:
+				for row in files:
+					f=row
+				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, id=f[0], dimx=f[5], dimy=f[6], dimz=f[7], prix=f[10], masse=f[9], list=l, userfile=f[11])
 	#if session.get('logged') is False:
 	#	return redirect('/login')
 	#return redirect('/propose')
@@ -974,17 +1105,17 @@ def searchproject():
 		s = "select * from project where "
 		prev = 0
 		if request.form['dimxmax']:
-			s = s + "dimensionsx <= " + "\"" + request.form['dimxmax'] + "\""
+			s = s + "dimensionsx <= " +  request.form['dimxmax']
 			prev = 1
 		if request.form['dimymax']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "dimensionsy <= " + "\"" + request.form['dimymax'] + "\""
+			s = s + "dimensionsy <= " + request.form['dimymax']
 			prev = 1
 		if request.form['dimzmax']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "dimensionsz <= " + "\"" + request.form['dimzmax'] + "\""
+			s = s + "dimensionsz <= " + request.form['dimzmax']
 			prev = 1
 		if request.form['field']:
 			if prev == 1:
@@ -994,19 +1125,49 @@ def searchproject():
 		if request.form['prix']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "price <= " + "\"" + request.form['prix'] + "\""
+			s = s + "price <= " + request.form['prix']
 			prev = 1
 
 		if prev == 0:
 			print("Empty request")
+			s3="<strong>Requête vide !</strong> Veuillez entrer des paramètres."
+			message = Markup(s3)
+			flash(message)
 		else:
 			print("Request made: ")
+			#s = "select * from printer"
 			print(s)
+			result = db.execute(s)
+			print(result)
+			if db.execute(s).first() is None:
+				print("## SEARCH : NO RESULTS")
+				s2="<strong>Aucun résultat</strong>"
+				message = Markup(s2)
+				flash(message)
 
-			for row in db.execute(s):
+			for row in result:
 				print(row)
+				s = "----------------------------------------------------------<br/><b><a href=\"/project_display/"
+				s=s+row.project_name
+				s=s+"\">"
+				s=s+row.project_name+ "</a> (par <a href=\"/profile/"
+				s=s+row.user
+				s=s+"\">" + row.user
+				s=s+"</a>)</b> <br />"
+				s=s+"<b>Description</b> : "
+				s=s+row.description
+				if row.image_path is not None:
+					s=s+"<br /> <b>Image: </b><a href=\""
+					s=s+row.image_path
+					s=s+"\">"
+					s=s+"voir l\'image" + "</a>"
+				s=s+"<br/><br/>"
+				message = Markup(s)
+				flash(message)
 			print('\n')
-	return render_template('searchproject.html', name="Recherche de projet")
+		return(redirect('/searchproject'))
+	else:
+		return render_template('searchproject.html', name="Recherche de projet")
 
 
 #____________________________________________________________#
@@ -1015,6 +1176,7 @@ def searchproject():
 
 @app.route('/write_comment/<title>',methods=['GET','POST'])
 def writeCom(title):
+	print("### WRITE COM ! ###")
 	username=getUserName(request)
 	value = request.args.get('key')
 	db = engine.connect()

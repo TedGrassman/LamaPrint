@@ -4,6 +4,7 @@
 
 {% block head %}
 {{ super() }}
+<script type="text/javascript" src="../api/project.js" defer></script>
 <script type="text/javascript" src="../api/comment.js" defer></script>
 {% endblock %}
 
@@ -20,7 +21,7 @@
 		
 		<div class="container-co jumbotron propose-form-title">
 			<p>
-				<label for="titletext" class="login-form-title">{{title}}</label>
+				<label for="titletext" class="login-form-title">{{title}} (par <a href="/profile/{{username}}">{{username}}</a>)</label>
 			</p>
 		</div>
 		
@@ -36,9 +37,13 @@
 						{{description}}
 					</div>
 
-					<label for="writecomment">Laisser un commentaire :</label>
-					<div class=textareawrapper> <textarea name="writecomment" id="writecomment" rows="2" style="width:100%; margin-bottom: 5px"></textarea> </div>
-					<div class=buttonwrapper><button onclick="writeComment()" style="position: relative; margin-left: auto; margin-right: auto; margin-top: 0px" class="btn btn-lg btn-warning register-button-style" href="#" role="button">Envoyer</button> </div>
+					{% if session.get('logged')==True %}
+						<p><label for="writecomment">Laisser un commentaire :</label><br />
+						<textarea name="writecomment" id="writecomment" rows="2" cols="42%" style="margin-bottom:11px"></textarea></p>
+						<button onclick="writeComment()" style="margin-top: 0px; margin-left:30%;" class="btn btn-lg btn-warning register-button-style" href="#" role="button">Envoyer</button>
+					{% else %}
+						<p>Connectez-vous pour laisser un commentaire !</p>
+					{% endif %}
 					
 				</div>
 			
