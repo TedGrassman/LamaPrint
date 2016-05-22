@@ -97,7 +97,8 @@ printer = Table('printer', metadata,
 	Column('address', String),
 	Column('postcode', String),
 	Column('city', String),
-	Column('country', String))
+	Column('country', String),
+	Column('description', String))
 				
 comment = Table('comment', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
@@ -285,12 +286,12 @@ def getUserPrinter(username):
 	finally:
 		db.close()
 
-def printer_create(username, xyz, res, price, material, address):
+def printer_create(username, xyz, res, price, material, address, description):
 	#engine = create_engine('sqlite:///lama.db', echo=True)
 	db = engine.connect()
 	try:
 		print(datetime.datetime.now())
-		idd = db.execute(printer.insert(), [ {'user': username, 'creation_date': str(datetime.date.today()) , 'dimensionsx': xyz[0], 'dimensionsy': xyz[1], 'dimensionsz': xyz[2], 'res': res, 'price': price, 'material': material, 'address': address[0], 'postcode':address[1], 'city': address[2], 'country': address[3]} ] )
+		idd = db.execute(printer.insert(), [ {'user': username, 'creation_date': str(datetime.date.today()) , 'dimensionsx': xyz[0], 'dimensionsy': xyz[1], 'dimensionsz': xyz[2], 'res': res, 'price': price, 'material': material, 'address': address[0], 'postcode':address[1], 'city': address[2], 'country': address[3], 'description': description } ])
 		return idd.lastrowid
 	finally:
 		db.close()
@@ -651,14 +652,18 @@ def rent():
 			price = request.form['prix']
 			material = request.form['materiaux']
 			address = (request.form['adresse'], request.form['codepostal'], request.form['ville'], request.form['pays'])
+			description = request.form['description']
 			print("### /rent : printer_create")
-			idd=printer_create(username=username, xyz=xyz, res=res, price=price, material=material, address=address)
-			print("idd ",idd)
-			flash('Printer n°'+ str(idd) + ' has been successfully rented.', 'success')
-			return redirect('/printer/'+str(idd))
-			
+			idd=printer_create(username=username, xyz=xyz, res=res, price=price, material=material, address=address, description=description)
+			print("idd =",idd)
+			if(idd > 0):
+				flash('Printer n°'+ str(idd) + ' has been successfully rented.', 'success')
+				return redirect('/printer/'+str(idd))
+			else:
+				return(redirect('/rent'))
+
 		else:
-			return render_template("rentprinter.html")
+			return render_template("rentprinter.html", name="Proposer mon imprimante 3D")
 
 
 @app.route('/printer/<idd>')
@@ -751,8 +756,13 @@ def showprinter(idd):
 			country=country.upper()
 		if result[12] is None:	
 			country='Non renseigné'
+		#Description
+		if result[13] is not None:
+			description=result[13]
+		if result[13] is None:	
+			description='-- Aucune description --'
 
-		return render_template('printer.html', name=" Imprimante n°"+str(idd), username=username, prenom=prenom, nom=nom, x=x, y=y, z=z, res=res, price=price, material=material, address=address, postcode=postcode, city=city, country=country, phone=phone)
+		return render_template('printer.html', name=" Imprimante n°"+str(idd), username=username, prenom=prenom, nom=nom, x=x, y=y, z=z, res=res, price=price, material=material, address=address, postcode=postcode, city=city, country=country, phone=phone, description=description)
 
 	elif result is False:
 		flash('Error: printer n°'+ str(idd) + ' may not exist.', 'warning')
@@ -895,12 +905,12 @@ def searchprinter():
 		if request.form['resolution']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "res <= " + "\"" + request.form['resolution'] + "\""
+			s = s + "res <= " + request.form['resolution']
 			prev = 1
 		if request.form['prix']:
 			if prev == 1:
 				s = s + " and "
-			s = s + "price <= " + "\"" + request.form['prix'] + "\""
+			s = s + "price <= " + request.form['prix']
 			prev = 1
 		if request.form['codepostal']:
 			if prev == 1:
@@ -950,9 +960,9 @@ def searchprinter():
 				flash(message)
 			print('\n')
 			
-		redirect('/searchprinter')
+		return(redirect('/searchprinter'))
 	else:
-		return render_template('searchprinter.html')
+		return render_template('searchprinter.html', name="Recherche d'imprimante 3D")
 
 @app.route('/searchproject', methods=['GET','POST'])
 def searchproject():

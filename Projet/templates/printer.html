@@ -15,94 +15,95 @@
 	<header>
 	</header>
 		
-	<form method="POST" action="#">
-		<div class="container register-text">
-		
-			<div class="jumbotron profile-title">
-				<label for="titletext" class="profile-title">Imprimante de <a href="/profile/{{username}}">{{username}}</a></label>
+	<div class="container register-text">
+	
+		<div class="jumbotron profile-title">
+			<label for="titletext" class="profile-title">Imprimante de <a href="/profile/{{username}}">{{username}}</a></label>
+		</div>
+	
+		<div class="container-globalprofile">
+			
+			<div class="col-md-6 no-padding">
+				<div class="jumbotron container-leftprofile">
+					<div class="form-style">
+						<br />
+						<br />
+						<img src="../image/printer.png" name="image" id="image" style="width: auto">
+						<br />
+						<br />
+						<label class="profile-subtitle">Description :</label>
+						<br />
+						<text class="profile-text">{{description}} 
+						</text>
+					</div>
+				</div>
 			</div>
 		
-			<div class="container-globalprofile">
+		
+			<div class="col-md-6 no-padding">
+				<div class="jumbotron container-rightprofile">
+					
+					<label class="profile-subtitle">Informations</label>
+					<br />
+
+					<B><text class="profile-text">Loueur : 
+					</text></B>
+					<text style="color:#0065e5; text-align:center;">{{prenom}} {{nom}} (<a href="/profile/{{username}}">{{username}}</a>)</text>
+					<br />
 				
-				<div class="col-md-6 no-padding">
-					<div class="jumbotron container-leftprofile">
-						<div class="form-style">
-							<br />
-							<br />
-							<img src="../image/printer.png" name="image" id="image">
-							<br />
-							<br />
-						</div>
-					</div>
+					<B><text class="profile-text">Adresse : </text></B>
+						<text style="color:#0065e5; text-align:center;">{{address}}, <br /> {{postcode}} {{city}}, {{country}}</text>
+
+					<br />
+					
+					<!-- IF NumTel-->
+					<B><text class="profile-text">Numéro de téléphone : </text></B>
+					<text style="color:#0065e5; text-align:center;">{{phone}}</text>
+
 				</div>
-			
-			
-				<div class="col-md-6 no-padding">
-					<div class="jumbotron container-rightprofile">
-						
-						<label class="profile-subtitle">Informations</label>
-						<br />
-
-						<B><text class="profile-text">Loueur : 
-						</text></B>
-						<text style="color:#0065e5; text-align:center;">{{prenom}} {{nom}} (<a href="/profile/{{username}}">{{username}}</a>)</text>
-						<br />
+				
+				<div class="jumbotron container-rightprofile">
 					
-						<B><text class="profile-text">Adresse : </text></B>
-							<text style="color:#0065e5; text-align:center;">{{address}}, <br /> {{postcode}} {{city}}, {{country}}</text>
-
-						<br />
-						
-						<!-- IF NumTel-->
-						<B><text class="profile-text">Numéro de téléphone : </text></B>
-						<text style="color:#0065e5; text-align:center;">{{phone}}</text>
-
-					</div>
+					<label class="profile-subtitle">Propriétés</label>
+					<br />	
 					
-					<div class="jumbotron container-rightprofile">
-						
-						<label class="profile-subtitle">Propriétés</label>
-						<br />	
-						
-						<B><text class="profile-text">Dimensions maximales : </text></B>
-						<text style="color:#0065e5; text-align:center;"> {{x}} </text>x <text style="color:#0065e5; text-align:center;">{{y}} </text>x <text style="color:#0065e5; text-align:center;">{{z}}</text> cm
-						<br />
-						
-						<B><text class="profile-text">Resolution : </text></B>
-						<text style="color:#0065e5; text-align:center;">{{res}}</text> µm
-						<br />
-						
-						<B><text class="profile-text">Prix min : </text></B>
-						<text style="color:#0065e5; text-align:center;">{{price}}</text> €/Kg
-						<br />
-
-						<B><text class="profile-text">Matériaux :</text></B>
-						<text style="color:#0065e5; text-align:center;"> {{material}}</text>
-						<br />
-						<B><text class="profile-text">Description :</text></B><br />
-						<text style="color:#0065e5; text-align:center;"> Coming soon!</text>
-
-					</div>
+					<B><text class="profile-text">Dimensions maximales : </text></B>
+					<text style="color:#0065e5; text-align:center;"> {{x}} </text>x <text style="color:#0065e5; text-align:center;">{{y}} </text>x <text style="color:#0065e5; text-align:center;">{{z}}</text> cm
+					<br />
 					
+					<B><text class="profile-text">Resolution : </text></B>
+					<text style="color:#0065e5; text-align:center;">{{res}}</text> µm
+					<br />
 					
+					<B><text class="profile-text">Prix min : </text></B>
+					<text style="color:#0065e5; text-align:center;">{{price}}</text> €/Kg
+					<br />
+
+					<B><text class="profile-text">Matériaux :</text></B>
+					<text style="color:#0065e5; text-align:center;"> {{material}}</text>
+					<br />
+
 				</div>
-			
-				<div class="col-md-12 no-padding">
-					<div class="jumbotron">
-						<B><text class="profile-subtitle">Commentaires</text></B>
-						</br>
-						<div id="older-comments" class="older-comments">
-						</div>
-
-						<div>
-							<textarea name="comments" id="com" class="comment-box"></textarea>
-						</div>
-						<button type="submit" class="btn btn-lg btn-default navbar-button">Envoyer</button>
+				
+				
+			</div>
+		
+			<div class="col-md-12 no-padding">
+				<div class="jumbotron">
+					<B><text class="profile-subtitle">Commentaires</text></B>
+					</br>
+					<div id="older-comments" class="older-comments">
 					</div>
+
+					<div>
+						<textarea name="comments" id="com" class="comment-box"></textarea>
+					</div>
+					<button onclick="writeComment()" class="btn btn-lg btn-default navbar-button">Envoyer</button>
 				</div>
 			</div>
 		</div>
-	</form>
+	</div>
+
 </div>
 {% endblock %}
 
