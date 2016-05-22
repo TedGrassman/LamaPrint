@@ -934,12 +934,15 @@ def searchprinter():
 			print("Request made: ")
 			#s = "select * from printer"
 			print(s)
-			if db.execute(s) is None:
-				s2="Aucun résultat."
+			result = db.execute(s)
+			print(result)
+			if db.execute(s).first() is None:
+				s2="<strong>Aucun résultat</strong>"
+				print("## SEARCH : NO RESULTS")
 				message = Markup(s2)
 				flash(message)
 
-			for row in db.execute(s):
+			for row in result:
 				print(row)
 				s = "----------------------------------------------------------<br /><b><a href=\"/printer/"
 				s=s+str(row.ID)
