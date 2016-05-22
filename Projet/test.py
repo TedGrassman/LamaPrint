@@ -872,8 +872,8 @@ def projet():
 #		SEARCH MANAGEMENT
 #____________________________________________________________#
 
-@app.route('/printers', methods=['GET','POST'])
-def printers():
+@app.route('/searchprinter', methods=['GET','POST'])
+def searchprinter():
 	db = engine.connect()
 
 	if request.method == 'POST':
@@ -950,9 +950,9 @@ def printers():
 				flash(message)
 			print('\n')
 			
-		redirect('/printers')
+		redirect('/searchprinter')
 	else:
-		return render_template('printers.html')
+		return render_template('searchprinter.html')
 
 @app.route('/searchproject', methods=['GET','POST'])
 def searchproject():
