@@ -62,7 +62,7 @@
 						<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Imprimante 3D<span class="caret"></span></a>
 						<ul class="dropdown-menu">
 							<li><a href="/rent">Prêter votre imprimante</a></li>
-							<li><a href="/printers">Louer une imprimante</a></li>
+							<li><a href="/searchprinter">Louer une imprimante</a></li>
 						</ul>
 					</li>
 				</ul>
@@ -89,6 +89,64 @@
 
 		<!-- CONTENU -->
 		<div class="container">
+			
+			<div class="container" style="width:100%; position: fixed; top:70px; left:0px;  z-index: 1040;" >
+				
+				{% with success = get_flashed_messages(category_filter=["success"]) %}
+					{% if success %}
+						<div class="msg-alert" style="margin-left:auto; margin-right:auto; max-width: 60%" >
+							{% for msg in success %}
+								<div class="alert alert-success fade in">
+									<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+										<strong>Success !</strong> {{ msg }}
+								</div>
+							{% endfor %}
+						</div>
+					{% endif %}
+				{% endwith %}
+
+				{% with info = get_flashed_messages(category_filter=["info"]) %}
+					{% if info %}
+						<div class="msg-alert" style="margin-left:auto; margin-right:auto; max-width: 60%" >
+							{% for msg in info %}
+								<div class="alert alert-info fade in">
+									<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+										<strong>Info !</strong> {{ msg }}
+								</div>
+							{% endfor %}
+						</div>
+					{% endif %}
+				{% endwith %}
+
+				{% with warning = get_flashed_messages(category_filter=["warning"]) %}
+					{% if warning %}
+						<div class="msg-alert" style="margin-left:auto; margin-right:auto; max-width: 60%" >
+							{% for msg in warning %}
+								<div class="alert alert-warning fade in">
+									<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+										<strong>Warning !</strong> {{ msg }}
+								</div>
+							{% endfor %}
+						</div>
+					{% endif %}
+				{% endwith %}
+
+				{% with danger = get_flashed_messages(category_filter=["danger"]) %}
+					{% if danger %}
+						<div class="msg-alert" style="margin-left:auto; margin-right:auto; max-width: 60%" >
+							{% for msg in danger %}
+								<div class="alert alert-danger fade in">
+									<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+										<strong>Danger !</strong> {{ msg }}
+								</div>
+							{% endfor %}
+						</div>
+					{% endif %}
+				{% endwith %}
+
+			</div>
+
+
 			{% block content %}{% endblock %}
 		</div>
 

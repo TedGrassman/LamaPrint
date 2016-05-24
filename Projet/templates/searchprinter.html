@@ -19,13 +19,13 @@
 		
 		<div class="container-co jumbotron propose-form-title">
 			<p>
-				<label for="titletext" class="login-form-title">Trouver une Imprimante 3D</label>
+				<label for="titletext" class="login-form-title">Trouver une imprimante 3D</label>
 			</p>
 		</div>
 
 		
 		<div class="container-globalregister"> 
-			<form method="post" action="/printers" enctype="multipart/form-data">
+			<form method="post" action="/searchprinter" enctype="multipart/form-data">
 				<div  id="registerleftwindow" class="jumbotron-propose printers-head">
 					<p><label for="dimxmax" style="margin-left:20px">Taille de l'impression</label> :  <label for="resolution" style="margin-left:100px">Résolution maximale</label> : <label for="prix" style="margin-left: 50px;">Prix max :</label>  <br />
 					<input type="number" min="0" step="0.1" name="dimxmax" id="dimxmax" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="x"  /> x
@@ -198,7 +198,7 @@
 								<option value="espagne">Espagne</option>
 								<option value="estonie">Estonie</option>
 								<option value="finlande">Finlande</option>
-								<option value="france">France</option>
+								<option value="france" selected="selected">France</option>
 								<option value="grece">Grèce</option>
 								<option value="hongrie">Hongrie</option>
 								<option value="irlande">Irlande</option>
@@ -276,9 +276,9 @@
 
 
 							<div class="flashes">
-							  {% for message in get_flashed_messages() %}
-								{{ message }}
-							  {% endfor %}
+								{% for message in get_flashed_messages() %}
+									{{ message }}
+								{% endfor %}
 							</div>
 						</div>
 						

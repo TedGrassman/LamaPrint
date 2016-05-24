@@ -25,7 +25,7 @@
 
 		
 		<div class="container-globalregister"> 
-			<form method="post" action="/searchproject" enctype="multipart/form-data">
+			<form method="POST" action="/searchproject" enctype="multipart/form-data">
 				<div  id="registerleftwindow" class="jumbotron-propose printers-head">
 					<p>
 
@@ -53,7 +53,12 @@
 
 
 				<div  id="registerleftwindow" class="jumbotron-propose printers-head">
-					Aucun résultat.
+					
+					<div class="flashes">
+						{% for message in get_flashed_messages() %}
+							{{ message }}
+						{% endfor %}
+					</div>
 					
 				</div>
 				

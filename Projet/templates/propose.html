@@ -32,7 +32,7 @@
 							
 							<label for="prix">Prix </label> : <label for="masse" style="margin-left: 105px;">Masse </label> :  </br>
 							<input type="number" min="0" step="0.01" value="0" name="prix" id="prix" style="width: 7em;" class="input-center" required /> € 
-							<input type="number" min="0" name="masse" id="masse" style="margin-left: 28px; width: 7em;" class="input-center" /> g</p>
+							<input type="number" min="0" name="masse" id="masse" style="margin-left: 28px; width: 7em;" class="input-center" required/> g</p>
 							
 							<p><label for="dimx">Dimensions </label> : </br>
 							<input type="number" min="0" step="0.1" name="dimx" id="dimx" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="x" required/> x
@@ -40,10 +40,10 @@
 							<input type="number" min="0" step="0.1" name="dimz" id="dimz" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="z" required/> cm </p>
 							
 							<p><label for="fichier">Fichier</label> :
-							<input type="file" name="fichier" id="fichier" style="margin-left:25px" /></p>
+							<input type="file" name="fichier" id="fichier" style="margin-left:25px" required/></p>
 								
-							<p><label for="images">Images</label> :
-							<input type="file" name="images" id="images" style="margin-left:25px" multiple /></p>			
+							<p><label for="images">Image</label> :
+							<input type="file" name="images" id="images" style="margin-left:25px" /></p>			
 					</div>
 				
 				</div>
@@ -51,7 +51,7 @@
 					<div id="registerrightwindow" class="jumbotron-propose container-halfpropose">
 						
 						<p><label for="description">Description </label> : <br />
-						<textarea name="description" id="description" rows="8" cols="42%" style="margin-bottom:11px"></textarea></p>
+						<textarea name="description" id="description" rows="8" cols="42%" style="margin-bottom:11px" required ></textarea></p>
 					
 						<button class="btn btn-lg btn-warning register-button-style" href="/propose">Envoyer</button>
 					</div>
