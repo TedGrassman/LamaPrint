@@ -614,7 +614,6 @@ def demand():
 @app.route('/demand/<title>', methods=['GET','POST'])
 def demandDisplay(title):
 	if request.method == 'GET':
-		username = getUserName(request)
 		db = engine.connect()
 		result = db.execute(select([project.c.description]).where(project.c.project_name==title and project.c.user==session['username'])).fetchone()
 		if result is None:
@@ -691,7 +690,7 @@ def propose():
 			#	print('Vous avez déjà créé ce projet')
 			return redirect('/')"""
 		
-@app.route('/project/<title>')
+"""@app.route('/project/<title>')
 def viewproject(title):
 	db = engine.connect()
 		
@@ -699,7 +698,7 @@ def viewproject(title):
 		return render_template("project.html", name="Projet \"" +title+ "\"", title=title)
 	if session.get('logged') is False:
 		return redirect('/login')
-	return render_template("propose.html")
+	return render_template("propose.html")"""
 
 
 @app.route('/projet')
