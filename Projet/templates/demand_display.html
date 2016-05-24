@@ -55,6 +55,12 @@
 					</div> </br>
 					<div class="file-block">
 					
+						{% if session.get('logged')==True %}
+							<a href="/propose?parent_project_id={{id}}" style="margin-top: 0px;" role="button" class="btn btn-lg btn-warning register-button-style">Proposer une réponse</a>
+						{% else %}
+							<p>Connectez-vous pour proposer une réponse !</p>
+						{% endif %}
+
 					</div>
 					<div style="text-align:center; margin-top:1%; font-size: 20px;">
 					Commentaire:

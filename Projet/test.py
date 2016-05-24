@@ -882,6 +882,11 @@ def demandDisplay(title):
 			print('Error: project \"'+ title + '\" may not exist.')
 			return redirect('/')
 		else:
+			#ID
+			if result[0] is not None:
+				idd=result[0]
+			if result[0] is None:	
+				idd=0
 			#User
 			if result[1] is not None:
 				user=result[1]
@@ -901,7 +906,7 @@ def demandDisplay(title):
 			l=getCom(title)
 			l.reverse()
 
-			return render_template("demand_display.html", name= "Demande : "+title, username=user, title=title, description=description, list=l, image=image)
+			return render_template("demand_display.html", name= "Demande : "+title, id=idd, username=user, title=title, description=description, list=l, image=image)
 	
 
 @app.route('/propose', methods=['GET','POST'])
