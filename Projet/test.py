@@ -1245,7 +1245,15 @@ def getCom(title):
 		
 	return l
 
-
+@app.route('/get_printer')
+def getAllPrinter():
+	#INIT
+	print('Getting printer')
+	db = engine.connect()
+	pr=db.execute(select([printer.c.address, printer.c.user])).fetchall()
+	print(type(pr))
+	
+	return dumps(pr)
 
 # ............................................................................................... #
 if __name__ == '__main__':

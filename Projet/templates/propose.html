@@ -4,6 +4,7 @@
 
 {% block head %}
 {{ super() }}
+<script type="text/javascript" src="../api/project.js" defer></script>
 {% endblock %}
 
 {% block navbar %}
@@ -39,8 +40,12 @@
 							<input type="number" min="0" step="0.1" name="dimy" id="dimy" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="y" required/> x
 							<input type="number" min="0" step="0.1" name="dimz" id="dimz" style="width: 4em; margin-left: 9px; margin-right: 9px;" class="input-center" placeholder="z" required/> cm </p>
 							
+							
 							<p><label for="fichier">Fichier</label> :
 							<input type="file" name="fichier" id="fichier" style="margin-left:25px" required/></p>
+							<div id="filebuttons" style="overflow-y:auto">
+							</div>
+							<button type="button" id="addbutton">Add more files</button>
 								
 							<p><label for="images">Image</label> :
 							<input type="file" name="images" id="images" style="margin-left:25px" /></p>			

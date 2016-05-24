@@ -1,3 +1,5 @@
+
+
 function initialize() {
 	
 	//myCenter=new google.maps.LatLng(p.coords.latitude,p.coords.longitude));
@@ -14,12 +16,7 @@ function initialize() {
 	
 	map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
 	
-	//l=["France","Lama","Kazakhstan","Lyon","Marseille","New-York","Paris","20 Avenue Albert Einstein, 69100 Villeurbanne","6 Avenue des Arts, 69100 Villeurbanne"]
-	$.get('/get_printer').done(function() {
-		alert("test")
-	});
-	
-	
+	l=["France","Lama","Kazakhstan","Lyon","Marseille","New-York","Paris","20 Avenue Albert Einstein, 69100 Villeurbanne","6 Avenue des Arts, 69100 Villeurbanne"]
 	for(i=0; i<l.length; i++){
 		geocoder.geocode( {'address': l[i]}, function(results, status) {
 		
