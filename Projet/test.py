@@ -929,24 +929,32 @@ def propose():
 			if result is None:
 				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description'], 'project_type':2}])
 				idd=idd.lastrowid
-				db.execute(file.insert(), [{'project': idd, 'creation_date': str(datetime.date.today()), 'price':request.form['prix'], 'weight':request.form['masse'], 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
-				
-				#UPLOAD DES FICHIERS
-				path = uploadFile(request, "fichier", filepath="CAO")
-				if path is not None:
-					fichier = "../"+path
-				else:
-					fichier = ""	# chemin vide -> aucun fichier. Normalement, n'arrive pas !
-				db.execute(file.update().values(file_path = fichier).where(file.c.project == idd))
-				print("FICHIER =", fichier)
 				path = uploadFile(request, "images", filepath="project_images")
 				if path is not None:
 					image = "../"+path
 				else:
 					image='../image/lama.png'
-				db.execute(file.update().values(image_path = image).where(file.c.project == idd))
 				db.execute(project.update().values(image_path = image).where(project.c.id == idd))
 				print("IMAGE =", image)
+
+				i=request.form['nbfiles']
+				i=int(i)
+				print("Nombre de fichiers :", i)
+
+				for j in range(i):
+					#CREATION DES FICHIERS
+					fidd = db.execute(file.insert(), [{'project': idd, 'creation_date': str(datetime.date.today()), 'price':request.form['prix'], 'weight':request.form['masse'], 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
+					fidd=fidd.lastrowid
+					#UPLOAD DES FICHIERS
+					path = uploadFile(request, "fichier"+str(j), filepath="CAO")
+					if path is not None:
+						fichier = "../"+path
+					else:
+						fichier = ""	# chemin vide -> aucun fichier. Normalement, n'arrive pas !
+					db.execute(file.update().values(file_path = fichier).where(file.c.id == fidd))
+					print("FICHIER =", fichier)
+					db.execute(file.update().values(image_path = image).where(file.c.id == fidd))
+				
 
 				print('### PROJECT CREATED ###')
 				flash('Project ' +request.form['title']+ 'has been succefully created', 'success')
@@ -1005,41 +1013,8 @@ def projectDisplay(title):
 	#if session.get('logged') is False:
 	#	return redirect('/login')
 	#return redirect('/propose')
+			
 
-
-#TO DELETE IF OTEHR PROPOSE IS OK			
-"""@app.route('/propose', methods=['GET','POST'])
-def propose():
-	
-	username = getUserName(request)
-	if username is None:
-			print('Pas de cookie')
-			return redirect('/login')
-	elif username is not None:
-
-		if request.method == 'GET':
-				return render_template("propose.html", name = "Proposition de projet")
-		
-		if request.method == 'POST':
-			db = engine.connect()
-			result = db.execute(select([file.c.project]).where(file.c.name==username)).fetchone()
-			#if result is None:
-			#db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
-			print('create project')
-			return redirect('/project/'+request.form['title'])
-			#else:
-			#	print('Vous avez déjà créé ce projet')
-			return redirect('/')"""
-		
-"""@app.route('/project/<title>')
-def viewproject(title):
-	db = engine.connect()
-		
-	if request.method == 'GET':
-		return render_template("project.html", name="Projet \"" +title+ "\"", title=title)
-	if session.get('logged') is False:
-		return redirect('/login')
-	return render_template("propose.html")"""
 	
 @app.route('/projet')
 def projet():
