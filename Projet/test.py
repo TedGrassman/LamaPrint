@@ -847,7 +847,7 @@ def demand():
 			print("## DEMAND CREATION")
 			result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'])).fetchone()
 			if result is None:
-				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description']}])
+				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description'], 'project_type': 1}])
 				fichier = request.files["images"]
 				print("Fichier =", fichier)
 				print("type(fichier) =", type(fichier))
@@ -884,19 +884,19 @@ def demandDisplay(title):
 			return redirect('/')
 		else:
 			#User
-			if result[2] is not None:
-				user=result[2]
-			if result[2] is None:	
+			if result[1] is not None:
+				user=result[1]
+			if result[1] is None:	
 				user='Non renseigné'
 			#Image
-			if result[7] is not None:
-				image=result[7]
-			if result[7] is None:	
+			if result[10] is not None:
+				image=result[10]
+			if result[10] is None:	
 				image='../image/lama.png'
 			#Description
-			if result[11] is not None:
-				description=result[11]
-			if result[11] is None:	
+			if result[12] is not None:
+				description=result[12]
+			if result[12] is None:	
 				description='-- Aucune description --'
 
 			l=getCom(title)
@@ -923,9 +923,9 @@ def propose():
 			print("## PROPOSE CREATION")
 			result = db.execute(select([project.c.id]).where(project.c.project_name==request.form['title'])).fetchone()
 			if result is None:
-				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description']}])
+				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description'], 'project_type':2}])
 				idd=idd.lastrowid
-				db.execute(file.insert(), [{'project': idd, 'creation_date': str(datetime.date.today()), 'price':request.form['prix'], 'weight':request.form['masse'], 'user': username, 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
+				db.execute(file.insert(), [{'project': idd, 'creation_date': str(datetime.date.today()), 'price':request.form['prix'], 'weight':request.form['masse'], 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
 				
 				#UPLOAD DES FICHIERS
 				path = uploadFile(request, "fichier", filepath="CAO")
@@ -972,19 +972,19 @@ def projectDisplay(title):
 			return redirect('/')
 		else:
 			#User
-			if project[2] is not None:
-				user=project[2]
-			if project[2] is None:	
+			if project[1] is not None:
+				user=project[1]
+			if project[1] is None:	
 				user='Non renseigné'
 			#Image
-			if project[7] is not None:
-				image=project[7]
-			if project[7] is None:	
+			if project[10] is not None:
+				image=project[10]
+			if project[10] is None:	
 				image='../image/lama.png'
 			#Description
-			if project[11] is not None:
-				description=project[11]
-			if project[11] is None:	
+			if project[12] is not None:
+				description=project[12]
+			if project[12] is None:	
 				description='-- Aucune description --'
 		
 			l=getCom(title)
@@ -997,7 +997,7 @@ def projectDisplay(title):
 			else:
 				for row in files:
 					f=row
-				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, id=f[0], dimx=f[5], dimy=f[6], dimz=f[7], prix=f[10], masse=f[9], list=l, userfile=f[11])
+				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, id=f[0], dimx=f[6], dimy=f[7], dimz=f[8], prix=f[10], masse=f[9], list=l)
 	#if session.get('logged') is False:
 	#	return redirect('/login')
 	#return redirect('/propose')
