@@ -58,32 +58,31 @@ user = Table('user', metadata,
 
 project = Table('project', metadata,
 	Column('id', Integer, autoincrement = True, primary_key = True, nullable = False, unique = True),
-	Column('creation_date', String),
 	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('project_name', String, unique = True, nullable = False),
+	Column('parent_project', Integer, ForeignKey('project.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
+	Column('creation_date', String),
+	Column('project_name', String),
+	Column('project_type', Integer), #'rquest', 'publication' ou 'offer'
+	Column('score', Integer),
 	Column('dimensionsx', Integer),
 	Column('dimensionsy', Integer),
 	Column('dimensionsz', Integer),
 	Column('image_path', String),
 	Column('price', Integer),
-	Column('score', Integer),
-	Column('project_type', Integer), #'rquest', 'publication' ou 'offer'
 	Column('description', String))
 
 file = Table('file', metadata,
 	Column('id', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),
+	Column('project', Integer, ForeignKey('project.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
 	Column('creation_date', String),
 	Column('score', Integer),
-	Column('project', Integer, ForeignKey('project.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
 	Column('file_path', String),
+	Column('image_path', String),
 	Column('dimensionsx', Integer),
 	Column('dimensionsy', Integer),
 	Column('dimensionsz', Integer),
-	Column('city', String),
 	Column('weight', Float),
-	Column('price', Integer),
-	Column('user', String, ForeignKey('user.username', ondelete = 'SET NULL', onupdate = 'CASCADE')),
-	Column('image_path', String))
+	Column('price', Integer))
 	
 printer = Table('printer', metadata,
 	Column('ID', Integer, autoincrement=True, primary_key=True, nullable = False, unique = True),	
