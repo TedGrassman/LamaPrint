@@ -14,15 +14,19 @@
 
 {% block content %}
 <div class="content">
-	<header>
-		<h1 >Bienvenue sur Lamaprint !</h1>	
-		<h2 >Le réseau social de l'impression 3D </h2>
-	</header>
+
+	<div class="container-co jumbotron" style="width:70%;margin:auto; padding:0px">
+
+		<header>
+			<img src="../image/logo2.png" name="image" id="image" style="width: auto;height:100px;margin-top:10px;">
+			<h1 >Bienvenue sur LamaPrint !</h1>	
+			<h3><i>Le réseau social de l'impression 3D </i></h3>
+		</header>
 	
 	
-	<div class="container container-index">
+		<div class="container container-index" style="width:100%;margin:auto; padding:0px">
 		<!-- CAROUSEL -->				
-		<div id="carousel-example-generic" class="carousel slide carousel-option" data-ride="carousel">
+			<div id="carousel-example-generic" class="carousel slide carousel-option" data-ride="carousel" style="width:100%;margin:0px">
 				<ol class="carousel-indicators">
 					<li data-target="#carousel-example-generic" data-slide-to="0" class=""></li>
 					<li class="" data-target="#carousel-example-generic" data-slide-to="1"></li>
@@ -47,32 +51,15 @@
 					<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
 					<span class="sr-only">Next</span>
 				</a>
-		  </div>
-		
-		
-		<div class="row row-no-margin choice"> <!-- mettre plusieurs classe-->							
-			<div class="col-md-6"> <!-- col-md-n avec n la taille en nombre de collone. Max=12 -->
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-					  <h3 class="panel-title panel-title-center"><a href="projet"> Proposer / Répondre à un projet </a></h3>
-					</div>
-					<div class="panel-body">
-					<!-- Ecrire dans le Panel ici-->
-					</div>
-				 </div>
+		  	</div>
+			<div class="container register-text">
+				<p><i>La technologie du futur à la portée de tous. <br />
+				Démocratisons l'impression 3D !</i></p>
+
+				<h3>Les imprimantes 3D près de chez vous</h3>
+				<div id="googleMap" class="maps"></div>
 			</div>
-			
-			<div class="col-md-6">
-				<div class="panel panel-primary">
-					<div class="panel-heading">
-					  
-					  <h3 class="panel-title panel-title-center"><a href="3dprinter"> Louer / Trouver une imprimante 3D </a></h3>
-					</div>
-					<div class="panel-body">
-						<div id="googleMap" class="maps"></div>
-					</div>
-				 </div>
-			</div>
+
 		</div>
 	</div>
 </div>

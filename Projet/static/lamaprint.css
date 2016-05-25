@@ -22,7 +22,7 @@ footer{
 
 
 body{
-	background-color:#e0eafa
+	background-color:#e9f0fa
 }
 
 /*.container {
@@ -306,7 +306,7 @@ img {
 	padding-left:20px;
 	padding-right:20px;
 	text-align:left;
-	height:auto;
+	height:700px;
 }
 	
 
@@ -415,12 +415,12 @@ img {
 
 .commentaire-block{
 	overflow-y: auto; 
-	height: 48%; 
+	height: 40%; 
 	
 }
 
 .file-block{
-	height:35%;
+	height:40%;
 	overflow-y: auto;
 	text-align:center;
 }
