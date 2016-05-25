@@ -1249,10 +1249,14 @@ def getAllPrinter():
 	#INIT
 	print('Getting printer')
 	db = engine.connect()
-	pr=db.execute(select([printer.c.address, printer.c.user])).fetchall()
-	print(type(pr))
-	
-	return dumps(pr)
+	pr=db.execute(select([printer.c.address,printer.c.city, printer.c.postcode, printer.c.user,printer.c.ID ])).fetchall()
+	l=[]
+	for i in range(0, len(pr)):
+		for j in range(0, len(pr[i])):
+			l.append(pr[i][j])
+		
+	l=json.dumps(l)
+	return l
 
 # ............................................................................................... #
 if __name__ == '__main__':

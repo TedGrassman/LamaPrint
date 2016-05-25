@@ -1,5 +1,3 @@
-
-
 function initialize() {
 	
 	//myCenter=new google.maps.LatLng(p.coords.latitude,p.coords.longitude));
@@ -16,8 +14,21 @@ function initialize() {
 	
 	map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
 	
-	l=["France","Lama","Kazakhstan","Lyon","Marseille","New-York","Paris","20 Avenue Albert Einstein, 69100 Villeurbanne","6 Avenue des Arts, 69100 Villeurbanne"]
-	for(i=0; i<l.length; i++){
+	
+	$.get('/get_printer').done(function(data) {
+		//alert(data)
+		res=jQuery.parseJSON(data)
+		l=[]
+		//alert(res[3])
+		for(i=0; i<res.length; i++){
+			if(i%2==0){
+				alert(res[i])
+				l.push(res[i])
+			}
+		}
+		alert(l.length)
+		//l=["France","Lama","Kazakhstan","Lyon","Marseille","New-York","Paris","20 Avenue Albert Einstein, 69100 Villeurbanne","6 Avenue des Arts, 69100 Villeurbanne"]
+		for(i=0; i<l.length; i++){
 		geocoder.geocode( {'address': l[i]}, function(results, status) {
 		
 			if (status == google.maps.GeocoderStatus.OK) {
@@ -32,7 +43,7 @@ function initialize() {
 						infowindow.close();
 					}
 					infowindow = new google.maps.InfoWindow({
-							content:"ADD PRINTER DESCRIPTION"
+							content:results[0]
 					});
 
 						infowindow.open(map,marker);
@@ -45,6 +56,10 @@ function initialize() {
 		
 		
 	}
+	});
+	
+	
+	
 	
 }
 

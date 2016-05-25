@@ -12,6 +12,7 @@ function showText(clickedID)
 i=0;
 $("#addbutton").on('click', function()
 	{ 
+	i++
 	element =document.getElementById("filebuttons");
 	element.innerHTML=element.innerHTML+"<p><input type=\"file\" name=\"fichier"+i+"\" id=\"fichier"+i+"\" style=\"margin-left:25px\" required/>"
 	}
