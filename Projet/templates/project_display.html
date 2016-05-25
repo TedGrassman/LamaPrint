@@ -24,6 +24,10 @@
 		<div class="container-co jumbotron propose-form-title">
 			<p>
 				<label for="titletext" class="login-form-title">{{title}} (par <a href="/profile/{{username}}">{{username}}</a>)</label>
+				<p>Type : {{project_type}}</p>
+				{% if parent_project != 0 %}
+					<p>Projet Parent : <a href="/projet/{{parent_project}}">{{parent_project}}</a></p>
+				{% endif %}
 			</p>
 		</div>
 		
@@ -67,12 +71,13 @@
 						<a onclick="showText(this.id)" href="javascript:void(0);" id="file">FILE {{id}}</a>
 					
 						<div id="textfile" class="hide" >
+						<a href="{{file}}" target="_blank">Download it here</a></br>
 						prix: {{prix}} € </br>
 						{% if masse != None %}
 						masse: {{masse}}</br>
 						{%endif%}
 						dimension: {{dimx}} cm *{{dimy}} cm *{{dimy}} cm</br>
-						<a href="/profile/{{userfile}}">User {{userfile}}</a>
+						<a href="/profile/{{username}}">User {{username}}</a>
 						</div>
 					
 					</div>
