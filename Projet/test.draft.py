@@ -1,3 +1,53 @@
+@app.route('/demand/<title>', methods=['GET','POST'])
+def demandDisplay(title):
+	if request.method == 'GET':
+		db = engine.connect()
+		#description = db.execute(select([project.c.description]).where(project.c.project_name==title)).fetchone()
+		#img = db.execute(select([project.c.image_path]).where(project.c.project_name==title)).fetchone()
+		result = getProjectInfo(title)
+		print(result)
+		
+		if result is False:
+			flash('Error: project \"'+ title + '\" may not exist.', 'warning')
+			print('Error: project \"'+ title + '\" may not exist.')
+			return redirect('/')
+		else:
+			#ID
+			if result[0] is not None:
+				idd=result[0]
+			if result[0] is None:	
+				idd=0
+			#User
+			if result[1] is not None:
+				user=result[1]
+			if result[1] is None:	
+				user='Non renseigné'
+			#Image
+			if result[10] is not None:
+				image=result[10]
+			if result[10] is None:	
+				image='../image/lama.png'
+			#Description
+			if result[12] is not None:
+				description=result[12]
+			if result[12] is None:	
+				description='-- Aucune description --'
+
+			l=getCom(title)
+			l.reverse()
+
+			return render_template("demand_display.html", name= "Demande : "+title, id=idd, username=user, title=title, description=description, list=l, image=image)
+
+@app.route('/get_printer')
+def getAllPrinter():
+	#INIT
+	print('Getting printer')
+	db = engine.connect()
+	pr=db.execute(select([printer.c.address, printer.c.user])).fetchall()
+	print(type(pr))
+	
+	return dumps(pr)
+
 #TO DELETE IF OTEHR printer_create IS OK
 def printer_create(username, xyz, res, price, material, address):
 	#engine = create_engine('sqlite:///lama.db', echo=True)

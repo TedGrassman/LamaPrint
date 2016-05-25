@@ -731,6 +731,14 @@ def editprofile(username):
 #____________________________________________________________#
 
 @app.route('/rent', methods=['GET','POST'])
+def rnt():
+	return(redirect('/printer?action=rent'))
+
+@app.route('/printer/<idd>')
+def prntr(idd):
+	return(redirect('/printer?action=view&id='+str(idd)))
+
+
 def rent():
 	username = getUserName(request)
 	if username is None:
@@ -757,8 +765,6 @@ def rent():
 		else:
 			return render_template("rentprinter.html", name="Proposer mon imprimante 3D")
 
-
-@app.route('/printer/<idd>')
 def showprinter(idd):
 	
 	idd = int(idd)
@@ -862,11 +868,41 @@ def showprinter(idd):
 		return redirect('/')
 
 
+@app.route('/printer', methods=['GET','POST'])
+def printerHandler():
+	action = request.args.get('action', '')
+	print("#!#!# action =", action, type(action))
+	printer_id = request.args.get('id', '')
+	print("#!#!# printer_id =", printer_id, type(printer_id))
+	if action=="view":
+		return(showprinter(printer_id))
+	elif action=="rent":
+		return(rent())
+	elif action=="search":
+		return(searchprinter())
+
 #____________________________________________________________#
 #		PROJECT MANAGEMENT
 #____________________________________________________________#
 
+
 @app.route('/demand', methods=['GET','POST'])
+def dmd():
+	return(redirect('/project?action=demand'))
+
+@app.route('/propose', methods=['GET','POST'])
+def prps():
+	return(redirect('/project?action=propose'))
+
+@app.route('/project_display/<title>')
+def prjdspl(title):
+	db = engine.connect()
+	idd = db.execute(select([project.c.id]).where(project.c.project_name == title)).fetchone()
+	idd = idd[0]
+	db.close()
+	return(redirect('/project?action=view&id='+str(idd)))
+
+
 def demand():
 	username = getUserName(request)
 	if username is None:
@@ -891,60 +927,17 @@ def demand():
 					image = "../"+path
 				else:
 					image='../image/lama.png'
-				db.execute(project.update().values(image_path = image).where(project.c.project_name == request.form['title']))
+				db.execute(project.update().values(image_path = image).where(project.c.id == idd))
 				print("IMAGE =", image)
 
 				print('### DEMAND CREATED ###')
 				flash('Demand ' +request.form['title']+ ' has been succefully created', 'success')
-				return redirect('/demand/'+request.form['title'])
+				return redirect('/project?action=view&id='+str(idd))
 			else:
 				flash('Demand creation failed: ' +request.form['title']+ ' may already exist', 'danger')
 				print('Vous avez déjà créé ce projet')
-				return redirect('/demand')
-		
-		
-@app.route('/demand/<title>', methods=['GET','POST'])
-def demandDisplay(title):
-	if request.method == 'GET':
-		db = engine.connect()
-		#description = db.execute(select([project.c.description]).where(project.c.project_name==title)).fetchone()
-		#img = db.execute(select([project.c.image_path]).where(project.c.project_name==title)).fetchone()
-		result = getProjectInfo(title)
-		print(result)
-		
-		if result is False:
-			flash('Error: project \"'+ title + '\" may not exist.', 'warning')
-			print('Error: project \"'+ title + '\" may not exist.')
-			return redirect('/')
-		else:
-			#ID
-			if result[0] is not None:
-				idd=result[0]
-			if result[0] is None:	
-				idd=0
-			#User
-			if result[1] is not None:
-				user=result[1]
-			if result[1] is None:	
-				user='Non renseigné'
-			#Image
-			if result[10] is not None:
-				image=result[10]
-			if result[10] is None:	
-				image='../image/lama.png'
-			#Description
-			if result[12] is not None:
-				description=result[12]
-			if result[12] is None:	
-				description='-- Aucune description --'
+				return redirect('/project?action=demand')	
 
-			l=getCom(title)
-			l.reverse()
-
-			return render_template("demand_display.html", name= "Demande : "+title, id=idd, username=user, title=title, description=description, list=l, image=image)
-	
-
-@app.route('/propose', methods=['GET','POST'])
 def propose():
 
 	username = getUserName(request)
@@ -1015,17 +1008,15 @@ def propose():
 				return redirect("/project_display/"+request.form['title'])
 			db.close()
 
-	
-@app.route('/project_display/<title>')
-def projectDisplay(title):
+def projectDisplay(project_id):
 	username = getUserName(request)
 	db = engine.connect()
 	if request.method == 'GET':
-		idd = db.execute(select([project.c.id]).where(project.c.project_name == title)).fetchone()
-		idd = idd[0]
+		title = db.execute(select([project.c.project_name]).where(project.c.id == project_id)).fetchone()
+		title = title[0]
 		projectinfo = getProjectInfo(title)
 		files = getProjectFile(title)
-		child_projects = getChildProjects(idd)
+		child_projects = getChildProjects(project_id)
 		print("Project =", projectinfo)
 		print("Files =", files, type(files))
 
@@ -1080,9 +1071,24 @@ def projectDisplay(title):
 	#if session.get('logged') is False:
 	#	return redirect('/login')
 	#return redirect('/propose')
-			
 
-	
+
+@app.route('/project', methods=['GET','POST'])
+def projectHandler():
+	action = request.args.get('action', '')
+	print("#!#!# action =", action, type(action))
+	project_id = request.args.get('id', '')
+	print("#!#!# project_id =", project_id, type(project_id))
+	if action=="view":
+		return(projectDisplay(project_id))
+	elif action=="demand":
+		return(demand())
+	elif action=="propose":
+		return(propose())
+	elif action=="search":
+		return(searchproject())
+
+
 @app.route('/projet')
 def projet():
 	return render_template("projet.html")
@@ -1093,6 +1099,9 @@ def projet():
 #____________________________________________________________#
 
 @app.route('/searchprinter', methods=['GET','POST'])
+def srchprntr():
+	return(redirect('/printer?action=search'))
+
 def searchprinter():
 	db = engine.connect()
 
@@ -1178,6 +1187,9 @@ def searchprinter():
 		return render_template('searchprinter.html', name="Recherche d'imprimante 3D")
 
 @app.route('/searchproject', methods=['GET','POST'])
+def srchprjct():
+	return(redirect('/project?action=search'))
+
 def searchproject():
 	db = engine.connect()
 	if request.method == 'POST':
@@ -1226,21 +1238,12 @@ def searchproject():
 
 			for row in result:
 				print(row)
-				s = "----------------------------------------------------------<br/><b><a href=\"/project_display/"
-				s=s+row.project_name
-				s=s+"\">"
-				s=s+row.project_name+ "</a> (par <a href=\"/profile/"
-				s=s+row.user
-				s=s+"\">" + row.user
-				s=s+"</a>)</b> <br />"
-				s=s+"<b>Description</b> : "
-				s=s+row.description
+				s = "----------------------------------------------------------<br/>"
+				s=s+ "<b><a href=\"/project_display/" + row.project_name +"\">" +row.project_name+ "</a> (par <a href=\"/profile/"+row.user +"\">" + row.user +"</a>)</b>" + "<br>"
+				s=s+ "<b>Type</b> : " +project_types[row.project_type] + "<br>"
+				s=s+ "<b>Description</b> : " +row.description + "<br>"
 				if row.image_path is not None:
-					s=s+"<br /> <b>Image: </b><a href=\""
-					s=s+row.image_path
-					s=s+"\">"
-					s=s+"voir l\'image" + "</a>"
-				s=s+"<br/><br/>"
+					s=s+"<b>Image: </b><a href=\"" +row.image_path +"\">" +"voir l\'image" + "</a>" + "<br>"
 				message = Markup(s)
 				flash(message)
 			print('\n')
@@ -1304,6 +1307,7 @@ def getAllPrinter():
 		
 	l=json.dumps(l)
 	return l
+
 
 # ............................................................................................... #
 if __name__ == '__main__':
