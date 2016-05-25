@@ -22,7 +22,7 @@
 		
 		<div class="container-co jumbotron propose-form-title">
 			<p>
-				<label for="titletext" class="login-form-title">{{title}} (par <a href="/profile/{{username}}">{{username}}</a>)</label>
+				<label for="titletext" id="title" value={{title}} class="login-form-title">{{title}}</label> <label> (par <a href="/profile/{{username}}">{{username}}</a>)</label>
 				<p>Type : {{project_type}}</p>
 				{% if parent_project != 0 %}
 					<p>Projet Parent : <a href="/projet/{{parent_project}}">{{parent_project}}</a></p>
@@ -61,7 +61,7 @@
 				<div  id="registerleftwindow" class="jumbotron-propose container-halfproject">
 					
 					<!-- Liste de fichiers si proposition ou réponse -->
-					{% if project_type=="Publication" or project_type=="Offer" %}
+					{% if project_type==project_types[2] or project_types==project_types[3] %}
 						<div style="text-align:center; margin-top:2%; font-size: 20px;">
 						Liste des fichiers:
 						</div> </br>
@@ -85,13 +85,15 @@
 						
 						{% endfor %}
 						</div>
-					{% elif project_type=="Request" %}
+
+					{% elif project_type==project_types[1] %}
+
 						<div style="text-align:center; margin-top:2%; font-size: 20px;">
 						Liste des réponses :
 						</div> </br>
 
 						{% if session.get('logged')==True %}
-							<a href="/propose?parent_project_id={{id}}" style="margin-top: 0px; margin-left:17%;" role="button" class="btn btn-lg btn-warning register-button-style">Proposer une réponse</a>
+							<a href="/project?action=propose&parent_project_id={{project_id}}" style="margin-top: 0px; margin-left:17%;" role="button" class="btn btn-lg btn-warning register-button-style">Proposer une réponse</a>
 						{% else %}
 							<p>Connectez-vous pour proposer une réponse !</p>
 						{% endif %}

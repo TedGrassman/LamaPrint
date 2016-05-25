@@ -923,6 +923,7 @@ def demand():
 			result = db.execute(select([project.c.project_name]).where(project.c.project_name==request.form['title'])).fetchone()
 			if result is None:
 				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description'], 'project_type': 1}])
+				idd=idd.lastrowid
 				fichier = request.files["images"]
 				print("Fichier =", fichier)
 				print("type(fichier) =", type(fichier))
@@ -947,11 +948,11 @@ def propose():
 	username = getUserName(request)
 
 	parent_project_id = request.args.get('parent_project_id', '')
-	print("#!#!# parent_project_id =", parent_project_id, type(parent_project_id))
-	if parent_project_id != '':
+	if parent_project_id != '' and parent_project_id != 0:
 		parent_project_id = int(parent_project_id)
-	else:
+	elif parent_project_id == '':
 		parent_project_id = 0
+	print("#!#!# parent_project_id =", parent_project_id, type(parent_project_id))
 	
 	if username is None:
 		print('Pas de cookie')
@@ -970,7 +971,7 @@ def propose():
 					project_type=3
 				else:
 					project_type=2
-				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description'], 'project_type':project_type}])
+				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description'], 'project_type':project_type, 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsz':request.form['dimz'], 'price':request.form['prix']}])
 				idd=idd.lastrowid
 				#Projet parent (si besoin)
 				if parent_project_id != 0:
@@ -990,7 +991,7 @@ def propose():
 
 				for j in range(i):
 					#CREATION DES FICHIERS
-					fidd = db.execute(file.insert(), [{'project': idd, 'creation_date': str(datetime.date.today()), 'price':request.form['prix'], 'weight':request.form['masse'], 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
+					fidd = db.execute(file.insert(), [{'project': idd, 'creation_date': str(datetime.date.today()), 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsz':request.form['dimz'], 'price':request.form['prix'], 'weight':request.form['masse'], }])
 					fidd=fidd.lastrowid
 					#UPLOAD DES FICHIERS
 					path = uploadFile(request, "fichier"+str(j), filepath="CAO")
@@ -1018,6 +1019,9 @@ def projectDisplay(project_id):
 	if request.method == 'GET':
 		title = db.execute(select([project.c.project_name]).where(project.c.id == project_id)).fetchone()
 		title = title[0]
+		idd = db.execute(select([project.c.id]).where(project.c.id == project_id)).fetchone()
+		idd = idd[0]
+		print("OOOOOOOOOOOOOOOO     PROJECT ID =", idd)
 		projectinfo = getProjectInfo(title)
 		files = getProjectFile(title)
 		child_projects = getChildProjects(project_id)
@@ -1061,20 +1065,18 @@ def projectDisplay(project_id):
 			if projectinfo[12] is None:	
 				description='-- Aucune description --'
 		
-			l=getCom(title)
-			l.reverse()
+			comments=getCom(title)
+			comments.reverse()
 
-			# A améliorer, notamment dans le template !! (c'est pas top...)
-			if files == []:
-				print('Aucun fichier pour le project \"'+ title + '\".')
-				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, child_projects=child_projects, id=0, file="../image/garou.png", dimx=0, dimy=0, dimz=0, prix=0, masse=0, list=l)
-			else:
-				for row in files:
-					f=row
-				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, files=files, child_projects=child_projects, id=f[0], file=f[4], dimx=f[6], dimy=f[7], dimz=f[8], prix=f[10], masse=f[9], list=l)
-	#if session.get('logged') is False:
-	#	return redirect('/login')
-	#return redirect('/propose')
+			print("##################WE AAAAAARE HEEEERE")
+
+			if project_type == 2 or project_type ==3:
+				# Fichiers, dimensions, prix
+				return render_template("project_display.html", files=files, name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, dimx=projectinfo.dimensionsx, dimy=projectinfo.dimensionsy, dimz=projectinfo.dimensionsz, prix=projectinfo.price, list=comments, project_types=project_types, project_id=idd)
+			elif project_type == 1:
+				# Pas de fichiers, ou dimensions, ou prix
+				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, child_projects=child_projects, list=comments, project_types=project_types, project_id=idd)
+
 
 
 @app.route('/project', methods=['GET','POST'])
@@ -1263,6 +1265,7 @@ def searchproject():
 @app.route('/write_comment/<title>',methods=['GET','POST'])
 def writeCom(title):
 	print("### WRITE COM ! ###")
+	print("###############TITLE :"+title)
 	username=getUserName(request)
 	value = request.args.get('key')
 	db = engine.connect()
@@ -1277,6 +1280,7 @@ def writeCom(title):
 		db.execute(comment.insert(), [ {'project': result[0], 'user': username, 'comment_text': value}])
 	return ""
 
+@app.route('/get_comment/<title>', methods=['GET','POST'])
 def getCom(title):
 	#INIT
 	print('Getting com')
