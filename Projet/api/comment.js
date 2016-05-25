@@ -2,9 +2,9 @@
 //vide.value="";
 function writeComment(){
 	var regSepURL = new RegExp('/');
-	var title=document.URL.split(regSepURL);
+	var title=document.getElementById("title").innerHTML;
 	commentaire=document.getElementById("writecomment").value;
-	$.get('/write_comment/'+title[4], {key: commentaire}).done(function() {
+	$.get('/write_comment/'+title, {key: commentaire}).done(function() {
 		var cookie=getCookie();
 		var username= cookie["username"];
 		var res=document.getElementById("comment");
@@ -15,8 +15,8 @@ function writeComment(){
 
 function getComment(){
 	var regSepURL = new RegExp('/');
-	var title=document.URL.split(regSepURL);
-	$.get('/get_comment/'+title[4]).done(function(data){
+	var title=document.getElementById("title").innerHTML;
+	$.get('/get_comment/'+title).done(function(data){
 		alert(data)
 	});
 }

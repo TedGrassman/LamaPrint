@@ -25,7 +25,7 @@
 			</div>
 
 			<div class="container-globalregister"> 
-				<form method="POST" action="/propose?parent_project_id={{parent_project_id}}" enctype="multipart/form-data">
+				<form method="POST" action="/project?action=propose&parent_project_id={{parent_project_id}}" enctype="multipart/form-data">
 					<div class="col-md-6 no-padding">
 						<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose">				
 							<p><label for="title">Titre</label> : </br>
@@ -60,7 +60,7 @@
 						<p><label for="description">Description </label> : <br />
 						<textarea name="description" id="description" rows="8" cols="42%" style="margin-bottom:11px" required ></textarea></p>
 					
-						<button class="btn btn-lg btn-warning register-button-style" href="/propose">Envoyer</button>
+						<button class="btn btn-lg btn-warning register-button-style" type="submit">Envoyer</button>
 					</div>
 				</div>
 			</form>
