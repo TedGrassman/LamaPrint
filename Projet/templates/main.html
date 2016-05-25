@@ -70,7 +70,7 @@
 				<!-- Right part of navbar -->
 				<ul class="nav navbar-nav navbar-right">
 					{% if session.get('logged')==True %}
-					<li><a href="/profile/{{session['username']}}"><span class="glyphicon glyphicon-user"></span> {{session['username']}}</a></li>
+					<li><a href="/profile?action=view&user={{session['username']}}"><span class="glyphicon glyphicon-user"></span> {{session['username']}}</a></li>
 					<li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
 					{% elif request.path == "/login" %}
 					<li><a href="/register"><span class="glyphicon glyphicon-user"></span> Register</a></li>

@@ -25,7 +25,7 @@
 			</div>
 
 			<div class="container-globalregister"> 
-				<form method="POST" action="/propose" enctype="multipart/form-data">
+				<form method="POST" action="/propose?parent_project_id={{parent_project_id}}" enctype="multipart/form-data">
 					<div class="col-md-6 no-padding">
 						<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose">				
 							<p><label for="title">Titre</label> : </br>
@@ -42,11 +42,13 @@
 							
 							
 							<p><label for="fichier">Fichier</label> :
-							<input type="file" name="fichier" id="fichier" style="margin-left:25px" required/></p>
+							<input type="file" name="fichier0" id="fichier0" style="margin-left:25px" required/></p>
 							<div id="filebuttons" style="overflow-y:auto">
 							</div>
+							<label for="nbfiles" class="register-text">Nombre de fichiers :</label>
+							<input type="number" id="nbfiles" name="nbfiles" value="1" />
 							<button type="button" id="addbutton">Add more files</button>
-								
+							
 							<p><label for="images">Image</label> :
 							<input type="file" name="images" id="images" style="margin-left:25px" /></p>			
 					</div>

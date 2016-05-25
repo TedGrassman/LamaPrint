@@ -25,6 +25,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(256)
 SALT = 'foo#BAR_{baz}^666'
 
+
 # Pour l'upload de fichiers
 UPLOAD_FOLDER = "uploads"
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -62,7 +63,7 @@ project = Table('project', metadata,
 	Column('parent_project', Integer, ForeignKey('project.id', ondelete = 'SET NULL', onupdate = 'CASCADE')),
 	Column('creation_date', String),
 	Column('project_name', String),
-	Column('project_type', Integer), #'rquest', 'publication' ou 'offer'
+	Column('project_type', Integer), #'request', 'publication' ou 'offer'
 	Column('score', Integer),
 	Column('dimensionsx', Integer),
 	Column('dimensionsy', Integer),
@@ -110,6 +111,7 @@ comment = Table('comment', metadata,
 
 metadata.create_all(engine)		# remplit la BdD avec les informations par défaut
 
+project_types = {1:"Request", 2:"Publication", 3:"Offer"}
 
 
 #____________________________________________________________#
@@ -274,11 +276,11 @@ def getUserPrinter(username):
 	db = engine.connect()
 	print("### GetPrinterInfo, User="+username)
 	try:
-		result = db.execute(select([printer]).where(printer.c.user == username)).fetchone()
+		result = db.execute(select([printer]).where(printer.c.user == username)).fetchall()
 		if result is None:
 			# L'imprimante n'existe pas
 			# code ...
-			print('**Encounter problem getting printer\'s info**')
+			print('**Encounter problem getting printer\'s info : no printers**')
 			return False
 		else:
 			print(result)
@@ -353,6 +355,30 @@ def getProjectFile(title):
 			return result
 	finally:
 		db.close()
+
+def getChildProjects(parent_project_id):
+	db = engine.connect()
+	print("### getChildProjects, parent_project_id = ", parent_project_id)
+	try:
+		# id du projet
+		#idd = db.execute(select([project.c.id]).where(project.c.project_name == title)).fetchone()
+		#print("ID du projet =", idd, type(idd))
+		# fichiers correspondant
+		#idd = idd[0]
+		result = db.execute(select([project]).where(project.c.parent_project == parent_project_id)).fetchall()
+		if result is None:
+			# Aucun fichier
+			# code ...
+			print('**Encounter problem getting child projects (or no child projects)**')
+			return False
+		else:
+			print(result)
+			for row in result:
+				print(row)
+			return result
+	finally:
+		db.close()
+
 
 
 #____________________________________________________________#
@@ -490,9 +516,14 @@ def logout():
 	return resp
 
 
-@app.route('/profile/<username>', methods=['GET','POST'])	
-def profile(username):
-	if request.method=='GET':
+@app.route('/profile', methods=['GET','POST'])	
+def profile():
+	action = request.args.get('action', '')
+	print("#!#!# action =", action, type(action))
+	username = request.args.get('user', '')
+	print("#!#!# user =", username, type(username))
+
+	if request.method=='GET' and action=="view":
 		print(session.get('username'))
 		result=getUserInfo(username)
 		
@@ -538,157 +569,162 @@ def profile(username):
 				phone='NaN'
 
 			#Printer
-			result=getUserPrinter(username)
-			if result is not False:
-				printerid=result[0]
-			if result is False:	
-				printerid=0
+			printers=getUserPrinter(username)
+			print("##Printers =", printers, type(printer))
 
-			return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone,printerid=printerid)
+			return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone, printers=printers)
 
 
+	elif action=="edit":
+		print("*****MODIFYPROFILE*****")
+		userLogged = isUserLogged(username, request)
+		if userLogged is False:
+				print('Pas de cookie')
+				flash('You must log in as correct user to edit your profile', 'info')
+				return redirect('/login')
+		elif userLogged is True:
+
+			if request.method == 'POST':
+				
+				db = engine.connect()
+
+				print("POST editprofile")
+				path = uploadFile(request, "file", filepath="profile_images")
+				if path is not None:
+					image = "../"+path
+					db.execute(user.update().values(profile_image_path = image).where(user.c.username == session.get('username')))
+				else:
+					image='../image/garou.png'
+				print("IMAGE =", image)
+				
+				try:
+					if request.form['firstname'] is not None:
+						print("Add Firstname: "+request.form['firstname']+" to DB")
+						smt=user.update().values(name=request.form['firstname']).where(user.c.username==username)
+						db.execute(smt)
+					if request.form['lastname'] is not None:
+						print("Add lastname: "+request.form['lastname']+" to DB")
+						smt=user.update().values(lastname=request.form['lastname']).where(user.c.username==username)
+						db.execute(smt)
+					if request.form['birthdate'] is not None:
+						print("Add birthdate: "+request.form['birthdate']+" to DB")
+						smt=user.update().values(birthdate=request.form['birthdate']).where(user.c.username==username)
+						db.execute(smt)
+					if request.form['mail'] is not None:
+						print("Add mail: "+request.form['mail']+" to DB")
+						smt=user.update().values(mail=request.form['mail']).where(user.c.username==username)
+						db.execute(smt)
+					if request.form['phonenumber'] is not None:
+						print("Add phonenumber: "+request.form['phonenumber']+" to DB")
+						smt=user.update().values(telephone=request.form['phonenumber']).where(user.c.username==username)
+						db.execute(smt)
+					
+					# Mot de Passe !
+					if request.form.get('newmdp') is not "" and request.form.get('mdp') is not "":		# les champs ne sont jamais None mais plutôt ""
+						print("##### CHANGE PASSWORD ASKED #####")
+						newpassword = request.form['newmdp']
+						password = request.form['mdp']
+						passhash = hash_for(password)
+						result = db.execute(select([user.c.password]).where(user.c.username == username)).fetchone()
+						oldpasshash = result[0]
+						if passhash==oldpasshash:
+							newpasshash=hash_for(newpassword)
+							print("Change password: "+newpassword+" to DB")
+							smt=user.update().values(password=newpasshash).where(user.c.username==username)
+							db.execute(smt)
+							flash('Your password has been successfully changed', 'success')
+						else:
+							print("Password changed failed : wrong old password")
+							flash("Password changed failed : wrong old password", 'warning')
+
+					# Suppression de compte !!
+					#print("request.form.get('DeletionCheckbox') =", request.form.get('DeletionCheckbox'))	# None or value=valeur
+					if request.form.get('DeletionCheckbox') is not None:
+						print("##### ! DELETION ASKED ! #####")
+						password = request.form['delconfirm']
+						passhash = hash_for(password)
+						result = db.execute(select([user.c.password]).where(user.c.username == username)).fetchone()
+						storedpasshash = result[0]
+						print(passhash)
+						print(storedpasshash)
+						if passhash==storedpasshash:
+							print("! Correct password, deletion authorized !")
+							smt = user.delete(user).where(user.c.username==username)
+							print("user.delete(user).where(user.c.username==username) =", smt)
+							print(db.execute(smt))
+							print("##### ! DELETION COMPLETE ! #####")
+							flash("Your account has been successfully deleted", 'danger')
+							session.pop('logged', None)
+							session.clear()
+							resp = make_response(redirect('/'))
+							resp.set_cookie('username', '', expires=0)
+							return(resp)		# on déconnecte l'utilisateur, car sa page n'existe plus
+						else:
+							print("! Account deletion failed : wrong password !")
+							flash("Account deletion failed : wrong password", 'warning')
+							return redirect("/profile?action=view&user="+username)
+						
+				finally:
+					db.close()
+
+				flash("Your informations have been successfully updated", 'success')
+				return redirect("/profile?action=view&user="+username)
+				#return redirect(url_for('uploaded_file', filename=filename))
+
+			else:
+				print("GET editprofile")
+				print(session.get('username'))
+				result=getUserInfo(username)
+				
+				if result is False:
+					flash('Error: user \"'+ username + '\" may not exist.', 'warning')
+					print('Error: user \"'+ username + '\" may not exist.')
+					return redirect('/')
+
+				else:
+					#Nom de Famille
+					if result[3] is not None:
+						nom=result[3]
+					if result[3] is None:	
+						nom='Non renseigné'	
+					#Prenom
+					if result[4] is not None:
+						prenom=result[4]
+					if result[4] is None:	
+						prenom='Non renseigné'
+					#Date de naissance
+					if result[9] is not None:
+						birthdate=result[9]
+					if result[9] is None:	
+						birthdate='Non renseigné'
+					#Image de profil
+					if result[6] is not None:
+						image="../"+result[6]
+					if result[6] is None:	
+						image='../image/garou.png'		# image par défaut :)
+					#print("IMAGE =", image)
+					#Mail
+					if result[2] is not None:
+						mail=result[2]
+					if result[2] is None:	
+						mail='Non renseigné'
+					#Phone
+					if result[10] is not None:
+						phone=result[10]
+					if result[10] is None:	
+						phone='NaN'
+
+					return render_template("editprofile.html", name="Modifier le profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
+
+
+@app.route('/profile/<username>', methods=['GET','POST'])
+def viewprofile(username):
+	return(redirect('/profile?action=view&user='+username))
 @app.route('/editprofile/<username>', methods=['GET','POST'])
 def editprofile(username):
+	return(redirect('/profile?action=edit&user='+username))
 	
-	print("*****MODIFYPROFILE*****")
-	userLogged = isUserLogged(username, request)
-	if userLogged is False:
-			print('Pas de cookie')
-			flash('You must log in as correct user to edit your profile', 'info')
-			return redirect('/login')
-	elif userLogged is True:
-
-		if request.method == 'POST':
-			
-			db = engine.connect()
-
-			print("POST editprofile")
-			path = uploadFile(request, "file", filepath="profile_images")
-			if path is not None:
-				image = "../"+path
-				db.execute(user.update().values(profile_image_path = image).where(user.c.username == session.get('username')))
-			else:
-				image='../image/garou.png'
-			print("IMAGE =", image)
-			
-			try:
-				if request.form['firstname'] is not None:
-					print("Add Firstname: "+request.form['firstname']+" to DB")
-					smt=user.update().values(name=request.form['firstname']).where(user.c.username==username)
-					db.execute(smt)
-				if request.form['lastname'] is not None:
-					print("Add lastname: "+request.form['lastname']+" to DB")
-					smt=user.update().values(lastname=request.form['lastname']).where(user.c.username==username)
-					db.execute(smt)
-				if request.form['birthdate'] is not None:
-					print("Add birthdate: "+request.form['birthdate']+" to DB")
-					smt=user.update().values(birthdate=request.form['birthdate']).where(user.c.username==username)
-					db.execute(smt)
-				if request.form['mail'] is not None:
-					print("Add mail: "+request.form['mail']+" to DB")
-					smt=user.update().values(mail=request.form['mail']).where(user.c.username==username)
-					db.execute(smt)
-				if request.form['phonenumber'] is not None:
-					print("Add phonenumber: "+request.form['phonenumber']+" to DB")
-					smt=user.update().values(telephone=request.form['phonenumber']).where(user.c.username==username)
-					db.execute(smt)
-				
-				# Mot de Passe !
-				if request.form.get('newmdp') is not "" and request.form.get('mdp') is not "":		# les champs ne sont jamais None mais plutôt ""
-					print("##### CHANGE PASSWORD ASKED #####")
-					newpassword = request.form['newmdp']
-					password = request.form['mdp']
-					passhash = hash_for(password)
-					result = db.execute(select([user.c.password]).where(user.c.username == username)).fetchone()
-					oldpasshash = result[0]
-					if passhash==oldpasshash:
-						newpasshash=hash_for(newpassword)
-						print("Change password: "+newpassword+" to DB")
-						smt=user.update().values(password=newpasshash).where(user.c.username==username)
-						db.execute(smt)
-						flash('Your password has been successfully changed', 'success')
-					else:
-						print("Password changed failed : wrong old password")
-						flash("Password changed failed : wrong old password", 'warning')
-
-				# Suppression de compte !!
-				#print("request.form.get('DeletionCheckbox') =", request.form.get('DeletionCheckbox'))	# None or value=valeur
-				if request.form.get('DeletionCheckbox') is not None:
-					print("##### ! DELETION ASKED ! #####")
-					password = request.form['delconfirm']
-					passhash = hash_for(password)
-					result = db.execute(select([user.c.password]).where(user.c.username == username)).fetchone()
-					storedpasshash = result[0]
-					print(passhash)
-					print(storedpasshash)
-					if passhash==storedpasshash:
-						print("! Correct password, deletion authorized !")
-						smt = user.delete(user).where(user.c.username==username)
-						print("user.delete(user).where(user.c.username==username) =", smt)
-						print(db.execute(smt))
-						print("##### ! DELETION COMPLETE ! #####")
-						flash("Your account has been successfully deleted", 'danger')
-						session.pop('logged', None)
-						session.clear()
-						resp = make_response(redirect('/'))
-						resp.set_cookie('username', '', expires=0)
-						return(resp)		# on déconnecte l'utilisateur, car sa page n'existe plus
-					else:
-						print("! Account deletion failed : wrong password !")
-						flash("Account deletion failed : wrong password", 'warning')
-						return redirect("/profile/"+username)
-					
-			finally:
-				db.close()
-
-			flash("Your informations have been successfully updated", 'success')
-			return redirect("/profile/"+username)
-			#return redirect(url_for('uploaded_file', filename=filename))
-
-		else:
-			print("GET editprofile")
-			print(session.get('username'))
-			result=getUserInfo(username)
-			
-			if result is False:
-				flash('Error: user \"'+ username + '\" may not exist.', 'warning')
-				print('Error: user \"'+ username + '\" may not exist.')
-				return redirect('/')
-
-			else:
-				#Nom de Famille
-				if result[3] is not None:
-					nom=result[3]
-				if result[3] is None:	
-					nom='Non renseigné'	
-				#Prenom
-				if result[4] is not None:
-					prenom=result[4]
-				if result[4] is None:	
-					prenom='Non renseigné'
-				#Date de naissance
-				if result[9] is not None:
-					birthdate=result[9]
-				if result[9] is None:	
-					birthdate='Non renseigné'
-				#Image de profil
-				if result[6] is not None:
-					image="../"+result[6]
-				if result[6] is None:	
-					image='../image/garou.png'		# image par défaut :)
-				#print("IMAGE =", image)
-				#Mail
-				if result[2] is not None:
-					mail=result[2]
-				if result[2] is None:	
-					mail='Non renseigné'
-				#Phone
-				if result[10] is not None:
-					phone=result[10]
-				if result[10] is None:	
-					phone='NaN'
-
-				return render_template("editprofile.html", name="Modifier le profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone)
+	
 
 
 #____________________________________________________________#
@@ -882,6 +918,11 @@ def demandDisplay(title):
 			print('Error: project \"'+ title + '\" may not exist.')
 			return redirect('/')
 		else:
+			#ID
+			if result[0] is not None:
+				idd=result[0]
+			if result[0] is None:	
+				idd=0
 			#User
 			if result[1] is not None:
 				user=result[1]
@@ -901,13 +942,20 @@ def demandDisplay(title):
 			l=getCom(title)
 			l.reverse()
 
-			return render_template("demand_display.html", name= "Demande : "+title, username=user, title=title, description=description, list=l, image=image)
+			return render_template("demand_display.html", name= "Demande : "+title, id=idd, username=user, title=title, description=description, list=l, image=image)
 	
 
 @app.route('/propose', methods=['GET','POST'])
 def propose():
 
 	username = getUserName(request)
+
+	parent_project_id = request.args.get('parent_project_id', '')
+	print("#!#!# parent_project_id =", parent_project_id, type(parent_project_id))
+	if parent_project_id != '':
+		parent_project_id = int(parent_project_id)
+	else:
+		parent_project_id = 0
 	
 	if username is None:
 		print('Pas de cookie')
@@ -916,35 +964,51 @@ def propose():
 	
 	elif username is not None:
 		if request.method == 'GET':
-				return render_template("propose.html", name = "Proposer une imprimante")
+				return render_template("propose.html", name = "Proposer un projet", parent_project_id=parent_project_id)
 		if request.method == 'POST':
 			db = engine.connect()
 			print("## PROPOSE CREATION")
 			result = db.execute(select([project.c.id]).where(project.c.project_name==request.form['title'])).fetchone()
 			if result is None:
-				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description'], 'project_type':2}])
-				idd=idd.lastrowid
-				db.execute(file.insert(), [{'project': idd, 'creation_date': str(datetime.date.today()), 'price':request.form['prix'], 'weight':request.form['masse'], 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
-				
-				#UPLOAD DES FICHIERS
-				path = uploadFile(request, "fichier", filepath="CAO")
-				if path is not None:
-					fichier = "../"+path
+				if parent_project_id != 0:
+					project_type=3
 				else:
-					fichier = ""	# chemin vide -> aucun fichier. Normalement, n'arrive pas !
-				db.execute(file.update().values(file_path = fichier).where(file.c.project == idd))
-				print("FICHIER =", fichier)
+					project_type=2
+				idd = db.execute(project.insert(), [ {'project_name': request.form['title'], 'creation_date': str(datetime.date.today()), 'user': username, 'description': request.form['description'], 'project_type':project_type}])
+				idd=idd.lastrowid
+				#Projet parent (si besoin)
+				if parent_project_id != 0:
+					db.execute(project.update().values(parent_project = parent_project_id).where(project.c.id == idd))
+				#Upload de l'image
 				path = uploadFile(request, "images", filepath="project_images")
 				if path is not None:
 					image = "../"+path
 				else:
 					image='../image/lama.png'
-				db.execute(file.update().values(image_path = image).where(file.c.project == idd))
 				db.execute(project.update().values(image_path = image).where(project.c.id == idd))
 				print("IMAGE =", image)
 
+				i=request.form['nbfiles']
+				i=int(i)
+				print("Nombre de fichiers :", i)
+
+				for j in range(i):
+					#CREATION DES FICHIERS
+					fidd = db.execute(file.insert(), [{'project': idd, 'creation_date': str(datetime.date.today()), 'price':request.form['prix'], 'weight':request.form['masse'], 'dimensionsx':request.form['dimx'],'dimensionsy':request.form['dimy'],'dimensionsx':request.form['dimz']}])
+					fidd=fidd.lastrowid
+					#UPLOAD DES FICHIERS
+					path = uploadFile(request, "fichier"+str(j), filepath="CAO")
+					if path is not None:
+						fichier = "../"+path
+					else:
+						fichier = ""	# chemin vide -> aucun fichier. Normalement, n'arrive pas !
+					db.execute(file.update().values(file_path = fichier).where(file.c.id == fidd))
+					print("FICHIER =", fichier)
+					db.execute(file.update().values(image_path = image).where(file.c.id == fidd))
+				
+
 				print('### PROJECT CREATED ###')
-				flash('Project ' +request.form['title']+ 'has been succefully created', 'success')
+				flash('Project ' +request.form['title']+ ' has been succefully created', 'success')
 				return redirect('/project_display/'+request.form['title'])
 			else:
 				print('Vous avez déjà créé ce projet')
@@ -955,35 +1019,52 @@ def propose():
 	
 @app.route('/project_display/<title>')
 def projectDisplay(title):
+	username = getUserName(request)
 	db = engine.connect()
 	if request.method == 'GET':
-		project = getProjectInfo(title)
+		idd = db.execute(select([project.c.id]).where(project.c.project_name == title)).fetchone()
+		idd = idd[0]
+		projectinfo = getProjectInfo(title)
 		files = getProjectFile(title)
-		print("Project =", project)
-		print("Files =", files)
+		child_projects = getChildProjects(idd)
+		print("Project =", projectinfo)
+		print("Files =", files, type(files))
 
 		for row in files:
-			print(row)
+			print(row, type(row))
 
-		if project is False:
+		for row in child_projects:
+			print(row, type(row))
+
+		if projectinfo is False:
 			flash('Error: project \"'+ title + '\" may not exist.', 'warning')
 			print('Error: project \"'+ title + '\" may not exist.')
 			return redirect('/')
 		else:
 			#User
-			if project[1] is not None:
-				user=project[1]
-			if project[1] is None:	
+			if projectinfo[1] is not None:
+				user=projectinfo[1]
+			if projectinfo[1] is None:	
 				user='Non renseigné'
+			#Parent Project
+			if projectinfo[2] is not None:
+				parent_project=projectinfo[2]
+			if projectinfo[2] is None:	
+				parent_project=0
+			#Type
+			if projectinfo[5] is not None:
+				project_type=projectinfo[5]
+			if projectinfo[5] is None:	
+				project_type=1
 			#Image
-			if project[10] is not None:
-				image=project[10]
-			if project[10] is None:	
+			if projectinfo[10] is not None:
+				image=projectinfo[10]
+			if projectinfo[10] is None:	
 				image='../image/lama.png'
 			#Description
-			if project[12] is not None:
-				description=project[12]
-			if project[12] is None:	
+			if projectinfo[12] is not None:
+				description=projectinfo[12]
+			if projectinfo[12] is None:	
 				description='-- Aucune description --'
 		
 			l=getCom(title)
@@ -992,49 +1073,16 @@ def projectDisplay(title):
 			# A améliorer, notamment dans le template !! (c'est pas top...)
 			if files == []:
 				print('Aucun fichier pour le project \"'+ title + '\".')
-				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, id=0, dimx=0, dimy=0, dimz=0, prix=0, masse=0, list=l, userfile="")
+				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, child_projects=child_projects, id=0, file="../image/garou.png", dimx=0, dimy=0, dimz=0, prix=0, masse=0, list=l)
 			else:
 				for row in files:
 					f=row
-				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, id=f[0], dimx=f[6], dimy=f[7], dimz=f[8], prix=f[10], masse=f[9], list=l)
+				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, files=files, child_projects=child_projects, id=f[0], file=f[4], dimx=f[6], dimy=f[7], dimz=f[8], prix=f[10], masse=f[9], list=l)
 	#if session.get('logged') is False:
 	#	return redirect('/login')
 	#return redirect('/propose')
+			
 
-
-#TO DELETE IF OTEHR PROPOSE IS OK			
-"""@app.route('/propose', methods=['GET','POST'])
-def propose():
-	
-	username = getUserName(request)
-	if username is None:
-			print('Pas de cookie')
-			return redirect('/login')
-	elif username is not None:
-
-		if request.method == 'GET':
-				return render_template("propose.html", name = "Proposition de projet")
-		
-		if request.method == 'POST':
-			db = engine.connect()
-			result = db.execute(select([file.c.project]).where(file.c.name==username)).fetchone()
-			#if result is None:
-			#db.execute(project.insert(), [ {'project_name': request.form['title'], 'user':session['username']}])
-			print('create project')
-			return redirect('/project/'+request.form['title'])
-			#else:
-			#	print('Vous avez déjà créé ce projet')
-			return redirect('/')"""
-		
-"""@app.route('/project/<title>')
-def viewproject(title):
-	db = engine.connect()
-		
-	if request.method == 'GET':
-		return render_template("project.html", name="Projet \"" +title+ "\"", title=title)
-	if session.get('logged') is False:
-		return redirect('/login')
-	return render_template("propose.html")"""
 	
 @app.route('/projet')
 def projet():

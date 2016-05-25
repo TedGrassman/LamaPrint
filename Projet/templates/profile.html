@@ -15,109 +15,115 @@
 	<header>
 	</header>
 	
-	<form method="POST" action="#">
-		<div class="container register-text">
-		
-			<div class="jumbotron profile-title">
-				<label for="titletext" class="profile-title">Profil de {{username}}</label>
-				{% if session.get('username')==username %}
-				<a href="/editprofile/{{username}}" class="btn btn-lg btn-default navbar-button">Modifier mes informations</a>
-				{% endif %}
+	<div class="container register-text">
+	
+		<div class="jumbotron profile-title">
+			<label for="titletext" class="profile-title">Profil de {{username}}</label>
+			{% if session.get('username')==username %}
+			<a href="/profile?action=edit&user={{username}}" class="btn btn-lg btn-default navbar-button">Modifier mes informations</a>
+			{% endif %}
+		</div>
+	
+		<div class="container-globalprofile">
+			
+			<div class="col-md-6 no-padding">
+				<div class="jumbotron container-leftprofile">
+					<div class="form-style">
+						<label class="profile-subtitle">Avatar</label>
+						<br />
+						<br />
+						<img src="{{image}}" style="overflow: hidden" name="avatar" id="avatar">
+						<br />
+					</div>
+				</div>
 			</div>
 		
-			<div class="container-globalprofile">
+		
+			<div class="col-md-6 no-padding">
+				<div class="jumbotron container-rightprofile">
+					
+					<label class="profile-subtitle">Informations personnelles</label>
+					<br />
+
+					<B><text class="profile-text">Prénom : 
+					</text></B>
+					<text style="color:#0065e5; text-align:center;">{{prenom}}</text>
+					<br />
 				
-				<div class="col-md-6 no-padding">
-					<div class="jumbotron container-leftprofile">
-						<div class="form-style">
-							<label class="profile-subtitle">Avatar</label>
-							<br />
-							<br />
-							<img src="{{image}}" style="overflow: hidden" name="avatar" id="avatar">
-							<br />
-						</div>
-					</div>
-				</div>
-			
-			
-				<div class="col-md-6 no-padding">
-					<div class="jumbotron container-rightprofile">
-						
-						<label class="profile-subtitle">Informations personnelles</label>
-						<br />
+					<B><text class="profile-text">Nom : </text></B>
+					<text style="color:#0065e5; text-align:center;">{{nom}}</text>
+					<br />
+				
+					<B><text class="profile-text">Date de naissance : </text></B>
+					<text style="color:#0065e5; text-align:center;">{{birthdate}}</text>
 
-						<B><text class="profile-text">Prénom : 
-						</text></B>
-						<text style="color:#0065e5; text-align:center;">{{prenom}}</text>
-						<br />
-					
-						<B><text class="profile-text">Nom : </text></B>
-						<text style="color:#0065e5; text-align:center;">{{nom}}</text>
-						<br />
-					
-						<B><text class="profile-text">Date de naissance : </text></B>
-						<text style="color:#0065e5; text-align:center;">{{birthdate}}</text>
-
-					
-					</div>
-					
-					<div class="jumbotron container-rightprofile">
-						
-						<label class="profile-subtitle">Informations du compte</label>
-						<br />	
-						
-						<B><text class="profile-text">Nombre de projets initiés : </text></B>
-						<text style="color:#0065e5; text-align:center;">######</text>
-						<br />
-						
-						<B><text class="profile-text">Nombre de fichiers déposés : </text></B>
-						<text style="color:#0065e5; text-align:center;">######</text>
-						<br />
-						
-						{% if printerid!=0 %}
-							<br />
-							<B><a href="/printer/{{printerid}}">{{username}} a une imprimante 3D !</a></B>
-						{% endif %}
-					</div>
-
-
-					<div class="jumbotron container-rightprofile">
-						
-						<label class="profile-subtitle">Informations privées</label>
-						<br />
-						{% if session.get('username')==username %}
-						<B><text class="profile-text">e-mail : </text></B>
-						<text style="color:#0065e5; text-align:center;">{{mail}}</text>
-						<br />
-						<B><text class="profile-text">n° tél. : </text></B>
-						<text style="color:#0065e5; text-align:center;">{{phone}}</text>
-						<br />
-						{% else %}
-						<B><text class="profile-text">Cet utilisateur ne rend pas publiques ses informations.</text></B>
-						{% endif %}
-
-					</div>
 				
 				</div>
-			
-				<div class="col-md-12 no-padding">
-					<div class="jumbotron">
-						<B><text class="profile-subtitle">Commentaires</text></B>
-						</br>
-						<div id="older-comments" class="older-comments">
-						</div>
-
-						<div>
-							<textarea name="comments" id="com" class="comment-box"></textarea>
-						</div>
-						<button onclick="test()" class="btn btn-lg btn-default navbar-button">Envoyer</button>
-					</div>
+				
+				<div class="jumbotron container-rightprofile">
+					
+					<label class="profile-subtitle">Informations du compte</label>
+					<br />	
+					
+					<B><text class="profile-text">Nombre de projets initiés : </text></B>
+					<text style="color:#0065e5; text-align:center;">######</text>
+					<br />
+					
+					<B><text class="profile-text">Nombre de fichiers déposés : </text></B>
+					<text style="color:#0065e5; text-align:center;">######</text>
+					<br /><br />
+					
+					{% if printers != False %}
+					{% set i = 1 %}
+					{% set nbprinters = printers.__len__() %}
+						<B>{{username}} a {{ nbprinters}} imprimante 3D !</B>
+						<p>
+						{% for row in printers %}
+						<a style="font-size: 12pt" href="/printer/{{row[0]}}">Imprimante n°{{i}}</a> <br>
+						{% set i = i + 1 %}
+						{% endfor %}
+						</p>
+						
+					{% endif %}
 				</div>
 
+
+				<div class="jumbotron container-rightprofile">
+					
+					<label class="profile-subtitle">Informations privées</label>
+					<br />
+					{% if session.get('username')==username %}
+					<B><text class="profile-text">e-mail : </text></B>
+					<text style="color:#0065e5; text-align:center;">{{mail}}</text>
+					<br />
+					<B><text class="profile-text">n° tél. : </text></B>
+					<text style="color:#0065e5; text-align:center;">{{phone}}</text>
+					<br />
+					{% else %}
+					<B><text class="profile-text">Cet utilisateur ne rend pas publiques ses informations.</text></B>
+					{% endif %}
+
+				</div>
+			
+			</div>
+		
+			<div class="col-md-12 no-padding">
+				<div class="jumbotron">
+					<B><text class="profile-subtitle">Commentaires</text></B>
+					</br>
+					<div id="older-comments" class="older-comments">
+					</div>
+
+					<div>
+						<textarea name="comments" id="com" class="comment-box"></textarea>
+					</div>
+					<button onclick="test()" class="btn btn-lg btn-default navbar-button">Envoyer</button>
+				</div>
 			</div>
 
 		</div>
-	</form>
+
+	</div>
 </div>
 {% endblock %}
 
