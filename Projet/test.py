@@ -153,7 +153,6 @@ def uploadFile(request, filestr, filepath="default"):
 	finally:
 		db.close()
 
-
 #____________________________________________________________#
 #		PASSWORD & USER MANAGEMENT
 #____________________________________________________________#
