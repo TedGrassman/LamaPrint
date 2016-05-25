@@ -13,6 +13,7 @@
 {% endblock %}
 
 {% block content %}
+
 <div class="content">
 	<header>
 	</header>
@@ -69,13 +70,13 @@
 					
 					{% set count = 0 %}
 					{% for c in list %}
-							{% if count is divisibleby 2 %}
-							<div class="commentaire"><a href="/profile/{{c}}">User {{c}}:</a></br>
-							{% endif %}
-							{% if count is not divisibleby 2 %}
-							{{c}}</div></br>
-							{% endif %}
-							{% set count = count +1 %}
+						{% if count is divisibleby 2 %}
+						<div class="commentaire"><a href="/profile/{{c}}">User {{c}}:</a></br>
+						{% endif %}
+						{% if count is not divisibleby 2 %}
+						{{c}}</div></br>
+						{% endif %}
+						{% set count = count +1 %}
 					{% endfor %}
 					</div>
 					

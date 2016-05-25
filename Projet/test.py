@@ -276,11 +276,11 @@ def getUserPrinter(username):
 	db = engine.connect()
 	print("### GetPrinterInfo, User="+username)
 	try:
-		result = db.execute(select([printer]).where(printer.c.user == username)).fetchone()
+		result = db.execute(select([printer]).where(printer.c.user == username)).fetchall()
 		if result is None:
 			# L'imprimante n'existe pas
 			# code ...
-			print('**Encounter problem getting printer\'s info**')
+			print('**Encounter problem getting printer\'s info : no printers**')
 			return False
 		else:
 			print(result)
@@ -355,6 +355,30 @@ def getProjectFile(title):
 			return result
 	finally:
 		db.close()
+
+def getChildProjects(parent_project_id):
+	db = engine.connect()
+	print("### getChildProjects, parent_project_id = ", parent_project_id)
+	try:
+		# id du projet
+		#idd = db.execute(select([project.c.id]).where(project.c.project_name == title)).fetchone()
+		#print("ID du projet =", idd, type(idd))
+		# fichiers correspondant
+		#idd = idd[0]
+		result = db.execute(select([project]).where(project.c.parent_project == parent_project_id)).fetchall()
+		if result is None:
+			# Aucun fichier
+			# code ...
+			print('**Encounter problem getting child projects (or no child projects)**')
+			return False
+		else:
+			print(result)
+			for row in result:
+				print(row)
+			return result
+	finally:
+		db.close()
+
 
 
 #____________________________________________________________#
@@ -545,13 +569,10 @@ def profile():
 				phone='NaN'
 
 			#Printer
-			result=getUserPrinter(username)
-			if result is not False:
-				printerid=result[0]
-			if result is False:	
-				printerid=0
+			printers=getUserPrinter(username)
+			print("##Printers =", printers, type(printer))
 
-			return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone,printerid=printerid)
+			return render_template("profile.html", name= "Profil", username=username, nom=nom, prenom=prenom, birthdate=birthdate, image=image, mail=mail, phone=phone, printers=printers)
 
 
 	elif action=="edit":
@@ -1001,43 +1022,49 @@ def projectDisplay(title):
 	username = getUserName(request)
 	db = engine.connect()
 	if request.method == 'GET':
-		project = getProjectInfo(title)
+		idd = db.execute(select([project.c.id]).where(project.c.project_name == title)).fetchone()
+		idd = idd[0]
+		projectinfo = getProjectInfo(title)
 		files = getProjectFile(title)
-		print("Project =", project)
+		child_projects = getChildProjects(idd)
+		print("Project =", projectinfo)
 		print("Files =", files, type(files))
 
 		for row in files:
 			print(row, type(row))
 
-		if project is False:
+		for row in child_projects:
+			print(row, type(row))
+
+		if projectinfo is False:
 			flash('Error: project \"'+ title + '\" may not exist.', 'warning')
 			print('Error: project \"'+ title + '\" may not exist.')
 			return redirect('/')
 		else:
 			#User
-			if project[1] is not None:
-				user=project[1]
-			if project[1] is None:	
+			if projectinfo[1] is not None:
+				user=projectinfo[1]
+			if projectinfo[1] is None:	
 				user='Non renseigné'
 			#Parent Project
-			if project[2] is not None:
-				parent_project=project[2]
-			if project[2] is None:	
+			if projectinfo[2] is not None:
+				parent_project=projectinfo[2]
+			if projectinfo[2] is None:	
 				parent_project=0
 			#Type
-			if project[5] is not None:
-				project_type=project[5]
-			if project[5] is None:	
+			if projectinfo[5] is not None:
+				project_type=projectinfo[5]
+			if projectinfo[5] is None:	
 				project_type=1
 			#Image
-			if project[10] is not None:
-				image=project[10]
-			if project[10] is None:	
+			if projectinfo[10] is not None:
+				image=projectinfo[10]
+			if projectinfo[10] is None:	
 				image='../image/lama.png'
 			#Description
-			if project[12] is not None:
-				description=project[12]
-			if project[12] is None:	
+			if projectinfo[12] is not None:
+				description=projectinfo[12]
+			if projectinfo[12] is None:	
 				description='-- Aucune description --'
 		
 			l=getCom(title)
@@ -1046,11 +1073,11 @@ def projectDisplay(title):
 			# A améliorer, notamment dans le template !! (c'est pas top...)
 			if files == []:
 				print('Aucun fichier pour le project \"'+ title + '\".')
-				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, id=0, file="../image/garou.png", dimx=0, dimy=0, dimz=0, prix=0, masse=0, list=l)
+				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, child_projects=child_projects, id=0, file="../image/garou.png", dimx=0, dimy=0, dimz=0, prix=0, masse=0, list=l)
 			else:
 				for row in files:
 					f=row
-				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, files=files, id=f[0], file=f[4], dimx=f[6], dimy=f[7], dimz=f[8], prix=f[10], masse=f[9], list=l)
+				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, files=files, child_projects=child_projects, id=f[0], file=f[4], dimx=f[6], dimy=f[7], dimz=f[8], prix=f[10], masse=f[9], list=l)
 	#if session.get('logged') is False:
 	#	return redirect('/login')
 	#return redirect('/propose')
