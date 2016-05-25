@@ -1004,10 +1004,10 @@ def projectDisplay(title):
 		project = getProjectInfo(title)
 		files = getProjectFile(title)
 		print("Project =", project)
-		print("Files =", files)
+		print("Files =", files, type(files))
 
 		for row in files:
-			print(row)
+			print(row, type(row))
 
 		if project is False:
 			flash('Error: project \"'+ title + '\" may not exist.', 'warning')
@@ -1050,7 +1050,7 @@ def projectDisplay(title):
 			else:
 				for row in files:
 					f=row
-				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, id=f[0], file=f[4], dimx=f[6], dimy=f[7], dimz=f[8], prix=f[10], masse=f[9], list=l)
+				return render_template("project_display.html", name="Projet "+title, username=user, title=title, image=image, description=description, project_type=project_types[project_type], parent_project=parent_project, files=files, id=f[0], file=f[4], dimx=f[6], dimy=f[7], dimz=f[8], prix=f[10], masse=f[9], list=l)
 	#if session.get('logged') is False:
 	#	return redirect('/login')
 	#return redirect('/propose')

@@ -64,24 +64,33 @@
 			</div>
 			<div class="col-md-6 no-padding">
 				<div  id="registerleftwindow" class="jumbotron-propose container-halfproject">
-					<div style="text-align:center; margin-top:2%; font-size: 20px;">
-					Liste des fichiers:
-					</div> </br>
-					<div class="file-block">
-						<a onclick="showText(this.id)" href="javascript:void(0);" id="file">FILE {{id}}</a>
 					
-						<div id="textfile" class="hide" >
-						<a href="{{file}}" target="_blank">Download it here</a></br>
-						prix: {{prix}} € </br>
-						{% if masse != None %}
-						masse: {{masse}}</br>
-						{%endif%}
-						dimension: {{dimx}} cm *{{dimy}} cm *{{dimy}} cm</br>
-						<a href="/profile/{{username}}">User {{username}}</a>
-						</div>
-					
-					</div>
-					<div style="text-align:center; margin-top:1%; font-size: 20px;">
+					<!-- Liste de fichiers si proposition ou réponse -->
+					{% if project_type=="Publication" or project_type=="Offer" %}
+						<div style="text-align:center; margin-top:2%; font-size: 20px;">
+						Liste des fichiers:
+						</div> </br>
+						{% set count = 1 %}
+						{% for row in files %}
+
+
+							<div class="file-block">
+								<a onclick="showText(this.id)" href="javascript:void(0);" id="file{{count}}">FILE {{count}}</a>
+									<div id="textfile{{count}}" class="hide" >
+									<a href="{{row[4]}}" target="_blank">Download it here</a></br>
+									prix: {{row[10]}} € </br>
+									{% if row[9] != None %}
+									masse: {{row[9]}}</br>
+									{%endif%}
+									dimension: {{row[6]}} cm *{{row[7]}} cm *{{row[8]}} cm</br>
+									<a href="/profile/{{username}}">User {{username}}</a>
+								</div>
+							</div>
+						{% set count = count +1 %}
+						{% endfor %}
+					{% endif %}
+
+						<div style="text-align:center; margin-top:1%; font-size: 20px;">
 					Commentaire:
 					</div>
 					<div id="comment" class="commentaire-block">
