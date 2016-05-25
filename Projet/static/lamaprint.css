@@ -20,6 +20,11 @@ footer{
 	height: 60px;
 }
 
+
+body{
+	background-color:#e0eafa
+}
+
 /*.container {
 	min-height: calc(100% + 500px);	/* 71px header + 60 px footr = 131px	=> marche pas...
 }*/
@@ -60,7 +65,7 @@ img {
 }
 
 .jumbotron{
-	background-color:#fae8ca;
+	background-color:#fafcff; /*#fae8ca*/
 	padding-top:30px;
 	padding-bottom:30px;
 	padding-left:0px;
@@ -75,6 +80,7 @@ img {
 	.panel-title-center{
 	text-align:center;
 	}
+
 
 	
 /*INDEX  -------------------------------------------------*/	
@@ -281,7 +287,7 @@ img {
 }
 
 .jumbotron-propose{
-	background-color:#fae8ca;
+	background-color:#fafcff;
 	padding-top:30px;
 	padding-bottom:30px;
 	padding-left:10px;
