@@ -71,11 +71,19 @@
 					
 					<B><text class="profile-text">Nombre de fichiers déposés : </text></B>
 					<text style="color:#0065e5; text-align:center;">######</text>
-					<br />
+					<br /><br />
 					
-					{% if printerid!=0 %}
-						<br />
-						<B><a href="/printer/{{printerid}}">{{username}} a une imprimante 3D !</a></B>
+					{% if printers != False %}
+					{% set i = 1 %}
+					{% set nbprinters = printers.__len__() %}
+						<B>{{username}} a {{ nbprinters}} imprimante 3D !</B>
+						<p>
+						{% for row in printers %}
+						<a style="font-size: 12pt" href="/printer/{{row[0]}}">Imprimante n°{{i}}</a> <br>
+						{% set i = i + 1 %}
+						{% endfor %}
+						</p>
+						
 					{% endif %}
 				</div>
 

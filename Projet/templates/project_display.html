@@ -14,7 +14,6 @@
 
 {% block content %}
 
-
 <div class="content">
 	<header>
 	</header>
@@ -35,7 +34,7 @@
 			<div class="col-md-6 no-padding">
 				<div  id="registerleftwindow" class="jumbotron-propose container-halfproject">
 					
-					<div class="image-wrapper"> <img style="max-width:100%; margin-left:auto; margin-right: auto" src={{image}}> </div>
+					<img style="max-width:100%; margin-left:auto; margin-right: auto" src={{image}}>
 					
 					<!--</br></br>
 					<p>Prix : #,## €</p>
@@ -57,10 +56,6 @@
 					
 				</div>
 					
-					
-					
-					<!--<a class="btn btn-lg btn-warning register-button-style" role="button">Télécharger</a>-->
-			
 			</div>
 			<div class="col-md-6 no-padding">
 				<div  id="registerleftwindow" class="jumbotron-propose container-halfproject">
@@ -72,7 +67,6 @@
 						</div> </br>
 						{% set count = 1 %}
 						{% for row in files %}
-
 
 							<div class="file-block">
 								<a onclick="showText(this.id)" href="javascript:void(0);" id="file{{count}}">FILE {{count}}</a>
@@ -88,9 +82,36 @@
 							</div>
 						{% set count = count +1 %}
 						{% endfor %}
+					{% elif project_type=="Request" %}
+						<div style="text-align:center; margin-top:2%; font-size: 20px;">
+						Liste des réponses:
+						</div> </br>
+						
+						<div class="file-block">
+						
+							{% if session.get('logged')==True %}
+								<a href="/propose?parent_project_id={{id}}" style="margin-top: 0px;" role="button" class="btn btn-lg btn-warning register-button-style">Proposer une réponse</a>
+							{% else %}
+								<p>Connectez-vous pour proposer une réponse !</p>
+							{% endif %}
+
+							{% set count = 1 %}
+							{% for row in child_projects %}
+
+								<div class="file-block">
+									<a href="/project_display/{{row[4]}}">Réponse n°{{count}}</a></br>
+									Titre : <a href="/profile/{{row[4]}}">{{row[4]}} </a></br>
+									Auteur : <a href="/profile/{{row[1]}}">{{row[1]}} </a>
+								</div>
+							{% set count = count +1 %}
+							{% endfor %}
+
+						</div>
+					
+
 					{% endif %}
 
-						<div style="text-align:center; margin-top:1%; font-size: 20px;">
+					<div style="text-align:center; margin-top:1%; font-size: 20px;">
 					Commentaire:
 					</div>
 					<div id="comment" class="commentaire-block">
