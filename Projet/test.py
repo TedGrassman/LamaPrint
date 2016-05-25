@@ -153,7 +153,6 @@ def uploadFile(request, filestr, filepath="default"):
 	finally:
 		db.close()
 
-
 #____________________________________________________________#
 #		PASSWORD & USER MANAGEMENT
 #____________________________________________________________#
@@ -1297,6 +1296,20 @@ def getCom(title):
 		for j in range(0, len(com[i])):
 			l.append(com[i][j])
 		
+	return l
+
+@app.route('/get_printer')
+def getAllPrinter():
+	#INIT
+	print('Getting printer')
+	db = engine.connect()
+	pr=db.execute(select([printer.c.address,printer.c.city, printer.c.postcode, printer.c.user,printer.c.ID ])).fetchall()
+	l=[]
+	for i in range(0, len(pr)):
+		for j in range(0, len(pr[i])):
+			l.append(pr[i][j])
+		
+	l=json.dumps(l)
 	return l
 
 
