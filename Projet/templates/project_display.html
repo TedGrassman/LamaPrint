@@ -84,16 +84,16 @@
 						{% endfor %}
 					{% elif project_type=="Request" %}
 						<div style="text-align:center; margin-top:2%; font-size: 20px;">
-						Liste des réponses:
+						Liste des réponses :
 						</div> </br>
+
+						{% if session.get('logged')==True %}
+							<a href="/propose?parent_project_id={{id}}" style="margin-top: 0px; margin-left:17%;" role="button" class="btn btn-lg btn-warning register-button-style">Proposer une réponse</a>
+						{% else %}
+							<p>Connectez-vous pour proposer une réponse !</p>
+						{% endif %}
 						
 						<div class="file-block">
-						
-							{% if session.get('logged')==True %}
-								<a href="/propose?parent_project_id={{id}}" style="margin-top: 0px;" role="button" class="btn btn-lg btn-warning register-button-style">Proposer une réponse</a>
-							{% else %}
-								<p>Connectez-vous pour proposer une réponse !</p>
-							{% endif %}
 
 							{% set count = 1 %}
 							{% for row in child_projects %}
