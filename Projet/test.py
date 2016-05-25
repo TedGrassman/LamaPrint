@@ -421,6 +421,10 @@ def index():
 	username = getUserName(request)
 	return render_template('index.html', name="Main Page")
 
+@app.route('/about')
+def about():
+	return render_template('about.html', name="About")
+
 @app.route('/test')
 def test():
 	return "Hello !"
@@ -554,7 +558,7 @@ def profile():
 			if result[6] is not None:
 				image="../"+result[6]
 			if result[6] is None:	
-				image='../image/garou.png'		# image par défaut :)
+				image='../image/photodeprofil.png'		# image par défaut :)
 			print("FETCH USER : image =", image)
 			#Mail
 			if result[2] is not None:

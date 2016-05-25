@@ -1,0 +1,69 @@
+{% extends "main.html" %}
+
+{% block title %}{{ name }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script type="text/javascript" src="../api/project.js" defer></script>
+{% endblock %}
+
+{% block navbar %}
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<div class="content">
+	<header>
+	</header>
+
+	<div class="container register-text">
+			
+			<div class="container-co jumbotron propose-form-title">
+			<p>
+				<label for="titletext" class="login-form-title">A propos</label>
+			</p>
+			</div>
+
+			<div class="container-globalregister"> 
+				<div class="col-md-6 no-padding">
+					<div  id="registerleftwindow" class="jumbotron-propose container-halfpropose" style="text-align:justify">				
+						<h3>Qu'est-ce que LamaPrint ?</h3> 
+						<p>LamaPrint est un site communautaire consacré au domaine de l’impression 3D. Celui-ci permet de rassembler différents types d’utilisateurs, intéressés de près ou de loin par ce domaine. <br /><br />
+						De l’expert en CAO (Conception Assistée par Ordinateur) à l’utilisateur lambda en quête de connaissances, tout le monde est le bienvenu dans la communauté grandissante de LamaPrint !<br /><br />
+						En plus de son objectif de fédérer les passionnés d’impression 3D,  le site a trois objectifs plus précis : <br />
+						<ul>
+						<li> Faciliter l’accès à la technologie de l’impression 3D aux néophytes, sans pour autant avoir le besoin de posséder le matériel ou les connaissances techniques nécessaires.</li>
+						<li>Créer une communauté active d’imprimeurs et de concepteurs, et ainsi créer un support d’aide fiable et facile d’accès pour les débutants en CAO ou passionés d’impression en général (On a l’impression que c’est de l’aide genre des tutos ou un forum d’aide)</li>
+						<li>Proposer un système de commerce entre concepteurs et utilisateurs, pour aider les concepteurs amateurs et freelance à se développer </li>
+						</ul>
+						Ce site web a été créé dans le cadre de l'enseignement Web Dynamique du Département Télécommunications, services et usages de l'INSA Lyon par 5 étudiants :<br />
+						Pierre Francolin, Guillaume Bullier, Nicolas Désilets, Mathias Dwerk et Tanguy Nodet.
+						</p>
+					</div>
+				</div>
+			
+
+				<div class="col-md-6 no-padding">
+					<div id="registerrightwindow" class="jumbotron-propose container-halfpropose">
+						
+						<img src="../image/logo2.png" name="image" id="image" style="width: auto;height:100px;margin-top:10px;">
+						<br /><br /><p>Rapport technique complet : </p>
+						<button class="btn btn-lg btn-warning profile-button-style" href="/">Télécharger</button>
+						<br /><br /><p>Rapport de conduite de projet : </p>
+						<button class="btn btn-lg btn-warning profile-button-style" href="/">Télécharger</button>
+						<br />
+						<br />
+						<img src="https://www.insa-lyon.fr/sites/www.insa-lyon.fr/files/logo-coul.png" name="image" id="image" style="width: 50%;height:auto;margin-top:10px;">
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+
+{% block footer %}
+{{ super() }}
+{% endblock %}
