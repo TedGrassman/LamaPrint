@@ -1050,6 +1050,7 @@ def projectDisplay(project_id):
 				project_type=projectinfo[5]
 			if projectinfo[5] is None:	
 				project_type=1
+			print("********* Type =", project_type)
 			#Image
 			if projectinfo[10] is not None:
 				image=projectinfo[10]
